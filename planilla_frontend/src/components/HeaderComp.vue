@@ -2,13 +2,13 @@
     <header class="d-flex justify-content-between align-items-center py-3 mb-4 px-2">
         <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
             <img src="@/assets/logo.png" alt="Logo" width="60" height="60" class="me-2">
-            <span class="fs-4">Onigiri Intelligent Solutions</span>
+            <span class="fs-4 fw-medium">Onigiri Intelligent Solutions</span>
         </a>
         <ul class="nav nav-underline d-flex align-items-center gap-3">
             <li class="nav-item">
                 <div class="dropdown text-end">
                     <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                        <span class="fs-5">Empresa ABC</span>
+                        <span class="fs-5 fw-medium">Empresa ABC</span>
                     </a>
                     <ul class="dropdown-menu text-small" style="">
                         <li><a class="dropdown-item" href="#">Empresa DEF</a></li>
