@@ -63,7 +63,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="Telephone" class="form-label">Teléfono</label>
-                    <input type="text" class="form-control" id="Telephone" placeholder="2222-2222" required>
+                    <input type="text" class="form-control" id="Telephone" placeholder="2222-2222">
                     <div class="invalid-feedback">
                         Ingrese el número de teléfono
                     </div>
