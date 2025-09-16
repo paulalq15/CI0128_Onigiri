@@ -32,11 +32,11 @@ namespace Planilla_Backend.Repositories
             string query = "SELECT Distrito AS Value FROM dbo.DivisionTerritorialCR WHERE Provincia = @province AND Canton = @county";
             return connection.Query<DivisionModel>(query, new { province, county }).ToList();
         }
-        public List<DivisionModel> GetZipCode(string province, string county, string district)
+        public DivisionModel? GetZipCode(string province, string county, string district)
         {
             using var connection = new SqlConnection(_connectionString);
             string query = "SELECT CodigoPostal AS Value FROM dbo.DivisionTerritorialCR WHERE Provincia = @province AND Canton = @county AND Distrito = @district";
-            return connection.Query<DivisionModel>(query, new { province, county, district }).ToList();
+            return connection.QueryFirstOrDefault<DivisionModel>(query, new { province, county, district });
         }
     }
 }

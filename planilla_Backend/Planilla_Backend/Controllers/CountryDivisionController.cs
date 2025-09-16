@@ -1,8 +1,8 @@
-﻿using Planilla_Backend.Models;
-using Planilla_Backend.Services;
-
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Planilla_Backend.Models;
+using Planilla_Backend.Services;
+using System.Diagnostics.Metrics;
 
 namespace Planilla_Backend.Controllers
 {
@@ -20,28 +20,29 @@ namespace Planilla_Backend.Controllers
         [HttpGet("Provinces")]
         public List<DivisionModel> GetProvince()
         {
-            var provincias = countryDivisionService.GetProvince();
-            return provincias;
+            var provinces = countryDivisionService.GetProvince();
+            return provinces;
         }
 
         [HttpGet("Counties")]
-        public List<DivisionModel> GetCounty(string provincia)
+        public List<DivisionModel> GetCounty(string province)
         {
-            var cantones = countryDivisionService.GetCounty(provincia);
-            return cantones;
+            var counties = countryDivisionService.GetCounty(province);
+            return counties;
         }
 
         [HttpGet("Districts")]
-        public List<DivisionModel> GetDistrict(string provincia, string canton)
+        public List<DivisionModel> GetDistrict(string province, string county)
         {
-            var distritos = countryDivisionService.GetDistrict(provincia, canton);
-            return distritos;
+            var districts = countryDivisionService.GetDistrict(province, county);
+            return districts;
         }
 
         [HttpGet("ZipCode")]
-        public List<DivisionModel> GetZipCode(string provincia, string canton, string distrito)
+        public ActionResult<DivisionModel> GetZipCode(string province, string county, string district)
         {
-            var zipCode = countryDivisionService.GetZipCode(provincia, canton, distrito);
+            var zipCode = countryDivisionService.GetZipCode(province, county, district);
+            if (zipCode is null) return NotFound();
             return zipCode;
         }
     }

@@ -22,7 +22,7 @@
                 </div>
                 <div class="mb-3 col-xl-6 col-sm-12">
                     <label for="Province" class="form-label">Provincia</label>
-                    <select class="form-select" id="Province" required v-model="selectedProvince">
+                    <select class="form-select" id="Province" required v-model="selectedProvince" @change="getCounties">
                         <option selected disabled value="">Seleccione una Provincia</option>
                         <option v-for="p in provinces" :key="p.value" :value="p.value">{{ p.value }}</option>
                     </select>
@@ -32,9 +32,9 @@
                 </div>
                 <div class="mb-3 col-xl-6 col-sm-12">
                     <label for="County" class="form-label">Cantón</label>
-                    <select class="form-select" id="County" required>
+                    <select class="form-select" id="County" required v-model="selectedCounty" @change="getDistricts" :disabled="!selectedProvince || counties.length===0">
                         <option selected disabled value="">Seleccione un cantón</option>
-                        <option>...</option>
+                        <option v-for="c in counties" :key="c.value" :value="c.value">{{ c.value }}</option>
                     </select>
                     <div class="invalid-feedback">
                         Seleccione un cantón
@@ -42,9 +42,9 @@
                 </div>
                 <div class="mb-3 col-xl-6 col-sm-12">
                     <label for="District" class="form-label">Distrito</label>
-                    <select class="form-select" id="District" required>
+                    <select class="form-select" id="District" required v-model="selectedDistrict" @change="getZipCode" :disabled="!selectedCounty || districts.length===0">
                         <option selected disabled value="">Seleccione un distrito</option>
-                        <option>...</option>
+                        <option v-for="c in districts" :key="c.value" :value="c.value">{{ c.value }}</option>
                     </select>
                     <div class="invalid-feedback">
                         Seleccione un distrito
@@ -52,7 +52,7 @@
                 </div>
                 <div class="mb-3 col-xl-6 col-sm-12">
                     <label for="ZipCode" class="form-label">Código Postal</label>
-                    <input type="text" class="form-control" id="ZipCode" readonly>
+                    <input type="text" class="form-control" id="ZipCode" disabled readonly v-model="zipCode">
                 </div>
                 <div class="mb-3">
                     <label for="AddressDetails" class="form-label">Otras señas</label>
@@ -127,7 +127,12 @@
         data() {
             return {
                 provinces: [],
-                selectedProvince: ""
+                selectedProvince: "", 
+                counties: [],
+                selectedCounty: "", 
+                districts: [],
+                selectedDistrict: "", 
+                zipCode: ""
             };
         },
         methods: {
@@ -150,6 +155,48 @@
                 axios.get("https://localhost:7115/api/CountryDivision/Provinces").then((response) => { 
                     this.provinces = response.data; 
                 });
+            },
+            getCounties() {
+                this.selectedCounty = "";
+                this.counties = [];
+                this.selectedDistrict = "";
+                this.districts = [];
+                this.zipCode = "";
+
+                axios
+                    .get("https://localhost:7115/api/CountryDivision/Counties", {
+                        params: {province: this.selectedProvince}
+                    })
+                    .then((response) => {
+                        this.counties = response.data;
+                    })
+                    .catch(console.error);
+            },
+            getDistricts() {
+                this.selectedDistrict = "";
+                this.districts = [];
+                this.zipCode = "";
+
+                axios
+                    .get("https://localhost:7115/api/CountryDivision/Districts", {
+                        params: {province: this.selectedProvince, county: this.selectedCounty}
+                    })
+                    .then((response) => {
+                        this.districts = response.data;
+                    })
+                    .catch(console.error);
+            },
+
+            getZipCode() {
+                this.zipCode = "";
+
+                axios.get("https://localhost:7115/api/CountryDivision/ZipCode", {
+                    params: { province: this.selectedProvince, county: this.selectedCounty, district: this.selectedDistrict }
+                })
+                .then(response => {
+                    this.zipCode = response.data.value;
+                })
+                .catch(console.error);
             }
         },
         mounted() {

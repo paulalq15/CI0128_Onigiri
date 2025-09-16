@@ -23,7 +23,7 @@ namespace Planilla_Backend.Services
         {
             return countryDivisionRepository.GetDistrict(province, county);
         }
-        public List<DivisionModel> GetZipCode(string province, string county, string district)
+        public DivisionModel? GetZipCode(string province, string county, string district)
         {
             return countryDivisionRepository.GetZipCode(province, county, district);
         }
