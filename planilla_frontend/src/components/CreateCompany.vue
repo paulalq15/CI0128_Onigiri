@@ -22,9 +22,9 @@
                 </div>
                 <div class="mb-3 col-xl-6 col-sm-12">
                     <label for="Province" class="form-label">Provincia</label>
-                    <select class="form-select" id="Province" required>
+                    <select class="form-select" id="Province" required v-model="selectedProvince">
                         <option selected disabled value="">Seleccione una Provincia</option>
-                        <option>...</option>
+                        <option v-for="p in provinces" :key="p.value" :value="p.value">{{ p.value }}</option>
                     </select>
                     <div class="invalid-feedback">
                         Seleccione una provincia
@@ -116,12 +116,19 @@
 </template>
 
 <script>
+    import axios from "axios";
     import HeaderComp from './HeaderComp.vue';
     import FooterComp from './FooterComp.vue';
     export default {
         components: {
         HeaderComp,
         FooterComp,
+        },
+        data() {
+            return {
+                provinces: [],
+                selectedProvince: ""
+            };
         },
         methods: {
             initBootstrapValidation() {
@@ -139,9 +146,15 @@
                     }, false)
                 })
             },
+            GetProvince() {
+                axios.get("https://localhost:7115/api/CountryDivision/Provinces").then((response) => { 
+                    this.provinces = response.data; 
+                });
+            }
         },
         mounted() {
-            this.initBootstrapValidation()
+            this.initBootstrapValidation();
+            this.GetProvince();
         },
     };
 </script>

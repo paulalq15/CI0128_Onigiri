@@ -1,5 +1,6 @@
 ﻿using Planilla_Backend.Models;
 using Planilla_Backend.Repositories;
+using System.Diagnostics.Metrics;
 
 namespace Planilla_Backend.Services
 {
@@ -10,21 +11,21 @@ namespace Planilla_Backend.Services
         {
             countryDivisionRepository = new CountryDivisionRepository();
         }
-        public List<ProvinciaModel> GetProvince()
+        public List<DivisionModel> GetProvince()
         {
             return countryDivisionRepository.GetProvince();
         }
-        public List<CantonModel> GetCounty(string provincia)
+        public List<DivisionModel> GetCounty(string province)
         {
-            return countryDivisionRepository.GetCounty(provincia);
+            return countryDivisionRepository.GetCounty(province);
         }
-        public List<DistritoModel> GetDistrict(string provincia, string canton)
+        public List<DivisionModel> GetDistrict(string province, string county)
         {
-            return countryDivisionRepository.GetDistrict(provincia, canton);
+            return countryDivisionRepository.GetDistrict(province, county);
         }
-        public List<ZipCodeModel> GetZipCode(string provincia, string canton, string distrito)
+        public List<DivisionModel> GetZipCode(string province, string county, string district)
         {
-            return countryDivisionRepository.GetZipCode(provincia, canton, distrito);
+            return countryDivisionRepository.GetZipCode(province, county, district);
         }
     }
 }

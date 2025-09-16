@@ -17,29 +17,29 @@ namespace Planilla_Backend.Controllers
             countryDivisionService = new CountryDivisionService();
         }
 
-        [HttpGet("provincias")]
-        public List<ProvinciaModel> GetProvincias()
+        [HttpGet("Provinces")]
+        public List<DivisionModel> GetProvince()
         {
             var provincias = countryDivisionService.GetProvince();
             return provincias;
         }
 
-        [HttpGet("cantones")]
-        public List<CantonModel> GetCantones(string provincia)
+        [HttpGet("Counties")]
+        public List<DivisionModel> GetCounty(string provincia)
         {
             var cantones = countryDivisionService.GetCounty(provincia);
             return cantones;
         }
 
-        [HttpGet("distritos")]
-        public List<DistritoModel> GetDistritos(string provincia, string canton)
+        [HttpGet("Districts")]
+        public List<DivisionModel> GetDistrict(string provincia, string canton)
         {
             var distritos = countryDivisionService.GetDistrict(provincia, canton);
             return distritos;
         }
 
-        [HttpGet("zipCode")]
-        public List<ZipCodeModel> GetZipCode(string provincia, string canton, string distrito)
+        [HttpGet("ZipCode")]
+        public List<DivisionModel> GetZipCode(string provincia, string canton, string distrito)
         {
             var zipCode = countryDivisionService.GetZipCode(provincia, canton, distrito);
             return zipCode;
