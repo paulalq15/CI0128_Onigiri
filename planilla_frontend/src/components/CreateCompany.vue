@@ -7,21 +7,21 @@
         <div class="container py-4 flex-fill d-flex justify-content-center">   
             <form action="/" method="post" class="row g-3 needs-validation" novalidate style="width: 800px;">
                 <div class="mb-3 col-xl-6 col-sm-12">
-                    <label for="companyId" class="form-label">Cédula Jurídica</label>
-                    <input type="text" class="form-control" id="companyId" placeholder="3-000-000000" required>
+                    <label for="companyId" class="form-label required">Cédula Jurídica</label>
+                    <input type="text" class="form-control" id="companyId" placeholder="3-000-000000" required pattern="[0-9]{1}-[0-9]{3}-[0-9]{6}">
                     <div class="invalid-feedback">
-                        Ingrese la cédula jurídica 
+                        Ingrese la cédula jurídica con el formato requerido #-###-######
                     </div>
                 </div>
                 <div class="mb-3 col-xl-6 col-sm-12">
-                    <label for="companyName" class="form-label">Nombre Empresa</label>
+                    <label for="companyName" class="form-label required">Nombre Empresa</label>
                     <input type="text" class="form-control" id="companyName" required>
                     <div class="invalid-feedback">
                         Ingrese el nombre de la empresa
                     </div>
                 </div>
                 <div class="mb-3 col-xl-6 col-sm-12">
-                    <label for="Province" class="form-label">Provincia</label>
+                    <label for="Province" class="form-label required">Provincia</label>
                     <select class="form-select" id="Province" required v-model="selectedProvince" @change="getCounties">
                         <option selected disabled value="">Seleccione una Provincia</option>
                         <option v-for="p in provinces" :key="p.value" :value="p.value">{{ p.value }}</option>
@@ -31,7 +31,7 @@
                     </div>
                 </div>
                 <div class="mb-3 col-xl-6 col-sm-12">
-                    <label for="County" class="form-label">Cantón</label>
+                    <label for="County" class="form-label required">Cantón</label>
                     <select class="form-select" id="County" required v-model="selectedCounty" @change="getDistricts" :disabled="!selectedProvince || counties.length===0">
                         <option selected disabled value="">Seleccione un cantón</option>
                         <option v-for="c in counties" :key="c.value" :value="c.value">{{ c.value }}</option>
@@ -41,7 +41,7 @@
                     </div>
                 </div>
                 <div class="mb-3 col-xl-6 col-sm-12">
-                    <label for="District" class="form-label">Distrito</label>
+                    <label for="District" class="form-label required">Distrito</label>
                     <select class="form-select" id="District" required v-model="selectedDistrict" @change="getZipCode" :disabled="!selectedCounty || districts.length===0">
                         <option selected disabled value="">Seleccione un distrito</option>
                         <option v-for="c in districts" :key="c.value" :value="c.value">{{ c.value }}</option>
@@ -55,55 +55,55 @@
                     <input type="text" class="form-control" id="ZipCode" disabled readonly v-model="zipCode">
                 </div>
                 <div class="mb-3">
-                    <label for="AddressDetails" class="form-label">Otras señas</label>
-                    <textarea class="form-control" id="AddressDetails" rows="3" placeholder="Otras señas" required></textarea>
+                    <label for="AddressDetails" class="form-label required">Otras señas</label>
+                    <textarea class="form-control" id="AddressDetails" rows="3" placeholder="Otras señas" required maxlength="250"></textarea>
                     <div class="invalid-feedback">
-                        Ingrese las señas
+                        Ingrese las otras señas
                     </div>
                 </div>
                 <div class="mb-3">
                     <label for="Telephone" class="form-label">Teléfono</label>
-                    <input type="text" class="form-control" id="Telephone" placeholder="2222-2222">
+                    <input type="text" class="form-control" id="Telephone" placeholder="2222-2222" pattern="[0-9]{4}-[0-9]{4}">
                     <div class="invalid-feedback">
-                        Ingrese el número de teléfono
+                        Ingrese el número de teléfono con el formato requerido ####-####
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label for="MaxBenefits" class="form-label">Cantidad máxima de beneficios</label>
-                    <input type="number" class="form-control" id="MaxBenefits" required>
+                    <label for="MaxBenefits" class="form-label required">Cantidad máxima de beneficios</label>
+                    <input type="number" class="form-control" id="MaxBenefits" value="0" required>
                     <div class="invalid-feedback">
                         Ingrese la cantidad máxima de beneficios que puede seleccionar un empleado
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label for="PaymentFrequency" class="form-label">Frecuencia de pago</label>
-                    <select class="form-select" id="PaymentFrequency" required>
+                    <label for="PaymentFrequency" class="form-label required">Frecuencia de pago</label>
+                    <select class="form-select" id="PaymentFrequency" required v-model="paymentFrequency">
                         <option selected disabled value="">Selecciona la frecuencia de pago de la planilla</option>
                         <option>Mensual</option>
                         <option>Quincenal</option>
                     </select>
                     <div class="invalid-feedback">
-                        Seleccione la frecuencia de pago
+                        Seleccione la frecuencia de pago de planilla
                     </div>
                 </div>
-                <div class="mb-3 col-xl-6 col-sm-12">
-                    <label for="PayDay1" class="form-label">Primer día de pago</label>
-                    <select class="form-select" id="PayDay1" required>
+                <div class="mb-3">
+                    <label for="PayDay1" class="form-label required">Día de pago</label>
+                    <select class="form-select" id="PayDay1" required v-model="payDay1">
                         <option selected disabled value="">Día de pago</option>
-                        <option>...</option>
+                        <option v-for="day in 31" :key="day" :value="day">{{ day }}</option>
                     </select>
                     <div class="invalid-feedback">
-                        Please select a valid state.
+                        Seleccione el día de pago de la planilla
                     </div>
                 </div>
-                <div class="mb-3 col-xl-6 col-sm-12">
-                    <label for="PayDay2" class="form-label">Segundo día de pago</label>
-                    <select class="form-select" id="PayDay2" required>
-                        <option selected disabled value="">Día de pago</option>
-                        <option>...</option>
+                <div v-if="paymentFrequency === 'Quincenal'" class="mb-3">
+                    <label for="PayDay2" class="form-label required">Segundo día de pago</label>
+                    <select class="form-select" id="PayDay2" required v-model="payDay2" :disabled="!payDay1">
+                        <option selected disabled value="">Segundo día de pago</option>
+                        <option v-for="day in daysAfterFirst" :key="day" :value="day">{{ day }}</option>
                     </select>
                     <div class="invalid-feedback">
-                        Seleccione el segundo día de pago
+                        Seleccione el segundo día de pago pago de la planilla
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -132,8 +132,17 @@
                 selectedCounty: "", 
                 districts: [],
                 selectedDistrict: "", 
-                zipCode: ""
+                zipCode: "",
+                paymentFrequency: "",
+                payDay1: "",
+                payDay2: ""
             };
+        },
+        computed: {
+            daysAfterFirst() {
+            if (!this.payDay1) return [];
+                return Array.from({ length: 31 - this.payDay1 }, (_, i) => this.payDay1 + i + 1);
+            }
         },
         methods: {
             initBootstrapValidation() {
@@ -210,5 +219,9 @@
     body {
         background: #596D53;
         background: linear-gradient(357deg, rgba(89, 109, 83, 1) 0%, rgba(225, 245, 219, 1) 80%);
+    }
+    .form-label.required::after {
+        content: " *";
+        color: red;
     }
 </style>
