@@ -21,6 +21,17 @@ namespace Planilla_Backend.Repositories
             {
                 try
                 {
+                    // Validar ZipCode y obtener IdDivision
+                    const string searchDivision =
+                        @"SELECT TOP (1) IdDivision FROM dbo.DivisionTerritorialCR WHERE CodigoPostal = @ZipCode;";
+                    int? idDivision = connection.ExecuteScalar<int?>(searchDivision, new 
+                    { 
+                        ZipCode = company.ZipCode 
+                    }, transaction);
+                    if (idDivision is null)
+                        throw new InvalidOperationException("El código postal no existe");
+
+                    // Crear Empresa y obtener Id
                     const string insertCompany = 
                         @"INSERT INTO [dbo].[Empresa] ([CedulaJuridica], [Nombre], [Telefono], [CantidadBeneficios], [FrecuenciaPago], [DiaPago1], [DiaPago2], [IdCreadoPor])
                         OUTPUT INSERTED.IdEmpresa
@@ -38,12 +49,25 @@ namespace Planilla_Backend.Repositories
                         CreatedBy = company.CreatedBy > 0 ? company.CreatedBy : 1, // temporal
                     }, transaction);
 
-                    const string insertUserCompany = @"INSERT INTO [dbo].[UsuariosPorEmpresa] ([IdEmpresa], [IdUsuario])
-                                 VALUES (@CompanyId, @UserId)";
+                    // Crear dirección con el id de empresa y con id de división
+                    const string insertAddress =
+                        @"INSERT INTO dbo.Direccion (IdDivision, OtrasSenas, IdEmpresa)
+                        VALUES (@IdDivision, @AddressDetails, @CompanyId)";
+                    connection.Execute(insertAddress, new
+                    {
+                        IdDivision = idDivision.Value,
+                        AddressDetails = company.AddressDetails,
+                        CompanyId = id
+                    }, transaction);
+
+                    // Link usuario con empresa creada
+                    const string insertUserCompany = 
+                        @"INSERT INTO [dbo].[UsuariosPorEmpresa] ([IdEmpresa], [IdUsuario])
+                        VALUES (@CompanyId, @UserId)";
                     connection.Execute(insertUserCompany, new
                     {
                         CompanyId = id,
-                        UserId = company.CreatedBy > 0 ? company.CreatedBy : 1,
+                        UserId = company.CreatedBy > 0 ? company.CreatedBy : 1, //temporal
                     }, transaction);
 
                     transaction.Commit();
