@@ -861,3 +861,4 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+planilla_Backend/Planilla_Backend/obj/Debug/net8.0/Planilla_Backend.GeneratedMSBuildEditorConfig.editorconfig
