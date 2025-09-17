@@ -70,7 +70,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="MaxBenefits" class="form-label required">Cantidad máxima de beneficios</label>
-                    <input type="number" class="form-control" id="MaxBenefits" value="0" required v-model.number="maxBenefits">
+                    <input type="number" class="form-control" id="MaxBenefits" placeholder="0" min="0" required v-model.number="maxBenefits">
                     <div class="invalid-feedback">
                         Ingrese la cantidad máxima de beneficios que puede seleccionar un empleado
                     </div>
@@ -111,6 +111,18 @@
                 </div>
             </form>
         </div>
+
+        <div class="toast-container position-fixed top-0 end-0 p-3">
+            <div v-if="showToast" class="toast show align-items-center text-white border-0" :class="toastType" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        {{ toastMessage }}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" @click="showToast = false"></button>
+                </div>
+            </div>
+        </div>
+
         <FooterComp />
     </body>
 </template>
@@ -141,6 +153,9 @@
                 addressDetails: "",
                 telephone: "",
                 maxBenefits: "",
+                showToast: false,
+                toastMessage: "",
+                toastType: "bg-success",
             };
         },
         computed: {
@@ -220,27 +235,44 @@
                     this.zipCode = response.data.value;
                 })
                 .catch(console.error);
-            }, 
+            },
             saveCompany() {
-                console.log("Datos a guardar:", this.formData);
+                var self = this;
+                var form = self.$el.querySelector('.needs-validation');
+                if (!form.checkValidity()) {
+                    return;
+                }
+
                 axios 
                     .post("https://localhost:7115/api/CreateCompany", {
                         CompanyId: this.companyId,
                         CompanyName: this.companyName.trim(),
                         AddressDetails: this.addressDetails.trim(),
                         ZipCode: this.zipCode,
-                        Telephone: this.telephone,
+                        Telephone: this.telephone !== "" ? this.telephone : null,
                         MaxBenefits: Number(this.maxBenefits || 0),
                         PaymentFrequency: this.paymentFrequency,
-                        PayDay1: this.payDay1 ? Number(this.payDay1) : null,
+                        PayDay1: this.payDay1,
                         PayDay2: this.paymentFrequency === "Quincenal" ? Number(this.payDay2 || 0) : null,
                     })
-                    .then(function (response) {
-                        console.log(response);
-                        window.location.href = "/";
+                    .then(function () {
+                        self.toastMessage = "Empresa creada correctamente";
+                        self.toastType = "bg-success";
+                        self.showToast = true;
+                        setTimeout(function () {
+                            self.showToast = false;
+                            window.location.href = "/"; 
+                        }, 3000);
                     })
                     .catch(function (error) {
-                        console.log(error);
+                        var msg = (error && error.response && error.response.data) ? error.response.data : "Error inesperado al crear la empresa";
+                        self.toastMessage = msg;
+                        self.toastType = "bg-danger";
+                        self.showToast = true;
+                        
+                        setTimeout(function () {
+                            self.showToast = false;
+                        }, 4000);
                     });
             },
         },

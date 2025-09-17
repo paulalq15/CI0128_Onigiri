@@ -5,7 +5,7 @@
         //Company details
         public string CompanyId { get; set; }
         public string CompanyName { get; set;  }
-        public string Telephone { get; set; }
+        public string? Telephone { get; set; }
         public int MaxBenefits { get; set; }
         public string PaymentFrequency { get; set; }
         public int PayDay1 { get; set; }

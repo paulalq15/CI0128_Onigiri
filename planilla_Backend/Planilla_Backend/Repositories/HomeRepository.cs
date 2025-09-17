@@ -13,23 +13,48 @@ namespace Planilla_Backend.Repositories
             _connectionString = builder.Configuration.GetConnectionString("PayrollContext");
         }
 
-        public bool CreateCompany(CreateCompanyModel company)
+        public int CreateCompany(CreateCompanyModel company)
         {
             using var connection = new SqlConnection(_connectionString);
-            string query = @"INSERT INTO [dbo].[Empresa] ([CedulaJuridica], [Nombre], [Telefono], [CantidadBeneficios], [FrecuenciaPago], [DiaPago1], [DiaPago2], [IdCreadoPor])
-                             VALUES (@CompanyId, @CompanyName, @Telephone, @MaxBenefits, @PaymentFrequency, @PayDay1, @PayDay2, @CreatedBy)";
-            int affectedRows = connection.Execute(query,new
+            connection.Open();
+            using (var transaction = connection.BeginTransaction())
             {
-                CompanyId = company.CompanyId,
-                CompanyName = company.CompanyName,
-                Telephone = company.Telephone,
-                MaxBenefits = company.MaxBenefits,
-                PaymentFrequency = company.PaymentFrequency,
-                PayDay1 = company.PayDay1,
-                PayDay2 = company.PayDay2,
-                CreatedBy = 1, //Temporal
-            });
-            return affectedRows >= 1;
+                try
+                {
+                    const string insertCompany = 
+                        @"INSERT INTO [dbo].[Empresa] ([CedulaJuridica], [Nombre], [Telefono], [CantidadBeneficios], [FrecuenciaPago], [DiaPago1], [DiaPago2], [IdCreadoPor])
+                        OUTPUT INSERTED.IdEmpresa
+                        VALUES (@CompanyId, @CompanyName, @Telephone, @MaxBenefits, @PaymentFrequency, @PayDay1, @PayDay2, @CreatedBy)";
+
+                    int id = connection.ExecuteScalar<int>(insertCompany, new
+                    {
+                        CompanyId = company.CompanyId,
+                        CompanyName = company.CompanyName,
+                        Telephone = company.Telephone,
+                        MaxBenefits = company.MaxBenefits,
+                        PaymentFrequency = company.PaymentFrequency,
+                        PayDay1 = company.PayDay1,
+                        PayDay2 = company.PayDay2,
+                        CreatedBy = company.CreatedBy > 0 ? company.CreatedBy : 1, // temporal
+                    }, transaction);
+
+                    const string insertUserCompany = @"INSERT INTO [dbo].[UsuariosPorEmpresa] ([IdEmpresa], [IdUsuario])
+                                 VALUES (@CompanyId, @UserId)";
+                    connection.Execute(insertUserCompany, new
+                    {
+                        CompanyId = id,
+                        UserId = company.CreatedBy > 0 ? company.CreatedBy : 1,
+                    }, transaction);
+
+                    transaction.Commit();
+                    return id;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+            }
         }
     }
 }

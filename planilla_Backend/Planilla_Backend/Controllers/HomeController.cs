@@ -16,17 +16,17 @@ namespace Planilla_Backend.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<bool>> CreateCompany(CreateCompanyModel company)
+        public async Task<ActionResult<int>> CreateCompany(CreateCompanyModel company)
         {
             if (company == null)
             {
-                return BadRequest();
+                return BadRequest("Datos inválidos");
             }
 
-            var result = createCompanyService.CreateCompany(company);
+            var result = createCompanyService.CreateCompany(company, out int companyId);
             if (string.IsNullOrEmpty(result))
             {
-                return Ok(true);
+                return Created(string.Empty, companyId);
             }
             else
             {
