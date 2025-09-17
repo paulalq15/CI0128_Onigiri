@@ -9,7 +9,7 @@
                         title="Empresas"
                         icon="bi bi-buildings-fill"
                         :actions="[
-                            { label: 'Crear Empresa', icon: 'bi bi-pencil-square', to: '/' },
+                            { label: 'Crear Empresa', icon: 'bi bi-pencil-square', to: '/CrearEmpresa' },
                             { label: 'Ver Empresas', icon: 'bi bi-search', to: '/' }
                         ]"
                     />

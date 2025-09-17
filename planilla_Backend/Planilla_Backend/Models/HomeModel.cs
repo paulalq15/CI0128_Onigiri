@@ -1,11 +1,19 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-
-namespace Planilla_Backend.Models
+﻿namespace Planilla_Backend.Models
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class HomeModel : ControllerBase
+    public class CreateCompanyModel
     {
-    }
+        //Company details
+        public string CompanyId { get; set; }
+        public string CompanyName { get; set;  }
+        public string? Telephone { get; set; }
+        public int MaxBenefits { get; set; }
+        public string PaymentFrequency { get; set; }
+        public int PayDay1 { get; set; }
+        public int? PayDay2 { get; set; }
+        public int CreatedBy { get; set; }
+
+        //Address details
+        public string AddressDetails { get; set; }
+        public string ZipCode { get; set; }
+        }
 }
