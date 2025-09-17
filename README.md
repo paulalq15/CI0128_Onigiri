@@ -26,3 +26,10 @@ Dentro de **planilla_frontend/**
 ```
 npm run serve
 ```
+## Dependencias
+
+Instalar Bootstrap:
+
+```
+npm install bootstrap
+```
