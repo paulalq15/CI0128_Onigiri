@@ -8,20 +8,20 @@
         <form class="form-signig p-5 h-100 d-inline-block" style="max-width: 550px; width: 100%;">
           <h1 class="font-weigth-normal text-center mb-4">Registro</h1>
           <!--Primer nombre-->
-          <InputType label="Primer nombre:" id="firstName" />
+          <InputType label="Primer nombre*" id="firstName" v-model="firstName"/>
           <!--Segundo nombre-->
-          <InputType label="Segundo nombre:" id="SecondName" />
+          <InputType label="Segundo nombre*" id="SecondName" v-model="secondName"/>
           <!--Primer apellido-->
-          <InputType label="Primer apellido:" id="firstSurname" />
+          <InputType label="Primer apellido*" id="firstSurname" v-model="firstSurname"/>
           <!--Segundo apellido-->
-          <InputType label="Segundo apellido:" id="secondSurname" />
+          <InputType label="Segundo apellido*" id="secondSurname" v-model="secondSurname" />
           <!--Cédula-->
-          <InputType label="Cédula de indentidad:" id="IDCard" placeHolder="0-0000-0000"/>
+          <InputType label="Cédula de indentidad*" id="IDCard" placeHolder="0-0000-0000" v-model="idCard" />
           <!--Número telefónico-->
-          <InputType label="Número de teléfono:" id="cellphone" type="tel" placeHolder="0000-0000"/>
+          <InputType label="Número de teléfono*" id="cellphone" type="tel" placeHolder="0000-0000" v-model="number" />
           <!--Dirección: Provincia-->
           <div class="form-group">
-            <label for="province">Provincia</label>
+            <label for="province">Provincia*</label>
             <select v-model="selectedProvince" class="form-control" id="province" required>
               <option value="" disabled selected>Seleccione una provincia</option>
               <option v-for="(cantones, prov) in cantonesPorProvinciaCR" :key="prov" :value="prov"> {{ prov }} </option>
@@ -29,7 +29,7 @@
           </div>
           <!--Dirección: Cantón-->
           <div class="form-group">
-            <label for="canton">Cantón</label>
+            <label for="canton">Cantón*</label>
             <select v-model="selectedCanton" class="form-control" id="canton" :disabled="!selectedProvince" required>
               <option value="" disabled selected>Seleccione un cantón</option>
               <option v-for="(distritos, canton) in selectProvince()" :key="canton" :value="canton"> {{ canton }} </option>
@@ -37,7 +37,7 @@
           </div>
           <!--Dirección: Distrito-->
           <div class="form-group">
-            <label for="distrit">Distrito</label>
+            <label for="distrit">Distrito*</label>
             <select v-model="selectedDistrit" class="form-control" id="distrit" :disabled="!selectedCanton" required>
               <option value="" disabled selected>Seleccione un distrito</option>
               <option v-for="distrit in selectCanton()" :key="distrit" :value="distrit"> {{ distrit }} </option>
@@ -46,16 +46,16 @@
           <!--Dirección: Otras señas-->
           <div class="form-group">
             <label for="otherSigns">Otras señas</label>
-            <textarea class="form-control" style="max-height: 200px;" id="otherSigns" rows="2"></textarea>
+            <textarea class="form-control" style="max-height: 200px;" id="otherSigns" rows="3" v-model="otherSigns"></textarea>
           </div>
           <!--Fecha nacimiento-->
-          <InputType label="Fecha de nacimiento:" id="birthday" type="date"/>
+          <InputType label="Fecha de nacimiento*" id="birthday" type="date" v-model="birthday" />
           <!--Correo electrónico-->
-          <InputType label="Correo electrónico:" id="email" type="email" placeHolder="name@example.com"/>
+          <InputType label="Correo electrónico*" id="email" type="email" placeHolder="name@example.com" v-model="email" />
           <!--Contraseña-->
-          <InputType label="Contraseña:" id="pwd" type="password"/>
+          <InputType label="Contraseña*" id="pwd" type="password" v-model="password" />
           <!--Confirmar contraseña-->
-          <InputType label="Confirmar contraseña:" id="confPwd" type="password"/>
+          <InputType label="Confirmar contraseña*" id="confPwd" type="password" v-model="confPassword" />
           <!--Términos y condiciones-->
           <p class="mt-4 mb-4" style="font-size: small;">Al continuar, aceptas nuestros <a href="#">Términos de servicio</a> y <a href="#">Política de privacidad</a></p>
           <!--Iniciar sesión-->
@@ -65,7 +65,7 @@
           </div>
           <!--Botón confirmar-->
           <div class="form-group text-center">
-            <LinkButton text="Registrarse" />
+            <LinkButton @click="printValuesInConsole" text="Registrarse" />
           </div>
         </form>
       </div>
@@ -89,6 +89,20 @@
 
     data() {
       return {
+        firstName: "",
+        secondName: "",
+        firstSurname: "",
+        secondSurname: "",
+        idCard: "",
+        number: "",
+        selectedProvince: "",
+        selectedCanton: "",
+        selectedDistrit: "",
+        otherSigns: "",
+        birthday: "",
+        email: "",
+        password: "",
+        confPassword: "",
         cantonesPorProvinciaCR: {
           "San José": {
             "San José": ["Carmen", "Merced", "Hospital", "Catedral", "Zapote", "San Francisco de Dos Ríos", "Uruca", "Mata Redonda", "Pavas", "Hatillo", "San Sebastián"],
@@ -194,10 +208,6 @@
             "Guácimo": []
           }
         },
-
-        selectedProvince: "",
-        selectedCanton: "",
-        selectedDistrit: "",
       }
     },
 
@@ -208,6 +218,25 @@
 
       selectCanton() {
         return this.selectedCanton ? this.cantonesPorProvinciaCR[this.selectedProvince][this.selectedCanton] : [];
+      },
+
+      printValuesInConsole() {
+        console.log({
+          firstName: this.firstName,
+          secondName: this.secondName,
+          firstSurname: this.firstSurname,
+          secondSurname: this.secondSurname,
+          idCard: this.idCard,
+          number: this.number,
+          selectedProvince: this.selectedProvince,
+          selectedCanton: this.selectedCanton,
+          selectedDistrit: this.selectedDistrit,
+          otherSigns: this.otherSigns,
+          birthday: this.birthday,
+          email: this.email,
+          password: this.password,
+          confPassword: this.confPassword
+        });
       }
     },
   }

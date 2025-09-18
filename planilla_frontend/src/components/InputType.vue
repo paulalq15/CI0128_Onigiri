@@ -7,6 +7,8 @@
       v-bind:id="id"
       v-bind:placeholder="placeHolder"
       v-bind:required="required"
+      v-bind:value="modelValue"
+      @input="$emit('update:modelValue', $event.target.value)"
     >
   </div>
 </template>
@@ -38,6 +40,11 @@ export default {
     required: {
       type: Boolean,
       default: true
+    },
+
+    modelValue: {
+      type: String,
+      default: ""
     }
   }
 }
