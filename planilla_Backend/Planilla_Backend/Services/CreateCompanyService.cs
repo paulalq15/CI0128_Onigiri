@@ -88,17 +88,23 @@ namespace Planilla_Backend.Services
 
                 if (company.CreatedBy <= 0)
                 {
-                    return "El ID del usuario creador es inválido.";
+                    return "El ID del usuario actual es inválido.";
                 }
 
-                if (!createCompanyRepository.UserIsActive(company.CreatedBy))
-                    return "El usuario creador no existe o está inactivo.";
+                if (!createCompanyRepository.UserIsActiveEmployer(company.CreatedBy))
+                {
+                    return "El usuario actual no es un Empleador activo.";
+                }
 
                 if (!createCompanyRepository.ZipExists(company.ZipCode))
+                {
                     return "El código postal no existe.";
+                }
 
                 if (createCompanyRepository.CompanyExistsByCedula(company.CompanyId))
-                    return "Ya existe una empresa con esa cédula jurídica.";
+                {
+                    return "Ya existe una empresa con la cédula jurídica ingresada.";
+                }
 
                 companyId = createCompanyRepository.CreateCompany(company);
                 if (companyId <= 0)

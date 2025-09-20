@@ -29,14 +29,15 @@ namespace Planilla_Backend.Repositories
             return r.HasValue;
         }
 
-        public bool UserIsActive(int userId)
+        public bool UserIsActiveEmployer(int userId)
         {
             using var connection = new SqlConnection(_connectionString);
-            const string sql = @"SELECT 1
-                                 FROM dbo.Usuario
-                                 WHERE IdUsuario = @Id AND Estado = 'Activo'";
-            var r = connection.ExecuteScalar<int?>(sql, new { Id = userId });
-            return r.HasValue;
+            const string sql = @"SELECT p.TipoPersona
+                                FROM dbo.Usuario u
+                                INNER JOIN dbo.Persona p ON p.IdPersona = u.IdPersona
+                                WHERE u.IdUsuario = @Id AND u.Estado = 'Activo'";
+            var type = connection.ExecuteScalar<string?>(sql, new { Id = userId });
+            return string.Equals(type, "Empleador", StringComparison.OrdinalIgnoreCase);
         }
 
         public int CreateCompany(CreateCompanyModel company)
@@ -55,7 +56,9 @@ namespace Planilla_Backend.Repositories
                         ZipCode = company.ZipCode 
                     }, transaction);
                     if (idDivision is null)
+                    {
                         throw new InvalidOperationException("El código postal no existe");
+                    }
 
                     // Crear Empresa y obtener Id
                     const string insertCompany = 
