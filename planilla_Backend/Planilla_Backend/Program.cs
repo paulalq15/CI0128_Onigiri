@@ -1,4 +1,11 @@
+using Planilla_Backend.Services;
+using Planilla_Backend.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IAuthService, AuthService>(); // <- clave
+
 
 // Add services to the container.
 
