@@ -254,6 +254,7 @@
                         PaymentFrequency: this.paymentFrequency,
                         PayDay1: this.payDay1,
                         PayDay2: this.paymentFrequency === "Quincenal" ? Number(this.payDay2 || 0) : null,
+                        CreatedBy: 1, //Temporal, en home traerlo de session storage
                     })
                     .then(function () {
                         self.toastMessage = "Empresa creada correctamente";

@@ -13,6 +13,32 @@ namespace Planilla_Backend.Repositories
             _connectionString = builder.Configuration.GetConnectionString("PayrollContext");
         }
 
+        public bool ZipExists(string zipCode)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            const string sql = @"SELECT 1 FROM dbo.DivisionTerritorialCR WHERE CodigoPostal = @Zip";
+            var r = connection.ExecuteScalar<int?>(sql, new { Zip = zipCode });
+            return r.HasValue;
+        }
+
+        public bool CompanyExistsByCedula(string cedula)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            const string sql = @"SELECT 1 FROM dbo.Empresa WHERE CedulaJuridica = @Ced";
+            var r = connection.ExecuteScalar<int?>(sql, new { Ced = cedula });
+            return r.HasValue;
+        }
+
+        public bool UserIsActive(int userId)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            const string sql = @"SELECT 1
+                                 FROM dbo.Usuario
+                                 WHERE IdUsuario = @Id AND Estado = 'Activo'";
+            var r = connection.ExecuteScalar<int?>(sql, new { Id = userId });
+            return r.HasValue;
+        }
+
         public int CreateCompany(CreateCompanyModel company)
         {
             using var connection = new SqlConnection(_connectionString);
@@ -46,7 +72,7 @@ namespace Planilla_Backend.Repositories
                         PaymentFrequency = company.PaymentFrequency,
                         PayDay1 = company.PayDay1,
                         PayDay2 = company.PayDay2,
-                        CreatedBy = company.CreatedBy > 0 ? company.CreatedBy : 1, // temporal
+                        CreatedBy = company.CreatedBy,
                     }, transaction);
 
                     // Crear dirección con el id de empresa y con id de división
@@ -67,7 +93,7 @@ namespace Planilla_Backend.Repositories
                     connection.Execute(insertUserCompany, new
                     {
                         CompanyId = id,
-                        UserId = company.CreatedBy > 0 ? company.CreatedBy : 1, //temporal
+                        UserId = company.CreatedBy,
                     }, transaction);
 
                     transaction.Commit();

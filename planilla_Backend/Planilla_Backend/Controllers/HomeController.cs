@@ -1,7 +1,8 @@
-﻿using Planilla_Backend.Models;
-using Planilla_Backend.Services;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Planilla_Backend.Models;
+using Planilla_Backend.Services;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Planilla_Backend.Controllers
 {
@@ -16,7 +17,7 @@ namespace Planilla_Backend.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<int>> CreateCompany(CreateCompanyModel company)
+        public ActionResult<int> CreateCompany([FromBody] CreateCompanyModel company)
         {
             if (company == null)
             {
@@ -28,10 +29,17 @@ namespace Planilla_Backend.Controllers
             {
                 return Created(string.Empty, companyId);
             }
-            else
-            {
-                return BadRequest(result);
-            }
+
+            var msg = result.ToLowerInvariant();
+
+            // Determinar el código de estado HTTP basado en el mensaje de error
+            if (msg.Contains("cédula"))
+                return Conflict(result); // 409 duplicado
+
+            if (msg.Contains("postal") || msg.Contains("usuario"))
+                return NotFound(result); // 404 dependencia faltante
+
+            return BadRequest(result); // 400 error de validación u otro error del cliente
         }
     }
 
