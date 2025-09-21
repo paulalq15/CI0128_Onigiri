@@ -4,14 +4,14 @@ using System.Text.RegularExpressions;
 
 namespace Planilla_Backend.Services
 {
-    public class CreateCompanyService
+    public class CompanyService
     {
-        private readonly CreateCompanyRepository createCompanyRepository;
-        public CreateCompanyService()
+        private readonly CompanyRepository createCompanyRepository;
+        public CompanyService()
         {
-            createCompanyRepository = new CreateCompanyRepository();
+            createCompanyRepository = new CompanyRepository();
         }
-        public string CreateCompany(CreateCompanyModel company, out int companyId)
+        public string CreateCompany(CompanyModel company, out int companyId)
         {
             var result = string.Empty;
             companyId = 0;

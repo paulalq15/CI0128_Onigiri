@@ -7,16 +7,16 @@ namespace Planilla_Backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CreateCompanyController : ControllerBase
+    public class CompanyController : ControllerBase
     {
-        private readonly CreateCompanyService createCompanyService;
-        public CreateCompanyController()
+        private readonly CompanyService createCompanyService;
+        public CompanyController()
         {
-            createCompanyService = new CreateCompanyService();
+            createCompanyService = new CompanyService();
         }
 
         [HttpPost]
-        public ActionResult<int> CreateCompany([FromBody] CreateCompanyModel company)
+        public ActionResult<int> CreateCompany([FromBody] CompanyModel company)
         {
             if (company == null)
             {

@@ -1,13 +1,14 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
 using Planilla_Backend.Models;
+using System.Data.SqlClient;
 
 namespace Planilla_Backend.Repositories
 {
-    public class CreateCompanyRepository
+    public class CompanyRepository
     {
         private readonly string _connectionString;
-        public CreateCompanyRepository()
+        public CompanyRepository()
         {
             var builder = WebApplication.CreateBuilder();
             _connectionString = builder.Configuration.GetConnectionString("PayrollContext");
@@ -40,7 +41,7 @@ namespace Planilla_Backend.Repositories
             return string.Equals(type, "Empleador", StringComparison.OrdinalIgnoreCase);
         }
 
-        public int CreateCompany(CreateCompanyModel company)
+        public int CreateCompany(CompanyModel company)
         {
             using var connection = new SqlConnection(_connectionString);
             connection.Open();
