@@ -14,5 +14,20 @@ namespace Planilla_Backend.Repositories
             _connectionString = builder.Configuration.GetConnectionString("PayrollContext");
         }
 
+        public bool CreatePayrollElement(PayrollElementModel element)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            const string query = @"INSERT INTO dbo.ElementoPlanilla (Nombre, PagadoPor, Tipo, Valor)
+                                 VALUES (@ElementName, @PaidBy, @CalculationType, @CalculationValue)";
+            int rowsAffected = connection.Execute(query, new 
+            {
+                ElementName = element.ElementName,
+                PaidBy = element.PaidBy,
+                CalculationType = element.CalculationType,
+                CalculationValue = element.CalculationValue
+            });
+            return rowsAffected > 0;
+        }
+
     }
 }
