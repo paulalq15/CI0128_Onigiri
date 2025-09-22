@@ -1,11 +1,13 @@
 <template>
-  <div class="form-group">
+  <div class="form-group mt-3">
     <label v-bind:for="id">{{ label }}</label>
     <input
       class="form-control"
       v-bind:type="type"
       v-bind:id="id"
       v-bind:placeholder="placeHolder"
+      v-bind:minlength="min_length"
+      v-bind:maxlength="max_length"
       v-bind:required="required"
       v-bind:value="modelValue"
       @input="$emit('update:modelValue', $event.target.value)"
@@ -35,6 +37,16 @@ export default {
     placeHolder: {
       type: String,
       default: ""
+    },
+
+    min_length: {
+      type: Number,
+      default: 0
+    },
+
+    max_length: {
+      type: Number,
+      default: 40
     },
 
     required: {
