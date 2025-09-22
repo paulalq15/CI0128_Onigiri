@@ -14,5 +14,24 @@ namespace Planilla_Backend.Controllers
         {
             payrollElementService = new PayrollElementService();
         }
+
+        [HttpPost("create")]
+        public async Task<ActionResult<bool>> CreatePayrollElement(PayrollElementModel element)
+        {
+            if (element == null)
+            {
+                return BadRequest();
+            }
+
+            var result = payrollElementService.CreatePayrollElement(element);
+            if (string.IsNullOrEmpty(result))
+            {
+                return Ok(true);
+            }
+            else
+            {
+                return BadRequest(result);
+            }
+        }
     }
 }
