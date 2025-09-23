@@ -1,7 +1,5 @@
 <template>
-    <body class="d-flex flex-column min-vh-100">
-        <HeaderComp />
-        
+    <div class="d-flex flex-column">
         <div class="container text-center py-4 flex-fill">
             <div class="row g-5">
                 <div class="col-12 col-md-6 col-lg-4">
@@ -66,19 +64,13 @@
                 </div>
             </div>
         </div>
-
-        <FooterComp />
-    </body>
+    </div>
 </template>
 
 <script>
-    import HeaderComp from './HeaderComp.vue';
-    import FooterComp from './FooterComp.vue';
     import HomePageCard from './HomePageCard.vue';
     export default {
         components: {
-        HeaderComp,
-        FooterComp,
         HomePageCard
         }
     }

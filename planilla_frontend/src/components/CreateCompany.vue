@@ -1,7 +1,5 @@
 <template>
-    <body class="d-flex flex-column min-vh-100">
-        <HeaderComp />
-
+    <div class="d-flex flex-column">
         <h1 class="text-center">Crear nueva empresa</h1>
 
         <div class="container py-4 flex-fill d-flex justify-content-center">   
@@ -122,20 +120,12 @@
                 </div>
             </div>
         </div>
-
-        <FooterComp />
-    </body>
+    </div>
 </template>
 
 <script>
     import axios from "axios";
-    import HeaderComp from './HeaderComp.vue';
-    import FooterComp from './FooterComp.vue';
     export default {
-        components: {
-        HeaderComp,
-        FooterComp,
-        },
         data() {
             return {
                 provinces: [],
