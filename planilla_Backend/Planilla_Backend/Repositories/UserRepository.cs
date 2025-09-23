@@ -7,10 +7,9 @@ namespace Planilla_Backend.Repositories
     public class UserRepository : IUserRepository
     {
         private readonly string _connectionString;
-        public UserRepository()
+        public UserRepository(IConfiguration config)
         {
-            var builder = WebApplication.CreateBuilder();
-            _connectionString = builder.Configuration.GetConnectionString("OnigiriContext");
+            _connectionString = config.GetConnectionString("OnigiriContext");
         }
 
         public async Task<User?> GetActiveEmailAsync(string correo)

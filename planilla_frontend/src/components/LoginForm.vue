@@ -69,60 +69,67 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
-import FooterComp from './FooterComp.vue';
-import HeaderOnigiri from './HeaderOnigiri.vue';
+import HeaderOnigiri from "./HeaderOnigiri.vue";
+import FooterComp from "./FooterComp.vue";
+import axios from "axios";
 
 export default {
+  name: "LoginForm",
   components: { HeaderOnigiri, FooterComp },
-  setup() {
-    const email = ref('');
-    const password = ref('');
-    const showPassword = ref(false);
-
-    const showToast = ref(false);
-    const toastMessage = ref('');
-    const toastType = ref('bg-success');
-
-    const initBootstrapValidation = () => {
-      const forms = document.querySelectorAll('.needs-validation');
-      Array.from(forms).forEach((form) => {
-        form.addEventListener(
-          'submit',
-          (event) => {
-            if (!form.checkValidity()) {
-              event.preventDefault();
-              event.stopPropagation();
-            }
-            form.classList.add('was-validated');
-          },
-          false
-        );
-      });
-    };
-
-    const onSubmit = () => {
-      if (!email.value || !password.value) return;
-
-      toastMessage.value = `Bienvenido, ${email.value}`;
-      toastType.value = 'bg-success';
-      showToast.value = true;
-      setTimeout(() => (showToast.value = false), 3000);
-    };
-
-    onMounted(() => {
-      initBootstrapValidation();
-    });
-
+  data() {
     return {
-      email,
-      password,
-      showPassword,
-      showToast,
-      toastMessage,
-      toastType,
-      onSubmit,
+      email: "",
+      password: "",
+      showPassword: false,
+      loading: false,
+      errorMsg: "",
+      successMsg: "",
     };
+  },
+  methods: {
+    async onSubmit() {
+      this.errorMsg = "";
+      this.successMsg = "";
+
+      if (!this.email || !this.password) {
+        this.errorMsg = "Ingrese correo y contraseña.";
+        return;
+      }
+
+      this.loading = true;
+      try {
+        const { data } = await axios.post("https://localhost:7115/api/Auth/login", {
+          correo: this.email.trim(),
+          contrasena: this.password,
+        });
+        console.log("[Login] Respuesta:", data);
+
+        if (data?.success) {
+          localStorage.setItem("onigiri_user", JSON.stringify({
+            idUsuario: data.idUsuario,
+            idPersona: data.idPersona,
+            nombreCompleto: data.nombreCompleto,
+            tipoPersona: data.tipoPersona,
+            correo: data.correo,
+          }));
+
+          this.successMsg = "Login exitoso. Redirigiendo…";
+          // this.$router.push({ name: "Home Page" });
+        } else {
+          this.errorMsg = data?.message || "No se pudo iniciar sesión.";
+        }
+      } catch (err) {
+        if (err?.response?.data?.message) {
+          this.errorMsg = err.response.data.message;
+        } else if (err?.message?.includes("Network Error")) {
+          this.errorMsg = "No hay conexión con el servidor. Verifique la URL/puerto.";
+        } else {
+          this.errorMsg = "Error al intentar iniciar sesión.";
+        }
+      } finally {
+        this.loading = false;
+      }
+    },
   },
 };
 </script>
