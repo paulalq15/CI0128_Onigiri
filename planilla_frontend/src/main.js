@@ -6,6 +6,7 @@ import 'bootstrap-icons/font/bootstrap-icons.css'
 import { createRouter, createWebHistory } from 'vue-router';
 import LoginForm from './components/LoginForm.vue';
 import HomePage from './components/HomePage.vue';
+import CreateCompany from './components/CreateCompany.vue';
 import { isAuthed } from "./session";
 
 const router = createRouter({
@@ -13,6 +14,7 @@ const router = createRouter({
     routes: [
         {path: "/", name: "Login", component: LoginForm},
         {path: "/HomePage", name: "Home Page", component: HomePage, meta: { requiresAuth: true }},
+        {path:"/CrearEmpresa", name: "Crear Empresa", component: CreateCompany},
     ]
 });
 
