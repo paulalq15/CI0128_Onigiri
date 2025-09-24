@@ -72,6 +72,7 @@
 import HeaderOnigiri from "./HeaderOnigiri.vue";
 import FooterComp from "./FooterComp.vue";
 import axios from "axios";
+import { setUser } from "../session";
 
 export default {
   name: "LoginForm",
@@ -105,16 +106,16 @@ export default {
         console.log("[Login] Respuesta:", data);
 
         if (data?.success) {
-          localStorage.setItem("onigiri_user", JSON.stringify({
-            idUsuario: data.idUsuario,
-            idPersona: data.idPersona,
-            nombreCompleto: data.nombreCompleto,
-            tipoPersona: data.tipoPersona,
-            correo: data.correo,
-          }));
+          setUser({
+            userId: data.idUsuario,
+            PersonId: data.idPersona,
+            fullName: data.nombreCompleto,
+            typeUser: data.tipoPersona,
+            email: data.correo,
+          });
 
           this.successMsg = "Login exitoso. Redirigiendo…";
-          // this.$router.push({ name: "Home Page" });
+          this.$router.push({ name: "Home Page" });
         } else {
           this.errorMsg = data?.message || "No se pudo iniciar sesión.";
         }
@@ -134,4 +135,25 @@ export default {
 };
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+    .form-label.required::after {
+        content: " *";
+        color: red;
+    }
+
+    .btn-custom {
+        background-color: #234d34;
+        color: #fff;
+        border: none;
+        border-radius: 0.375rem;
+        padding: 0.5rem 1rem;
+        font-weight: 600;
+        text-align: center;
+        }
+
+        .btn-custom:hover {
+        background-color: #1b3d2a;
+        color: #fff;
+        }
+
+</style>
