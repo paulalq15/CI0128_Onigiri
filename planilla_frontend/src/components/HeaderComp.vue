@@ -32,7 +32,7 @@
                     <ul class="dropdown-menu text-small" style="">
                         <li><a class="dropdown-item" href="#">Configuración</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#">Cerrar sesión</a></li>
+                        <li><a class="dropdown-item" href="#" @click="logout">Cerrar sesión</a></li>
                     </ul>
                 </div>
             </li> 
@@ -41,11 +41,31 @@
 </template>
 
 <script>
-    export default {
-        setup() {
-            return {}
-        },
-    }
+  import { getUser, clearUser } from "../session";
+
+  export default {
+    name: "HomePage",
+    data() {
+      return {
+        user: null,
+      };
+    },
+    computed: {
+      displayName() {
+        if (!this.user) return "";
+        return this.user.fullName?.trim() || this.user.email || "Usuario";
+      },
+    },
+    created() {
+      this.user = getUser();
+    },
+    methods: {
+      logout() {
+        clearUser();
+        this.$router.push({ name: "Login" });
+      },
+    },
+  };
 </script>
 
 <style lang="scss" scoped>
