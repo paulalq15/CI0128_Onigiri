@@ -4,7 +4,7 @@ namespace Planilla_Backend.Models
 {
   public class RegisterEmpleador
   {
-    public PersonaUsuario personaData { get; set; }
+    public PersonUser personData { get; set; }
     public string password { get; set; }
     public string otherSigns { get; set; }
     public string zipCode { get; set; }

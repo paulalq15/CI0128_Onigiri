@@ -32,7 +32,7 @@ namespace Planilla_Backend.Repositories
     }
 
     // Guardar nueva dirección y devolver el id
-    public int saveDirection(int idDivision, string otherSigns, int? idEmpresa = null, int? idPersona = null)
+    public int saveDirection(int idDivision, string otherSigns, int? idEmpresa = null, int? idPerson = null)
     {
       using var connection = new SqlConnection(_connectionString);
       
@@ -50,7 +50,7 @@ namespace Planilla_Backend.Repositories
           IdDivision = idDivision,
           OtherSigns = otherSigns,
           IdEmpresa = idEmpresa,
-          IdPersona = idPersona
+          IdPersona = idPerson
         });
 
         return idDirection;

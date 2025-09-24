@@ -1,6 +1,6 @@
 <template>
   <div class="form-group mt-3">
-    <label v-bind:for="id">{{ label }}</label>
+    <label v-bind:for="id">{{ label }}<span v-if="required" style="color: red;"> *</span></label>
     <input
       class="form-control"
       v-bind:type="type"
