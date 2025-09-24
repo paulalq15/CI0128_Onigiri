@@ -1,53 +1,35 @@
 <template>
-    <header class="d-flex justify-content-between align-items-center py-3 mb-4 px-2">
+    <header class="d-flex justify-content-between align-items-center py-3 mb-4 px-2" id="headerComp">
         <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
             <img src="@/assets/logo.png" alt="Logo" width="60" height="60" class="me-2">
-            <span class="fs-4 fw-medium">Onigiri Intelligent Solutions</span>
+            <span class="fs-5 fw-medium">Onigiri Intelligent Solutions</span>
         </a>
         <ul class="nav nav-underline d-flex align-items-center gap-3">
             <li class="nav-item">
                 <div class="dropdown text-end">
-                    <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button class="btn btn-link dropdown-toggle text-dark text-decoration-none shadow-none" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <span class="fs-5 fw-medium">Empresa ABC</span>
-                    </a>
-                    <ul class="dropdown-menu text-small" style="">
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" style="">
                         <li><a class="dropdown-item" href="#">Empresa DEF</a></li>
                         <li><a class="dropdown-item" href="#">Empresa GHI</a></li>
                     </ul>
                 </div>
             </li> 
             <li class="nav-item">
-                <router-link to="/" class="text-dark text-decoration-none p-0">
-                    <i class="bi bi-house-fill fs-4"></i>
-                </router-link>
+                <button class="btn p-0 border-0 bg-transparent d-flex align-items-center shadow-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#appSidebar" aria-controls="appSidebar">
+                    <i class="bi bi-list fs-2"></i>
+                </button>
             </li>
-            <li class="nav-item">
-                <i class="bi bi-bell-fill fs-4"></i>
-            </li>
-            <li class="nav-item">
-                <div class="dropdown text-end">
-                    <a href="#" class="d-block link-body-emphasis text-decoration-none" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-person-circle fs-4"></i>
-                    </a>
-                    <ul class="dropdown-menu text-small" style="">
-                        <li><a class="dropdown-item" href="#">Configuración</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#">Cerrar sesión</a></li>
-                    </ul>
-                </div>
-            </li> 
         </ul> 
     </header>
 </template>
 
 <script>
-    export default {
-        setup() {
-            return {}
-        },
-    }
 </script>
 
 <style lang="scss" scoped>
-
+    #headerComp {
+        background: rgba(89, 109, 83, 0.2);
+    }
 </style>
