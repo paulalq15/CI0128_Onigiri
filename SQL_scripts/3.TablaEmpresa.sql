@@ -2,7 +2,7 @@
 IdEmpresa INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
 CedulaJuridica CHAR(12) NOT NULL UNIQUE,
 Nombre VARCHAR(150) NOT NULL,
-Telefono CHAR(9) NOT NULL,
+Telefono CHAR(9),
 FechaCreacion DATETIME NOT NULL DEFAULT GETDATE(),
 CantidadBeneficios tinyint NOT NULL,
 FrecuenciaPago VARCHAR(9) NOT NULL,

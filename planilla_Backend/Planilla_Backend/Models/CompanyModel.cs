@@ -1,6 +1,6 @@
 ﻿namespace Planilla_Backend.Models
 {
-    public class CreateCompanyModel
+    public class CompanyModel
     {
         //Company details
         public string CompanyId { get; set; }

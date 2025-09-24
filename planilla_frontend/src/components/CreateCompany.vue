@@ -244,7 +244,7 @@
                 }
 
                 axios 
-                    .post("https://localhost:7115/api/CreateCompany", {
+                    .post("https://localhost:7115/api/Company", {
                         CompanyId: this.companyId,
                         CompanyName: this.companyName.trim(),
                         AddressDetails: this.addressDetails.trim(),
@@ -254,6 +254,7 @@
                         PaymentFrequency: this.paymentFrequency,
                         PayDay1: this.payDay1,
                         PayDay2: this.paymentFrequency === "Quincenal" ? Number(this.payDay2 || 0) : null,
+                        CreatedBy: 1, //Temporal, en home traerlo de session storage
                     })
                     .then(function () {
                         self.toastMessage = "Empresa creada correctamente";
@@ -284,10 +285,6 @@
 </script>
 
 <style lang="scss" scoped>
-    body {
-        background: #596D53;
-        background: linear-gradient(357deg, rgba(89, 109, 83, 1) 0%, rgba(225, 245, 219, 1) 80%);
-    }
     .form-label.required::after {
         content: " *";
         color: red;

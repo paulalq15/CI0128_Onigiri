@@ -1,3 +1,0 @@
-﻿ALTER TABLE Empresa
-ALTER COLUMN Telefono CHAR(9) NULL;
-GO
