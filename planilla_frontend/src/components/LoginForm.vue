@@ -57,6 +57,16 @@
             </small>
           </div>
 
+          <!-- Alerts -->
+          <div aria-live="polite" aria-atomic="true" class="mb-3">
+            <div v-if="errorMsg" class="alert alert-danger py-2 mb-2">
+              {{ errorMsg }}
+            </div>
+            <div v-if="successMsg" class="alert alert-success py-2 mb-0">
+              {{ successMsg }}
+            </div>
+          </div>
+
           <!-- Submit -->
           <div class="d-grid">
             <button type="submit" class="btn btn-custom">Ingresar</button>
