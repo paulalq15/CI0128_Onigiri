@@ -269,12 +269,12 @@
             .then(response => { console.log("OK:", response.data);
 
               // Uso de alerta global para notificar un registro exitoso
-              const alert = useGlobalAlert()
+              const alert = useGlobalAlert();
         
-              alert.show("Registro exitoso. Por favor, inicie sesión.", "success")
+              alert.show("Registro exitoso. Por favor, active su cuenta mediante el correo de activación enviado a " + this.Persona.Correo + " para poder iniciar sesión", "success");
 
               // Redireccionamiento que permite mantener la alerta
-              this.$router.push("/")
+              this.$router.push("/");
             })
             .catch(error => {
                   if (error.response) console.log("Error del backend:", error.response.data); // 👈 aquí está tu mensaje
