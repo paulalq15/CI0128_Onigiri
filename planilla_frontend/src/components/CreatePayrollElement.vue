@@ -8,8 +8,8 @@
             <form @submit.prevent="saveElement" class="row g-3 needs-validation" novalidate style="width: 800px;">
                 <div class="mb-3">
                     <label for="ElementName" class="form-label required">Nombre</label>
-                    <input type="text" class="form-control" id="ElementName" required maxlength="40" v-model="name">
-                    <div class="invalid-feedback">Ingrese el nombre del elemento, máximo 40 caracteres.</div>
+                    <input type="text" class="form-control" id="ElementName" required :maxlength="maxNameLength" v-model="name">
+                    <div class="invalid-feedback">Ingrese el nombre del elemento, máximo {{ maxNameLength }} caracteres.</div>
                 </div>
                 <div class="mb-3 col-xl-6 col-sm-12">
                     <label for="PaidBy" class="form-label required">Pagado por</label>
@@ -48,10 +48,10 @@
                     <div class="input-group">
                         <input type="number" class="form-control"
                         v-model="calculationValue"
-                        min="0" max="100" step="0.01" required
+                        min="0" :max="maxPercentaje" step="0.01" required
                         @input="clampPercent" />
                         <span class="input-group-text">%</span>
-                        <div class="invalid-feedback">Ingrese el porcentaje entre 0 y 100</div>
+                        <div class="invalid-feedback">Ingrese el porcentaje entre 0 y {{ maxPercentaje }}</div>
                     </div>
                 </div>
                 <div v-else class="mb-3 col-xl-6 col-sm-12">
@@ -103,6 +103,8 @@
                 calculationValue: "",
                 companyId: "",
                 userId: "",
+                maxNameLength: 40,
+                maxPercentaje: 100,
                 showToast: false,
                 toastMessage: "",
                 toastType: "bg-success",

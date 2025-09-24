@@ -14,6 +14,25 @@ namespace Planilla_Backend.Repositories
             _connectionString = builder.Configuration.GetConnectionString("PayrollContext");
         }
 
+        public bool CompanyIsActive(int companyId)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            const string query = @"SELECT 1 FROM dbo.Empresa WHERE IdEmpresa = @Id AND Estado = 'Activo'";
+            var company = connection.ExecuteScalar<int?>(query, new { Id = companyId });
+            return company.HasValue;
+        }
+
+        public bool UserIsActiveEmployer(int userId)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            const string query = @"SELECT p.TipoPersona
+                                FROM dbo.Usuario u
+                                INNER JOIN dbo.Persona p ON p.IdPersona = u.IdPersona
+                                WHERE u.IdUsuario = @Id AND u.Estado = 'Activo'";
+            var type = connection.ExecuteScalar<string?>(query, new { Id = userId });
+            return string.Equals(type, "Empleador", StringComparison.OrdinalIgnoreCase);
+        }
+
         public bool CreatePayrollElement(PayrollElementModel element)
         {
             using var connection = new SqlConnection(_connectionString);
