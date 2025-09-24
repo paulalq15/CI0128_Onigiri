@@ -88,6 +88,9 @@
 </template>
 
 <script>
+  // Alerta global en App.vue
+  import { useGlobalAlert } from '@/utils/alerts.js'
+
   import { toRaw } from "vue";
   
   // Enviar datos a la API
@@ -263,15 +266,22 @@
         console.log(registro);
 
         URLBaseAPI.post("/api/PersonaUsuario/register", registro)
-            .then(response => { console.log("OK:", response.data); })
+            .then(response => { console.log("OK:", response.data);
+
+              // Uso de alerta global para notificar un registro exitoso
+              const alert = useGlobalAlert()
+        
+              alert.show("Registro exitoso. Por favor, inicie sesión.", "success")
+
+              // Redireccionamiento que permite mantener la alerta
+              this.$router.push("/")
+            })
             .catch(error => {
-                if (error.response) {
-                  console.log("Error del backend:", error.response.data); // 👈 aquí está tu mensaje
-                } else {
-                  console.log("Error de red:", error.message);
-                }
+                  if (error.response) console.log("Error del backend:", error.response.data); // 👈 aquí está tu mensaje
+                  else console.log("Error de red:", error.message);
               }
             );
+        
         }
     },
 
