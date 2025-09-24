@@ -9,9 +9,9 @@ namespace Planilla_Backend.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IAuthService _auth;
+        private readonly AuthService _auth;
 
-        public AuthController(IAuthService auth)
+        public AuthController(AuthService auth)
         {
             _auth = auth;
         }

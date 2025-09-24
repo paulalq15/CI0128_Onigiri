@@ -4,7 +4,7 @@ using Planilla_Backend.Models;
 
 namespace Planilla_Backend.Repositories
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository
     {
         private readonly string _connectionString;
         public UserRepository(IConfiguration config)

@@ -3,11 +3,11 @@ using Planilla_Backend.Repositories;
 
 namespace Planilla_Backend.Services
 {
-    public class AuthService : IAuthService
+    public class AuthService
     {
-        private readonly IUserRepository _repo;
+        private readonly UserRepository _repo;
 
-        public AuthService(IUserRepository repo)
+        public AuthService(UserRepository repo)
         {
             _repo = repo;
         }
