@@ -13,9 +13,7 @@ Línea de comandos:
 
 Dentro de **planilla_Backend/Planilla_Backend/**
 
-```
-dotnet run
-```
+``` dotnet run ```
 
 ## Ejecutar Frontend
 
@@ -23,6 +21,14 @@ Línea de comandos:
 
 Dentro de **planilla_frontend/**
 
-```
-npm run serve
-```
+``` npm run serve ```
+
+## Dependencias
+
+Instalar Bootstrap:
+
+``` npm install bootstrap ```
+
+Instalar Pinia:
+
+``` npm install pinia ```
