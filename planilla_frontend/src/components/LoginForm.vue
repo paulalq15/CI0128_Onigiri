@@ -110,18 +110,18 @@ export default {
       this.loading = true;
       try {
         const { data } = await axios.post("https://localhost:7115/api/Auth/login", {
-          correo: this.email.trim(),
-          contrasena: this.password,
+          email: this.email.trim(),
+          password: this.password,
         });
         console.log("[Login] Respuesta:", data);
 
         if (data?.success) {
           setUser({
-            userId: data.idUsuario,
-            PersonId: data.idPersona,
-            fullName: data.nombreCompleto,
-            typeUser: data.tipoPersona,
-            email: data.correo,
+            userId: data.UserId,
+            personId: data.PersonID,
+            fullName: data.FullName,
+            typeUser: data.PersonType,
+            email: data.Email,
           });
 
           this.successMsg = "Login exitoso. Redirigiendo…";

@@ -2,11 +2,11 @@
 {
     public class User
     {
-        public int IdUsuario { get; set; }
-        public string Correo { get; set; } = "";
-        public string Contrasena { get; set; } = "";  // texto plano por ahora
-        public string Estado { get; set; } = "";      // 'Activo' | 'Inactivo'
-        public int IdPersona { get; set; }
-        public Person? Persona { get; set; }
+        public int UserId { get; set; }
+        public string Email { get; set; } = "";
+        public string Password { get; set; } = "";  // texto plano por ahora
+        public string Status { get; set; } = "";      // 'Activo' | 'Inactivo'
+        public int PersonID { get; set; }
+        public Person? Person { get; set; }
     }
 }

@@ -4,10 +4,10 @@
     {
         public bool Success { get; set; }
         public string Message { get; set; } = "";
-        public int? IdUsuario { get; set; }
-        public int? IdPersona { get; set; }
-        public string? NombreCompleto { get; set; }
-        public string? TipoPersona { get; set; }
-        public string? Correo { get; set; }
+        public int? UserId { get; set; }
+        public int? PersonID { get; set; }
+        public string? FullName { get; set; }
+        public string? PersonType { get; set; }
+        public string? Email { get; set; }
     }
 }

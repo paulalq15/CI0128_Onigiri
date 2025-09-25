@@ -14,37 +14,37 @@ namespace Planilla_Backend.Services
 
         public async Task<LoginResponse> LoginAsync(LoginRequest req)
         {
-            if (string.IsNullOrWhiteSpace(req.Correo) || string.IsNullOrWhiteSpace(req.Contrasena))
+            if (string.IsNullOrWhiteSpace(req.Email) || string.IsNullOrWhiteSpace(req.Password))
             {
                 return new LoginResponse { Success = false, Message = "Correo y contraseña son requeridos." };
             }
 
-            var user = await _repo.GetActiveEmailAsync(req.Correo.Trim());
+            var user = await _repo.GetActiveEmailAsync(req.Email.Trim());
             if (user is null)
             {
                 return new LoginResponse { Success = false, Message = "Usuario no encontrado o inactivo." };
             }
 
             // VALIDACIÓN EN TEXTO PLANO - Cambiar***
-            if (!string.Equals(user.Contrasena, req.Contrasena))
+            if (!string.Equals(user.Password, req.Password))
             {
                 return new LoginResponse { Success = false, Message = "Contraseña incorrecta." };
             }
 
-            var p = user.Persona;
-            var nombre = p is null
+            var p = user.Person;
+            var name = p is null
                 ? null
-                : $"{p.Nombre1} {(string.IsNullOrWhiteSpace(p.Nombre2) ? "" : p.Nombre2 + " ")}{p.Apellido1} {(string.IsNullOrWhiteSpace(p.Apellido2) ? "" : p.Apellido2)}".Replace("  ", " ").Trim();
+                : $"{p.Name1} {(string.IsNullOrWhiteSpace(p.Name2) ? "" : p.Name2 + " ")}{p.Surname1} {(string.IsNullOrWhiteSpace(p.Surname2) ? "" : p.Surname2)}".Replace("  ", " ").Trim();
 
             return new LoginResponse
             {
                 Success = true,
                 Message = "Login exitoso.",
-                IdUsuario = user.IdUsuario,
-                IdPersona = user.IdPersona,
-                NombreCompleto = nombre,
-                TipoPersona = p?.TipoPersona,
-                Correo = user.Correo
+                UserId = user.UserId,
+                PersonID = user.PersonID,
+                FullName = name,
+                PersonType = p?.PersonType,
+                Email = user.Email
             };
         }
     }

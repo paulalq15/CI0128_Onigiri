@@ -12,33 +12,47 @@ namespace Planilla_Backend.Repositories
             _connectionString = config.GetConnectionString("PayrollContext");
         }
 
-        public async Task<User?> GetActiveEmailAsync(string correo)
+        public async Task<User?> GetActiveEmailAsync(string email)
         {
-            const string sql = @" SELECT u.IdUsuario, u.Correo, u.Contrasena, u.Estado, u.IdPersona,
-                                  p.Cedula, p.IdPersona, p.Nombre1, p.Nombre2, p.Apellido1, p.Apellido2, p.Telefono, p.FechaNacimiento, p.TipoPersona
-                                  FROM dbo.Usuario u
-                                  JOIN dbo.Persona p ON p.IdPersona = u.IdPersona
-                                  WHERE u.Correo = @Correo AND u.Estado = 'Activo';";
+            const string sql = @"
+                SELECT 
+                    u.IdUsuario AS UserId, 
+                    u.Correo AS Email, 
+                    u.Contrasena AS Password, 
+                    u.Estado AS Status, 
+                    u.IdPersona AS PersonID,
+                    p.Cedula AS Cedula,
+                    p.IdPersona AS PersonID, 
+                    p.Nombre1 AS Name1, 
+                    p.Nombre2 AS Name2, 
+                    p.Apellido1 AS Surname1, 
+                    p.Apellido2 AS Surname2, 
+                    p.Telefono AS Phone, 
+                    p.FechaNacimiento AS BirthDate,
+                    p.TipoPersona AS PersonType
+                FROM dbo.Usuario u
+                JOIN dbo.Persona p ON p.IdPersona = u.IdPersona
+                WHERE u.Correo = @Email AND u.Estado = 'Activo';";
 
             using var conn = new SqlConnection(_connectionString);
 
-            User? usuario = null;
+            User? user = null;
             await conn.QueryAsync<User, Person, User>(
                 sql,
                 (u, p) =>
                 {
-                    if (usuario == null)
+                    if (user == null)
                     {
-                        usuario = u;
+                        user = u;
                     }
-                    usuario.Persona = p;
-                    return usuario;
+                    user.Person = p;
+                    return user;
                 },
-                new { Correo = correo },
+                new { Email = email },
                 splitOn: "Cedula"
             );
 
-            return usuario;
+            return user;
         }
     }
 }
