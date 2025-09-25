@@ -36,8 +36,6 @@ namespace Planilla_Backend.Services
                 ? null
                 : $"{p.Name1} {(string.IsNullOrWhiteSpace(p.Name2) ? "" : p.Name2 + " ")}{p.Surname1} {(string.IsNullOrWhiteSpace(p.Surname2) ? "" : p.Surname2)}".Replace("  ", " ").Trim();
 
-            var company = p?.Company;
-
             return new LoginResponse
             {
                 Success = true,
@@ -47,7 +45,7 @@ namespace Planilla_Backend.Services
                 FullName = name,
                 PersonType = p?.PersonType,
                 Email = user.Email,
-                CompanyUniqueId = company?.CompanyUniqueId,
+                CompanyUniqueId = user?.CompanyUniqueId,
             };
         }
     }
