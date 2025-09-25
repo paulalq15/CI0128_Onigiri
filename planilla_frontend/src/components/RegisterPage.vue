@@ -195,11 +195,12 @@
 
         // Cédula
         if (!this.Persona.IdCard) this.errors.IdCard = "La cedula es obligatorio";
-        else if (this.Persona.IdCard.length < 9) this.errors.IdCard = "La cedula debe tener al menos 9 caracteres";
+        else if (!/^\d{1}-\d{4}-\d{4}$/.test(this.Persona.IdCard)) this.errors.IdCard = "El formato debe ser #-####-####, solo valores numéricos";
 
         // Teléfono
         if (!this.Persona.Number) this.errors.Number = "El teléfono es obligatorio";
         else if (this.Persona.Number.length < 8) this.errors.Number = "El teléfono debe tener al menos 8 caracteres";
+        else if (!/^\d{4}-\d{4}$/.test(this.Persona.Number)) this.errors.Number = "El formato debe ser ####-####, solo valores numéricos";
 
         // Fecha de nacimiento
         if (!this.Persona.BirthdayDate) this.errors.BirthdayDate = "La fecha de nacimiento es obligatoria";
