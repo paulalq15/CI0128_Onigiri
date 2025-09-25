@@ -122,6 +122,7 @@ export default {
             fullName: data.FullName,
             typeUser: data.PersonType,
             email: data.Email,
+            companyUniqueId: data.CompanyUniqueId
           });
 
           this.successMsg = "Login exitoso. Redirigiendo…";
