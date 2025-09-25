@@ -9,5 +9,6 @@
         public string? FullName { get; set; }
         public string? PersonType { get; set; }
         public string? Email { get; set; }
+        public int? CompanyUniqueId { get; set; }
     }
 }

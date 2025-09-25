@@ -8,5 +8,6 @@
         public string Status { get; set; } = "";      // 'Activo' | 'Inactivo'
         public int PersonID { get; set; }
         public Person? Person { get; set; }
+        public int? CompanyUniqueId { get; set; }
     }
 }

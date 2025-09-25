@@ -11,5 +11,6 @@
         public string? Phone { get; set; }
         public DateTime BirthDate { get; set; }
         public string PersonType { get; set; } = "";
+        public CompanyModel? Company { get; set; }
     }
 }
