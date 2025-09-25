@@ -137,7 +137,7 @@
                             <li>
                                 <RouterLink
                                     class="nav-link my-2"
-                                    to="/Home" @click="closeSidebar">Crear beneficios y deducciones
+                                    to="/CrearBeneficiosDeducciones" @click="closeSidebar">Crear beneficios y deducciones
                                 </RouterLink>
                             </li>
                             <li>

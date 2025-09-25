@@ -1,27 +1,13 @@
 <template>
-    <body class="d-flex flex-column min-vh-100">
-        <HeaderComp />
-
-        <h1 class="text-center">Crear elemento de planilla</h1>
+    <div class="d-flex flex-column">
+        <h1 class="text-center">Crear beneficios y deducciones</h1>
 
         <div class="container py-4 flex-fill d-flex justify-content-center">   
             <form @submit.prevent="saveElement" class="row g-3 needs-validation" novalidate style="width: 800px;">
                 <div class="mb-3">
                     <label for="ElementName" class="form-label required">Nombre</label>
                     <input type="text" class="form-control" id="ElementName" required :maxlength="maxNameLength" v-model="name">
-                    <div class="invalid-feedback">Ingrese el nombre del elemento, máximo {{ maxNameLength }} caracteres.</div>
-                </div>
-                <div class="mb-3 col-xl-6 col-sm-12">
-                    <label for="PaidBy" class="form-label required">Pagado por</label>
-                    <select class="form-select" id="PaidBy" required v-model="paidBy" @change="AddElementType">
-                        <option value="Empleado">Empleado</option>
-                        <option value="Empleador">Empleador</option>
-                    </select>
-                    <div class="invalid-feedback">Seleccione quién paga el elemento de planilla.</div>
-                </div>
-                <div class="mb-3 col-xl-6 col-sm-12">
-                    <label for="ElementType" class="form-label">Tipo de elemento</label>
-                    <input type="text" class="form-control" id="ElementType" disabled readonly v-model="elementType">
+                    <div class="invalid-feedback">Ingrese el nombre, máximo {{ maxNameLength }} caracteres.</div>
                 </div>
                 <div class="mb-3 col-xl-6 col-sm-12">
                     <label for="CalculationType" class="form-label required">Tipo de cálculo</label>
@@ -65,6 +51,18 @@
                         <div class="invalid-feedback">Ingrese el monto con un máximo de 2 decimales</div>
                     </div>
                 </div>
+                <div v-if="calculationType === 'Monto' || calculationType === 'Porcentaje'" class="mb-3 col-xl-6 col-sm-12">
+                    <label for="PaidBy" class="form-label required">Pagado por</label>
+                    <select class="form-select" id="PaidBy" required v-model="paidBy" @change="AddElementType">
+                        <option value="Empleado">Empleado</option>
+                        <option value="Empleador">Empleador</option>
+                    </select>
+                    <div class="invalid-feedback">Seleccione el responsable del pago.</div>
+                </div>
+                <div v-if="calculationType === 'Monto' || calculationType === 'Porcentaje'" class="mb-3 col-xl-6 col-sm-12">
+                    <label for="ElementType" class="form-label">Tipo de elemento</label>
+                    <input type="text" class="form-control" id="ElementType" disabled readonly v-model="elementType">
+                </div>
                 <div class="mb-3">
                     <button class="btn btn-custom w-100 mt-2" type="submit">Crear elemento</button>
                 </div>
@@ -80,20 +78,12 @@
                 </div>
             </div>
         </div>
-
-        <FooterComp />
-    </body>
+    </div>
 </template>
 
 <script>
     import axios from "axios";
-    import HeaderComp from './HeaderComp.vue';
-    import FooterComp from './FooterComp.vue';
     export default {
-        components: {
-        HeaderComp,
-        FooterComp,
-        },
         data() {
             return {
                 name: "", 

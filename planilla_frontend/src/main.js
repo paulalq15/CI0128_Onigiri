@@ -17,7 +17,7 @@ const router = createRouter({
       children: [
         { path: 'Home', name: 'Página principal', component: HomePage },
         { path: 'CrearEmpresa', name: 'Crear empresa', component: CreateCompany },
-        { path: 'CrearBeneficiosDeducciones', name: 'Crear beneficios y deducciones', component: CreateCompany },
+        { path: 'CrearBeneficiosDeducciones', name: 'Crear beneficios y deducciones', component: CreatePayrollElement },
       ],
     },
   ],
