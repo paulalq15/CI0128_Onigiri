@@ -11,7 +11,7 @@ namespace Planilla_Backend.Repositories
         public CompanyRepository()
         {
             var builder = WebApplication.CreateBuilder();
-            _connectionString = builder.Configuration.GetConnectionString("PayrollContext");
+            _connectionString = builder.Configuration.GetConnectionString("OnigiriContext");
         }
 
         public bool ZipExists(string zipCode)
