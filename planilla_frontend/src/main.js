@@ -14,8 +14,8 @@ const router = createRouter({
       path: '/',
       component: WebPageLayout,
       children: [
-        { path: 'Home', name: 'Página Principal', component: HomePage },
-        { path: 'CrearEmpresa', name: 'Crear Empresa', component: CreateCompany },
+        { path: 'Home', name: 'Página principal', component: HomePage },
+        { path: 'CrearEmpresa', name: 'Crear empresa', component: CreateCompany },
       ],
     },
   ],

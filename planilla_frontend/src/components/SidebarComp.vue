@@ -35,7 +35,7 @@
                             <li>
                                 <RouterLink
                                     class="nav-link my-2"
-                                    to="/" @click="closeSidebar">Ver Empresas
+                                    to="/Home" @click="closeSidebar">Ver Empresas
                                 </RouterLink>
                             </li>
                             <li>
@@ -61,13 +61,13 @@
                             <li>
                                 <RouterLink
                                     class="nav-link my-2"
-                                    to="/" @click="closeSidebar">Ver Empleados
+                                    to="/Home" @click="closeSidebar">Ver Empleados
                                 </RouterLink>
                             </li>
                             <li>
                                 <RouterLink
                                     class="nav-link my-2"
-                                    to="/" @click="closeSidebar">Crear Empleados
+                                    to="/Home" @click="closeSidebar">Crear Empleados
                                 </RouterLink>
                             </li>
                         </ul>
@@ -87,19 +87,19 @@
                             <li>
                                 <RouterLink
                                     class="nav-link my-2"
-                                    to="/" @click="closeSidebar">Ver Timesheets
+                                    to="/Home" @click="closeSidebar">Ver Timesheets
                                 </RouterLink>
                             </li>
                             <li>
                                 <RouterLink
                                     class="nav-link my-2"
-                                    to="/" @click="closeSidebar">Aprobar Timesheets
+                                    to="/Home" @click="closeSidebar">Aprobar Timesheets
                                 </RouterLink>
                             </li>
                             <li>
                                 <RouterLink
                                     class="nav-link my-2"
-                                    to="/" @click="closeSidebar">Crear Timesheet
+                                    to="/Home" @click="closeSidebar">Crear Timesheet
                                 </RouterLink>
                             </li>
                         </ul>
@@ -119,31 +119,37 @@
                             <li>
                                 <RouterLink
                                     class="nav-link my-2"
-                                    to="/" @click="closeSidebar">Historial de planillas
+                                    to="/Home" @click="closeSidebar">Historial de planillas
                                 </RouterLink>
                             </li>
                             <li>
                                 <RouterLink
                                     class="nav-link my-2"
-                                    to="/" @click="closeSidebar">Crear planilla
+                                    to="/Home" @click="closeSidebar">Crear planilla
                                 </RouterLink>
                             </li>
                             <li>
                                 <RouterLink
                                     class="nav-link my-2"
-                                    to="/" @click="closeSidebar">Ver elementos
+                                    to="/Home" @click="closeSidebar">Ver beneficios y deducciones
                                 </RouterLink>
                             </li>
                             <li>
                                 <RouterLink
                                     class="nav-link my-2"
-                                    to="/" @click="closeSidebar">Crear elemento
+                                    to="/Home" @click="closeSidebar">Crear beneficios y deducciones
                                 </RouterLink>
                             </li>
                             <li>
                                 <RouterLink
                                     class="nav-link my-2"
-                                    to="/" @click="closeSidebar">Asignar elemento
+                                    to="/Home" @click="closeSidebar">Asignar deducciones
+                                </RouterLink>
+                            </li>
+                            <li>
+                                <RouterLink
+                                    class="nav-link my-2"
+                                    to="/Home" @click="closeSidebar">Seleccionar beneficios
                                 </RouterLink>
                             </li>
                         </ul>
@@ -163,13 +169,13 @@
                             <li>
                                 <RouterLink
                                     class="nav-link my-2"
-                                    to="/" @click="closeSidebar">Historial de pagos
+                                    to="/Home" @click="closeSidebar">Historial de pagos
                                 </RouterLink>
                             </li>
                             <li>
                                 <RouterLink
                                     class="nav-link my-2"
-                                    to="/" @click="closeSidebar">Crear pago
+                                    to="/Home" @click="closeSidebar">Crear pago
                                 </RouterLink>
                             </li>
                         </ul>
@@ -189,13 +195,13 @@
                             <li>
                                 <RouterLink
                                     class="nav-link my-2"
-                                    to="/" @click="closeSidebar">Ver Reportes
+                                    to="/Home" @click="closeSidebar">Ver Reportes
                                 </RouterLink>
                             </li>
                             <li>
                                 <RouterLink
                                     class="nav-link my-2"
-                                    to="/" @click="closeSidebar">Crear Reporte
+                                    to="/Home" @click="closeSidebar">Crear Reporte
                                 </RouterLink>
                             </li>
                         </ul>
