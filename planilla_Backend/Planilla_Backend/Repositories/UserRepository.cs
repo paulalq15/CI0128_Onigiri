@@ -29,9 +29,19 @@ namespace Planilla_Backend.Repositories
                     p.Apellido2 AS Surname2, 
                     p.Telefono AS Phone, 
                     p.FechaNacimiento AS BirthDate,
-                    p.TipoPersona AS PersonType
+                    p.TipoPersona AS PersonType,
+                    c1.IdEmpresa AS CompanyUniqueId
                 FROM dbo.Usuario u
                 JOIN dbo.Persona p ON p.IdPersona = u.IdPersona
+                OUTER APPLY (
+                    SELECT TOP (1) c.IdEmpresa
+                    FROM dbo.UsuariosPorEmpresa ue
+                    JOIN dbo.Empresa c ON c.IdEmpresa = ue.IdEmpresa
+                    WHERE ue.IdUsuario = u.IdUsuario
+                      AND c.Estado = 'Activo'
+                    ORDER BY ue.IdUsEmp DESC
+                ) c1
+
                 WHERE u.Correo = @Email AND u.Estado = 'Activo';";
 
             using var conn = new SqlConnection(_connectionString);
@@ -41,10 +51,7 @@ namespace Planilla_Backend.Repositories
                 sql,
                 (u, p) =>
                 {
-                    if (user == null)
-                    {
-                        user = u;
-                    }
+                    if (user == null) user = u;
                     user.Person = p;
                     return user;
                 },
