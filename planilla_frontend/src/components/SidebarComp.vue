@@ -7,7 +7,7 @@
     data-bs-backdrop="false"
     data-bs-scroll="true"
   >
-    <!--Nombre de la empresa y X para cerrarlo-->
+    <!--Company name-->
     <div class="offcanvas-header py-4 my-3">
       <h5 id="sidebarLabel">Empresa ABC</h5>
       <button
@@ -19,18 +19,18 @@
     </div>
     <div class="offcanvas-body">
 
-      <!--Nombre e icono del usuario-->
+      <!--User name and icon-->
       <div>
         <i class="bi bi-person-circle fs-2 me-3"></i>
-        <span>Paula Lopez</span>
+        <span v-if="$session.user">{{ $session.user.fullName }}</span>
       </div>
 
       <ul class="list-unstyled ps-0" id="sidebar-accordion">
         <li class="border-top my-3"></li>
 
-        <!--Para volver a la página principal-->
+        <!--Go back to home-->
         <li class="my-3">
-          <RouterLink class="link-body-emphasis text-decoration-none" to="/Home">
+          <RouterLink class="link-body-emphasis text-decoration-none" to="/app/Home">
             <div class="gap-2 px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas">
               <i class="bi bi-house me-3"></i>
               <span>Página principal</span>
@@ -38,7 +38,7 @@
           </RouterLink>
         </li>
 
-        <!--Opciones para empresa-->
+        <!--Company menu-->
         <li class="my-3">
           <button
             class="nav-link d-flex w-100 gap-2 px-2 py-2 sidebar-item collapsed"
@@ -54,14 +54,14 @@
           <div class="collapse" id="company-collapse" data-bs-parent="#sidebar-accordion">
             <ul class="list-unstyled ms-4 ps-2 small">
               <li>
-                <RouterLink class="nav-link my-3" to="/Home">
+                <RouterLink class="nav-link my-3" to="/app/Home">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas"
                     >Ver Empresas</span
                   >
                 </RouterLink>
               </li>
               <li>
-                <RouterLink class="nav-link my-3" to="/CrearEmpresa">
+                <RouterLink class="nav-link my-3" to="/app/CrearEmpresa">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas"
                     >Crear Empresa</span
                   >
@@ -71,7 +71,7 @@
           </div>
         </li>
 
-        <!--Opciones para empleados-->
+        <!--Employee menu-->
         <li class="my-3">
           <button
             class="nav-link d-flex w-100 gap-2 px-2 py-2 sidebar-item collapsed"
@@ -87,14 +87,14 @@
           <div class="collapse" id="employee-collapse" data-bs-parent="#sidebar-accordion">
             <ul class="list-unstyled ms-4 ps-2 small">
               <li>
-                <RouterLink class="nav-link my-3" to="/Home">
+                <RouterLink class="nav-link my-3" to="/app/Home">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas"
                     >Ver Empleados</span
                   >
                 </RouterLink>
               </li>
               <li>
-                <RouterLink class="nav-link my-3" to="/Home">
+                <RouterLink class="nav-link my-3" to="/app/Home">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas"
                     >Crear Empleados</span
                   >
@@ -104,7 +104,7 @@
           </div>
         </li>
 
-        <!--Opciones para timesheets-->
+        <!--Timesheets menu-->
         <li class="my-3">
           <button
             class="nav-link d-flex w-100 gap-2 px-2 py-2 sidebar-item collapsed"
@@ -120,21 +120,21 @@
           <div class="collapse" id="timesheet-collapse" data-bs-parent="#sidebar-accordion">
             <ul class="list-unstyled ms-4 ps-2 small">
               <li>
-                <RouterLink class="nav-link my-3" to="/Home">
+                <RouterLink class="nav-link my-3" to="/app/Home">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas"
                     >Ver Timesheets</span
                   >
                 </RouterLink>
               </li>
               <li>
-                <RouterLink class="nav-link my-3" to="/Home">
+                <RouterLink class="nav-link my-3" to="/app/Home">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas"
                     >Aprobar Timesheets</span
                   >
                 </RouterLink>
               </li>
               <li>
-                <RouterLink class="nav-link my-3" to="/Home">
+                <RouterLink class="nav-link my-3" to="/app/Home">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas"
                     >Crear Timesheet</span
                   >
@@ -144,7 +144,7 @@
           </div>
         </li>
 
-        <!--Opciones para planilla-->
+        <!--Payroll menu-->
         <li class="my-3">
           <button
             class="nav-link d-flex w-100 gap-2 px-2 py-2 sidebar-item collapsed"
@@ -160,42 +160,42 @@
           <div class="collapse" id="payroll-collapse" data-bs-parent="#sidebar-accordion">
             <ul class="list-unstyled ms-4 ps-2 small">
               <li>
-                <RouterLink class="nav-link my-3" to="/Home">
+                <RouterLink class="nav-link my-3" to="/app/Home">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas"
                     >Historial de planillas</span
                   >
                 </RouterLink>
               </li>
               <li>
-                <RouterLink class="nav-link my-3" to="/Home">
+                <RouterLink class="nav-link my-3" to="/app/Home">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas"
                     >Crear planilla</span
                   >
                 </RouterLink>
               </li>
               <li>
-                <RouterLink class="nav-link my-3" to="/Home">
+                <RouterLink class="nav-link my-3" to="/app/Home">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas"
                     >Ver beneficios y deducciones</span
                   >
                 </RouterLink>
               </li>
               <li>
-                <RouterLink class="nav-link my-3" to="/Home">
+                <RouterLink class="nav-link my-3" to="/app/Home">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas"
                     >Crear beneficios y deducciones</span
                   >
                 </RouterLink>
               </li>
               <li>
-                <RouterLink class="nav-link my-3" to="/Home">
+                <RouterLink class="nav-link my-3" to="/app/Home">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas"
                     >Asignar deducciones</span
                   >
                 </RouterLink>
               </li>
               <li>
-                <RouterLink class="nav-link my-3" to="/Home">
+                <RouterLink class="nav-link my-3" to="/app/Home">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas"
                     >Seleccionar beneficios</span
                   >
@@ -205,7 +205,7 @@
           </div>
         </li>
 
-        <!--Opciones para pagos-->
+        <!--Payment options-->
         <li class="my-3">
           <button
             class="nav-link d-flex w-100 gap-2 px-2 py-2 sidebar-item collapsed"
@@ -221,14 +221,14 @@
           <div class="collapse" id="payment-collapse" data-bs-parent="#sidebar-accordion">
             <ul class="list-unstyled ms-4 ps-2 small">
               <li>
-                <RouterLink class="nav-link my-3" to="/Home">
+                <RouterLink class="nav-link my-3" to="/app/Home">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas"
                     >Historial de pagos</span
                   >
                 </RouterLink>
               </li>
               <li>
-                <RouterLink class="nav-link my-3" to="/Home">
+                <RouterLink class="nav-link my-3" to="/app/Home">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas">Crear pago</span>
                 </RouterLink>
               </li>
@@ -236,7 +236,7 @@
           </div>
         </li>
 
-        <!--Opciones para reportes-->
+        <!--Reports menu-->
         <li class="my-3">
           <button
             class="nav-link d-flex w-100 gap-2 px-2 py-2 sidebar-item collapsed"
@@ -252,14 +252,14 @@
           <div class="collapse" id="report-collapse" data-bs-parent="#sidebar-accordion">
             <ul class="list-unstyled ms-4 ps-2 small">
               <li>
-                <RouterLink class="nav-link my-3" to="/Home">
+                <RouterLink class="nav-link my-3" to="/app/Home">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas"
                     >Ver Reportes</span
                   >
                 </RouterLink>
               </li>
               <li>
-                <RouterLink class="nav-link my-3" to="/Home">
+                <RouterLink class="nav-link my-3" to="/app/Home">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas"
                     >Crear Reporte</span
                   >
@@ -271,21 +271,35 @@
 
         <li class="border-top my-3"></li>
         
-        <!--Botón para cerrar sesión en rojo-->
+        <!--Log out-->
         <li class="my-3">
-          <RouterLink class="nav-link link-danger" to="/">
-            <div class="gap-2 px-2 py-2" data-bs-dismiss="offcanvas">
+          <button
+            class="nav-link link-danger"
+            @click="logout"
+            data-bs-dismiss="offcanvas"
+          >
+            <div class="gap-2 px-2 py-2">
               <i class="bi bi-box-arrow-right me-3"></i>
               <span>Cerrar sesión</span>
             </div>
-          </RouterLink>
+          </button>
         </li>
       </ul>
     </div>
   </div>
 </template>
 
-<script></script>
+<script>
+export default {
+  name: 'SidebarComp',
+  methods: {
+    logout() {
+      this.$session.clear();
+      this.$router.push({ name: 'Login' });
+    }
+  }
+}
+</script>
 
 <style lang="scss" scoped>
 .sidebar-item:hover {

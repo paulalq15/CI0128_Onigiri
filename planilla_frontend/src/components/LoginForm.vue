@@ -1,9 +1,7 @@
 <template>
-  <div class="page d-flex flex-column min-vh-100">
-    <HeaderOnigiri />
-
+  <div class="page d-flex flex-column">
     <div class="flex-fill d-flex justify-content-center align-items-center">
-      <div style="max-width: 400px; width: 100%;">
+      <div style="max-width: 400px; width: 100%">
         <div class="text-center mb-3">
           <h3 class="mb-3">Iniciar sesión</h3>
         </div>
@@ -50,7 +48,7 @@
           <div class="d-flex flex-column text-center mb-3">
             <small>
               ¿No tienes una cuenta aún?
-              <router-link to="/registerAccount" class="text-decoration-none">
+              <router-link to="/auth/Register" class="text-decoration-none">
                 Regístrate como empleador
               </router-link>
             </small>
@@ -76,69 +74,64 @@
         </form>
       </div>
     </div>
-    <FooterComp />
   </div>
 </template>
 
 <script>
-import HeaderOnigiri from "./HeaderOnigiri.vue";
-import FooterComp from "./FooterComp.vue";
-import axios from "axios";
-import { setUser } from "../session";
+import axios from 'axios';
 
 export default {
-  name: "LoginForm",
-  components: { HeaderOnigiri, FooterComp },
+  name: 'LoginForm',
   data() {
     return {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
       showPassword: false,
       loading: false,
-      errorMsg: "",
-      successMsg: "",
+      errorMsg: '',
+      successMsg: '',
     };
   },
   methods: {
     async onSubmit() {
-      this.errorMsg = "";
-      this.successMsg = "";
+      this.errorMsg = '';
+      this.successMsg = '';
 
       if (!this.email || !this.password) {
-        this.errorMsg = "Ingrese correo y contraseña.";
+        this.errorMsg = 'Ingrese correo y contraseña.';
         return;
       }
 
       this.loading = true;
       try {
-        const { data } = await axios.post("https://localhost:7071/api/Auth/login", {
+        const { data } = await axios.post('https://localhost:7071/api/Auth/login', {
           email: this.email.trim(),
           password: this.password,
         });
-        console.log("[Login] Respuesta:", data);
+        console.log('[Login] Respuesta:', data);
 
         if (data?.success) {
-          setUser({
+          this.$session.set({
             userId: data.userId,
             personId: data.personID,
             fullName: data.fullName,
             typeUser: data.personType,
             email: data.email,
-            companyUniqueId: data.companyUniqueId
+            companyUniqueId: data.companyUniqueId,
           });
 
-          this.successMsg = "Login exitoso. Redirigiendo…";
-          this.$router.push({ name: "Home Page" });
+          this.successMsg = 'Login exitoso. Redirigiendo…';
+          this.$router.push({ name: 'Home Page' });
         } else {
-          this.errorMsg = data?.message || "No se pudo iniciar sesión.";
+          this.errorMsg = data?.message || 'No se pudo iniciar sesión.';
         }
       } catch (err) {
         if (err?.response?.data?.message) {
           this.errorMsg = err.response.data.message;
-        } else if (err?.message?.includes("Network Error")) {
-          this.errorMsg = "No hay conexión con el servidor. Verifique la URL/puerto.";
+        } else if (err?.message?.includes('Network Error')) {
+          this.errorMsg = 'No hay conexión con el servidor. Verifique la URL/puerto.';
         } else {
-          this.errorMsg = "Error al intentar iniciar sesión.";
+          this.errorMsg = 'Error al intentar iniciar sesión.';
         }
       } finally {
         this.loading = false;
@@ -149,24 +142,23 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-    .form-label.required::after {
-        content: " *";
-        color: red;
-    }
+.form-label.required::after {
+  content: ' *';
+  color: red;
+}
 
-    .btn-custom {
-        background-color: #234d34;
-        color: #fff;
-        border: none;
-        border-radius: 0.375rem;
-        padding: 0.5rem 1rem;
-        font-weight: 600;
-        text-align: center;
-        }
+.btn-custom {
+  background-color: #234d34;
+  color: #fff;
+  border: none;
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  text-align: center;
+}
 
-        .btn-custom:hover {
-        background-color: #1b3d2a;
-        color: #fff;
-        }
-
+.btn-custom:hover {
+  background-color: #1b3d2a;
+  color: #fff;
+}
 </style>

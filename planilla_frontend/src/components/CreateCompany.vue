@@ -10,11 +10,11 @@
         style="width: 800px"
       >
         <div class="mb-3 col-xl-3 col-sm-12">
-          <label for="CompanyId" class="form-label required">Cédula Jurídica</label>
+          <label for="companyId" class="form-label required">Cédula Jurídica</label>
           <input
             type="text"
             class="form-control"
-            id="CompanyId"
+            id="companyId"
             placeholder="3-000-000000"
             required
             pattern="[0-9]{1}-[0-9]{3}-[0-9]{6}"
@@ -25,22 +25,24 @@
           </div>
         </div>
         <div class="mb-3 col-xl-9 col-sm-12">
-          <label for="CompanyName" class="form-label required">Nombre Empresa</label>
+          <label for="companyName" class="form-label required">Nombre Empresa</label>
           <input
             type="text"
             class="form-control"
-            id="CompanyName"
+            id="companyName"
             required
             maxlength="150"
             v-model="companyName"
           />
           <div class="invalid-feedback">Ingrese el nombre de la empresa</div>
         </div>
+
+        <!--Address-->
         <div class="mb-3 col-xl-6 col-sm-12">
-          <label for="Province" class="form-label required">Provincia</label>
+          <label for="province" class="form-label required">Provincia</label>
           <select
             class="form-select"
-            id="Province"
+            id="province"
             required
             v-model="selectedProvince"
             @change="getCounties"
@@ -51,10 +53,10 @@
           <div class="invalid-feedback">Seleccione una provincia</div>
         </div>
         <div class="mb-3 col-xl-6 col-sm-12">
-          <label for="County" class="form-label required">Cantón</label>
+          <label for="county" class="form-label required">Cantón</label>
           <select
             class="form-select"
-            id="County"
+            id="county"
             required
             v-model="selectedCounty"
             @change="getDistricts"
@@ -66,10 +68,10 @@
           <div class="invalid-feedback">Seleccione un cantón</div>
         </div>
         <div class="mb-3 col-xl-6 col-sm-12">
-          <label for="District" class="form-label required">Distrito</label>
+          <label for="district" class="form-label required">Distrito</label>
           <select
             class="form-select"
-            id="District"
+            id="district"
             required
             v-model="selectedDistrict"
             @change="getZipCode"
@@ -81,21 +83,21 @@
           <div class="invalid-feedback">Seleccione un distrito</div>
         </div>
         <div class="mb-3 col-xl-6 col-sm-12">
-          <label for="ZipCode" class="form-label">Código Postal</label>
+          <label for="zipCode" class="form-label">Código Postal</label>
           <input
             type="text"
             class="form-control"
-            id="ZipCode"
+            id="zipCode"
             disabled
             readonly
             v-model="zipCode"
           />
         </div>
         <div class="mb-3">
-          <label for="AddressDetails" class="form-label required">Otras señas</label>
+          <label for="addressDetails" class="form-label required">Otras señas</label>
           <textarea
             class="form-control"
-            id="AddressDetails"
+            id="addressDetails"
             rows="3"
             placeholder="Otras señas"
             required
@@ -104,12 +106,14 @@
           ></textarea>
           <div class="invalid-feedback">Ingrese las otras señas</div>
         </div>
+
+        <!--Telephone and benefits-->
         <div class="mb-3">
-          <label for="Telephone" class="form-label">Teléfono</label>
+          <label for="telephone" class="form-label">Teléfono</label>
           <input
             type="text"
             class="form-control"
-            id="Telephone"
+            id="telephone"
             placeholder="2222-2222"
             pattern="[0-9]{4}-[0-9]{4}"
             v-model="telephone"
@@ -119,11 +123,11 @@
           </div>
         </div>
         <div class="mb-3">
-          <label for="MaxBenefits" class="form-label required">Cantidad máxima de beneficios</label>
+          <label for="maxBenefits" class="form-label required">Cantidad máxima de beneficios</label>
           <input
             type="number"
             class="form-control"
-            id="MaxBenefits"
+            id="maxBenefits"
             placeholder="0"
             min="0"
             required
@@ -133,9 +137,11 @@
             Ingrese la cantidad máxima de beneficios que puede seleccionar un empleado
           </div>
         </div>
+
+        <!--Payment frequency and days-->
         <div class="mb-3">
-          <label for="PaymentFrequency" class="form-label required">Frecuencia de pago</label>
-          <select class="form-select" id="PaymentFrequency" required v-model="paymentFrequency">
+          <label for="paymentFrequency" class="form-label required">Frecuencia de pago</label>
+          <select class="form-select" id="paymentFrequency" required v-model="paymentFrequency">
             <option selected disabled value="">
               Selecciona la frecuencia de pago de la planilla
             </option>
@@ -145,10 +151,10 @@
           <div class="invalid-feedback">Seleccione la frecuencia de pago de planilla</div>
         </div>
         <div class="mb-3">
-          <label for="PayDay1" class="form-label required">Día de pago</label>
+          <label for="payDay1" class="form-label required">Día de pago</label>
           <select
             class="form-select"
-            id="PayDay1"
+            id="payDay1"
             required
             v-model="payDay1"
             :disabled="!paymentFrequency"
@@ -159,8 +165,8 @@
           <div class="invalid-feedback">Seleccione el día de pago de la planilla</div>
         </div>
         <div v-if="paymentFrequency === 'Quincenal'" class="mb-3">
-          <label for="PayDay2" class="form-label required">Segundo día de pago</label>
-          <select class="form-select" id="PayDay2" required v-model="payDay2" :disabled="!payDay1">
+          <label for="payDay2" class="form-label required">Segundo día de pago</label>
+          <select class="form-select" id="payDay2" required v-model="payDay2" :disabled="!payDay1">
             <option selected disabled value="">Segundo día de pago</option>
             <option v-for="day in daysAfterFirst" :key="day" :value="day">{{ day }}</option>
           </select>
@@ -172,6 +178,7 @@
       </form>
     </div>
 
+    <!--Toast messages-->
     <div class="toast-container position-fixed top-0 end-0 p-3">
       <div
         v-if="showToast"
@@ -197,7 +204,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import URLBaseAPI from '../axiosAPIInstances.js';
 export default {
   data() {
     return {
@@ -219,12 +226,14 @@ export default {
       showToast: false,
       toastMessage: '',
       toastType: 'bg-success',
+      toastTimeout: 3000,
+      lastMonthDay: 31,
     };
   },
   computed: {
     daysAfterFirst() {
       if (!this.payDay1) return [];
-      return Array.from({ length: 31 - this.payDay1 }, (_, i) => this.payDay1 + i + 1);
+      return Array.from({ length: this.lastMonthDay - this.payDay1 }, (_, i) => this.payDay1 + i + 1);
     },
   },
   watch: {
@@ -257,8 +266,8 @@ export default {
         );
       });
     },
-    GetProvince() {
-      axios.get('https://localhost:7115/api/CountryDivision/Provinces').then((response) => {
+    getProvince() {
+      URLBaseAPI.get('/api/CountryDivision/Provinces').then((response) => {
         this.provinces = response.data;
       });
     },
@@ -269,10 +278,9 @@ export default {
       this.districts = [];
       this.zipCode = '';
 
-      axios
-        .get('https://localhost:7115/api/CountryDivision/Counties', {
-          params: { province: this.selectedProvince },
-        })
+      URLBaseAPI.get('/api/CountryDivision/Counties', {
+        params: { province: this.selectedProvince },
+      })
         .then((response) => {
           this.counties = response.data;
         })
@@ -283,10 +291,9 @@ export default {
       this.districts = [];
       this.zipCode = '';
 
-      axios
-        .get('https://localhost:7115/api/CountryDivision/Districts', {
-          params: { province: this.selectedProvince, county: this.selectedCounty },
-        })
+      URLBaseAPI.get('/api/CountryDivision/Districts', {
+        params: { province: this.selectedProvince, county: this.selectedCounty },
+      })
         .then((response) => {
           this.districts = response.data;
         })
@@ -295,14 +302,13 @@ export default {
     getZipCode() {
       this.zipCode = '';
 
-      axios
-        .get('https://localhost:7115/api/CountryDivision/ZipCode', {
-          params: {
-            province: this.selectedProvince,
-            county: this.selectedCounty,
-            district: this.selectedDistrict,
-          },
-        })
+      URLBaseAPI.get('/api/CountryDivision/ZipCode', {
+        params: {
+          province: this.selectedProvince,
+          county: this.selectedCounty,
+          district: this.selectedDistrict,
+        },
+      })
         .then((response) => {
           this.zipCode = response.data.value;
         })
@@ -315,19 +321,18 @@ export default {
         return;
       }
 
-      axios
-        .post('https://localhost:7115/api/Company', {
-          CompanyId: this.companyId,
-          CompanyName: this.companyName.trim(),
-          AddressDetails: this.addressDetails.trim(),
-          ZipCode: this.zipCode,
-          Telephone: this.telephone !== '' ? this.telephone : null,
-          MaxBenefits: Number(this.maxBenefits || 0),
-          PaymentFrequency: this.paymentFrequency,
-          PayDay1: this.payDay1,
-          PayDay2: this.paymentFrequency === 'Quincenal' ? Number(this.payDay2 || 0) : null,
-          CreatedBy: 1, //Temporal, en home traerlo de session storage
-        })
+      URLBaseAPI.post('/api/Company', {
+        CompanyId: this.companyId,
+        CompanyName: this.companyName.trim(),
+        AddressDetails: this.addressDetails.trim(),
+        ZipCode: this.zipCode,
+        Telephone: this.telephone !== '' ? this.telephone : null,
+        MaxBenefits: Number(this.maxBenefits || 0),
+        PaymentFrequency: this.paymentFrequency,
+        PayDay1: this.payDay1,
+        PayDay2: this.paymentFrequency === 'Quincenal' ? Number(this.payDay2 || 0) : null,
+        CreatedBy: Number(this.$session.user?.userId),
+      })
         .then(function () {
           self.toastMessage = 'Empresa creada correctamente';
           self.toastType = 'bg-success';
@@ -335,7 +340,7 @@ export default {
           setTimeout(function () {
             self.showToast = false;
             window.location.href = '/';
-          }, 3000);
+          }, self.toastTimeout);
         })
         .catch(function (error) {
           var msg =
@@ -348,13 +353,13 @@ export default {
 
           setTimeout(function () {
             self.showToast = false;
-          }, 4000);
+          }, self.toastTimeout);
         });
     },
   },
   mounted() {
     this.initBootstrapValidation();
-    this.GetProvince();
+    this.getProvince();
   },
 };
 </script>

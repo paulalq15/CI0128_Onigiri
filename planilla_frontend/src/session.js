@@ -6,7 +6,13 @@ export function setUser(user) {
 
 export function getUser() {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const u = JSON.parse(raw);
+    if (u && typeof u === 'object' && (u.userId || u.email || u.fullName)) {
+      return u;
+    }
+    return null;
   } catch {
     return null;
   }
@@ -17,5 +23,6 @@ export function clearUser() {
 }
 
 export function isAuthed() {
-  return !!getUser();
+  const u = getUser();
+  return !!(u && u.userId);
 }
