@@ -50,7 +50,9 @@
           <div class="d-flex flex-column text-center mb-3">
             <small>
               ¿No tienes una cuenta aún?
-              <a href="#" class="text-decoration-none">Regístrate como empleador</a>
+              <router-link to="/registerAccount" class="text-decoration-none">
+                Regístrate como empleador
+              </router-link>
             </small>
             <small>
               <a href="#" class="text-decoration-none">¿Has olvidado tu contraseña?</a>
@@ -109,7 +111,7 @@ export default {
 
       this.loading = true;
       try {
-        const { data } = await axios.post("https://localhost:7115/api/Auth/login", {
+        const { data } = await axios.post("https://localhost:7071/api/Auth/login", {
           email: this.email.trim(),
           password: this.password,
         });
@@ -117,12 +119,12 @@ export default {
 
         if (data?.success) {
           setUser({
-            userId: data.UserId,
-            personId: data.PersonID,
-            fullName: data.FullName,
-            typeUser: data.PersonType,
-            email: data.Email,
-            companyUniqueId: data.CompanyUniqueId
+            userId: data.userId,
+            personId: data.personID,
+            fullName: data.fullName,
+            typeUser: data.personType,
+            email: data.email,
+            companyUniqueId: data.companyUniqueId
           });
 
           this.successMsg = "Login exitoso. Redirigiendo…";
