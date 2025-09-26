@@ -9,7 +9,7 @@ namespace Planilla_Backend.Repositories
         private readonly string _connectionString;
         public UserRepository(IConfiguration config)
         {
-            _connectionString = config.GetConnectionString("PayrollContext");
+            _connectionString = config.GetConnectionString("OnigiriContext");
         }
 
         public async Task<User?> GetActiveEmailAsync(string email)
