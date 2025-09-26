@@ -173,14 +173,14 @@
                 </RouterLink>
               </li>
               <li>
-                <RouterLink class="nav-link my-3" to="/app/CrearBeneficiosDeducciones">
+                <RouterLink class="nav-link my-3" to="/app/Home">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas"
                     >Ver beneficios y deducciones</span
                   >
                 </RouterLink>
               </li>
               <li>
-                <RouterLink class="nav-link my-3" to="/app/Home">
+                <RouterLink class="nav-link my-3" to="/app/CrearBeneficiosDeducciones">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas"
                     >Crear beneficios y deducciones</span
                   >
