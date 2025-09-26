@@ -166,7 +166,7 @@ export default {
       showToast: false,
       toastMessage: '',
       toastType: 'bg-success',
-      toastTimeout: 4000,
+      toastTimeout: 3000,
     };
   },
   methods: {
@@ -208,8 +208,8 @@ export default {
           paidBy: this.calculationType === 'API' ? 'Empleador' : this.paidBy,
           calculationType: this.calculationType,
           calculationValue: Number(this.calculationValue || 0),
-          companyId: 1,
-          userId: 1,
+          companyId: Number(this.$session.user?.companyUniqueId),
+          userId: Number(this.$session.user?.userId),
         })
         .then(function () {
           self.toastMessage = 'Elemento creado correctamente';
