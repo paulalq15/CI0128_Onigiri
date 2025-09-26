@@ -5,49 +5,49 @@ using System.Data.SqlClient;
 
 namespace Planilla_Backend.Repositories
 {
-    public class PayrollElementRepository
+  public class PayrollElementRepository
+  {
+    private readonly string _connectionString;
+    public PayrollElementRepository()
     {
-        private readonly string _connectionString;
-        public PayrollElementRepository()
-        {
-            var builder = WebApplication.CreateBuilder();
-            _connectionString = builder.Configuration.GetConnectionString("PayrollContext");
-        }
+      var builder = WebApplication.CreateBuilder();
+      _connectionString = builder.Configuration.GetConnectionString("PayrollContext");
+    }
 
-        public bool CompanyIsActive(int companyId)
-        {
-            using var connection = new SqlConnection(_connectionString);
-            const string query = @"SELECT 1 FROM dbo.Empresa WHERE IdEmpresa = @Id AND Estado = 'Activo'";
-            var company = connection.ExecuteScalar<int?>(query, new { Id = companyId });
-            return company.HasValue;
-        }
+    public bool CheckCompanyStatus(int companyId)
+    {
+      using var connection = new SqlConnection(_connectionString);
+      const string query = @"SELECT 1 FROM dbo.Empresa WHERE IdEmpresa = @Id AND Estado = 'Activo'";
+      var company = connection.ExecuteScalar<int?>(query, new { Id = companyId });
+      return company.HasValue;
+    }
 
-        public bool UserIsActiveEmployer(int userId)
-        {
-            using var connection = new SqlConnection(_connectionString);
-            const string query = @"SELECT p.TipoPersona
+    public bool CheckUserType(int userId)
+    {
+      using var connection = new SqlConnection(_connectionString);
+      const string query = @"SELECT p.TipoPersona
                                 FROM dbo.Usuario u
                                 INNER JOIN dbo.Persona p ON p.IdPersona = u.IdPersona
                                 WHERE u.IdUsuario = @Id AND u.Estado = 'Activo'";
-            var type = connection.ExecuteScalar<string?>(query, new { Id = userId });
-            return string.Equals(type, "Empleador", StringComparison.OrdinalIgnoreCase);
-        }
-
-        public bool CreatePayrollElement(PayrollElementModel element)
-        {
-            using var connection = new SqlConnection(_connectionString);
-            const string query = @"INSERT INTO dbo.ElementoPlanilla (Nombre, PagadoPor, Tipo, Valor, IdEmpresa)
-                                 VALUES (@ElementName, @PaidBy, @CalculationType, @CalculationValue, @CompanyId)";
-            int rowsAffected = connection.Execute(query, new 
-            {
-                ElementName = element.ElementName,
-                PaidBy = element.PaidBy,
-                CalculationType = element.CalculationType,
-                CalculationValue = element.CalculationValue,
-                CompanyId = element.CompanyId
-            });
-            return rowsAffected > 0;
-        }
-
+      var personType = connection.ExecuteScalar<string?>(query, new { Id = userId });
+      return string.Equals(personType, "Empleador", StringComparison.OrdinalIgnoreCase);
     }
+
+    public bool CreatePayrollElement(PayrollElementModel element)
+    {
+      using var connection = new SqlConnection(_connectionString);
+      const string query = @"INSERT INTO dbo.ElementoPlanilla (Nombre, PagadoPor, Tipo, Valor, IdEmpresa)
+                                 VALUES (@ElementName, @PaidBy, @CalculationType, @CalculationValue, @CompanyId)";
+      int rowsAffected = connection.Execute(query, new
+      {
+        elementName = element.ElementName,
+        paidBy = element.PaidBy,
+        calculationType = element.CalculationType,
+        calculationValue = element.CalculationValue,
+        companyId = element.CompanyId
+      });
+      return rowsAffected > 0;
+    }
+
+  }
 }

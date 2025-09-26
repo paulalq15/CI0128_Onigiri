@@ -10,11 +10,11 @@
         style="width: 800px"
       >
         <div class="mb-3">
-          <label for="ElementName" class="form-label required">Nombre</label>
+          <label for="elementName" class="form-label required">Nombre</label>
           <input
             type="text"
             class="form-control"
-            id="ElementName"
+            id="elementName"
             required
             :maxlength="maxNameLength"
             v-model="name"
@@ -25,13 +25,13 @@
         </div>
 
         <div class="mb-3 col-xl-6 col-sm-12">
-          <label for="CalculationType" class="form-label required">Tipo de cálculo</label>
+          <label for="calculationType" class="form-label required">Tipo de cálculo</label>
           <select
             class="form-select"
-            id="CalculationType"
+            id="calculationType"
             required
             v-model="calculationType"
-            @change="CleanValue"
+            @change="cleanValue"
           >
             <option value="Monto">Monto</option>
             <option value="Porcentaje">Porcentaje</option>
@@ -40,7 +40,7 @@
           <div class="invalid-feedback">Seleccione el tipo de cálculo</div>
         </div>
 
-        <!--Cambiar el id por los correctos cuando los otros equipos lo tengan listo-->
+        <!--Calculation values, change API IDs ***-->
         <div v-if="calculationType === 'API'" class="mb-3 col-xl-6 col-sm-12">
           <label class="form-label required">API</label>
           <select class="form-select" v-model="calculationValue" required>
@@ -51,7 +51,6 @@
           </select>
           <div class="invalid-feedback">Seleccione un API</div>
         </div>
-
         <div v-else-if="calculationType === 'Porcentaje'" class="mb-3 col-xl-6 col-sm-12">
           <label class="form-label required">Valor</label>
           <div class="input-group">
@@ -69,7 +68,6 @@
             <div class="invalid-feedback">Ingrese el porcentaje entre 0 y {{ maxPercentaje }}</div>
           </div>
         </div>
-
         <div v-else class="mb-3 col-xl-6 col-sm-12">
           <label class="form-label required">Valor</label>
           <div class="input-group">
@@ -87,6 +85,7 @@
           </div>
         </div>
 
+        <!--Paid by and element type only if calculation Monto or Porcentaje-->
         <div
           v-if="calculationType === 'Monto' || calculationType === 'Porcentaje'"
           class="mb-3 col-xl-6 col-sm-12"
@@ -97,23 +96,22 @@
             id="PaidBy"
             required
             v-model="paidBy"
-            @change="AddElementType"
+            @change="addElementType"
           >
             <option value="Empleado">Empleado</option>
             <option value="Empleador">Empleador</option>
           </select>
           <div class="invalid-feedback">Seleccione el responsable del pago.</div>
         </div>
-
         <div
           v-if="calculationType === 'Monto' || calculationType === 'Porcentaje'"
           class="mb-3 col-xl-6 col-sm-12"
         >
-          <label for="ElementType" class="form-label">Tipo de elemento</label>
+          <label for="elementType" class="form-label">Tipo de elemento</label>
           <input
             type="text"
             class="form-control"
-            id="ElementType"
+            id="elementType"
             disabled
             readonly
             v-model="elementType"
@@ -126,6 +124,7 @@
       </form>
     </div>
 
+    <!--Toast alerts-->
     <div class="toast-container position-fixed top-0 end-0 p-3">
       <div
         v-if="showToast"
@@ -167,6 +166,7 @@ export default {
       showToast: false,
       toastMessage: '',
       toastType: 'bg-success',
+      toastTimeout: 4000,
     };
   },
   methods: {
@@ -189,10 +189,10 @@ export default {
         );
       });
     },
-    AddElementType() {
+    addElementType() {
       this.elementType = this.paidBy === 'Empleado' ? 'Deducción' : 'Beneficio';
     },
-    CleanValue() {
+    cleanValue() {
       this.calculationValue = '';
     },
     saveElement() {
@@ -205,11 +205,11 @@ export default {
       axios
         .post('https://localhost:7115/api/PayrollElement', {
           elementName: this.name,
-          paidBy: this.paidBy,
+          paidBy: this.calculationType === 'API' ? 'Empleador' : this.paidBy,
           calculationType: this.calculationType,
           calculationValue: Number(this.calculationValue || 0),
-          companyId: 1, //Temporal, en home traerlo de session storage
-          userId: 1, //Temporal, en home traerlo de session storage
+          companyId: 1,
+          userId: 1,
         })
         .then(function () {
           self.toastMessage = 'Elemento creado correctamente';
@@ -218,7 +218,7 @@ export default {
           setTimeout(function () {
             self.showToast = false;
             window.location.href = '/';
-          }, 3000);
+          }, self.toastTimeout);
         })
         .catch(function (error) {
           var msg =
@@ -231,7 +231,7 @@ export default {
 
           setTimeout(function () {
             self.showToast = false;
-          }, 4000);
+          }, self.toastTimeout);
         });
     },
   },
