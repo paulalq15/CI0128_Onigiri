@@ -6,8 +6,6 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import { createRouter, createWebHistory } from 'vue-router';
 import LoginForm from './components/LoginForm.vue';
-
-// Templates
 import HomePage from './components/HomePage.vue';
 import RegisterPage from './components/RegisterPage.vue';
 import CreateCompany from './components/CreateCompany.vue';
@@ -19,6 +17,7 @@ const router = createRouter({
         {path: "/", name: "Login", component: LoginForm},
         {path: "/HomePage", name: "Home Page", component: HomePage, meta: { requiresAuth: true }},
         {path:"/CrearEmpresa", name: "Crear Empresa", component: CreateCompany},
+        {path:"/registerAccount", name: "RegisterAccount", component: RegisterPage},
     ]
 });
 
@@ -26,12 +25,12 @@ router.beforeEach((to, from, next) => {
   const authed = isAuthed();
 
   if (to.meta.requiresAuth && !authed) {
-    // Si no est� logueado, a login
+    // Si no esta logueado, a login
     return next({ name: "Login" });
   }
 
   if (to.name === "Login" && authed) {
-    // Si ya est� logueado y va al login, reenv�a al Home
+    // Si ya esta logueado y va al login, reenvia al Home
     return next({ name: "Home Page" });
   }
 
