@@ -35,7 +35,8 @@ const router = createRouter({
       meta: { requiresAuth: true },
       children: [
         { path: 'Home', name: 'Home Page', component: HomePage },
-        { path: 'CrearEmpresa', name: 'Crear Empresa', component: CreateCompany }
+        { path: 'CrearEmpresa', name: 'Crear Empresa', component: CreateCompany },
+        { path: 'CrearBeneficiosDeducciones', name: 'Crear Beneficios y Deducciones', component: CreatePayrollElement }
       ]
     },
 

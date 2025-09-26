@@ -18,7 +18,6 @@
       ></button>
     </div>
     <div class="offcanvas-body">
-
       <!--User name and icon-->
       <div>
         <i class="bi bi-person-circle fs-2 me-3"></i>
@@ -174,7 +173,7 @@
                 </RouterLink>
               </li>
               <li>
-                <RouterLink class="nav-link my-3" to="/app/Home">
+                <RouterLink class="nav-link my-3" to="/app/CrearBeneficiosDeducciones">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas"
                     >Ver beneficios y deducciones</span
                   >
@@ -270,14 +269,10 @@
         </li>
 
         <li class="border-top my-3"></li>
-        
+
         <!--Log out-->
         <li class="my-3">
-          <button
-            class="nav-link link-danger"
-            @click="logout"
-            data-bs-dismiss="offcanvas"
-          >
+          <button class="nav-link link-danger" @click="logout" data-bs-dismiss="offcanvas">
             <div class="gap-2 px-2 py-2">
               <i class="bi bi-box-arrow-right me-3"></i>
               <span>Cerrar sesión</span>
@@ -296,9 +291,9 @@ export default {
     logout() {
       this.$session.clear();
       this.$router.push({ name: 'Login' });
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
