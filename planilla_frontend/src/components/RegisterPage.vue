@@ -78,7 +78,9 @@
           </p>
           <div>
             <span class="me-2">¿Ya tienes una cuenta?</span>
-            <a href="#">Inicie Sesión</a>
+            <router-link to="/" class="text-decoration-none">
+                Inicie Sesión
+              </router-link>
           </div>
         </div>
 

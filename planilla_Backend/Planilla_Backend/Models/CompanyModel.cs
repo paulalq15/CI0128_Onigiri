@@ -3,7 +3,8 @@
     public class CompanyModel
     {
         //Company details
-        public string CompanyId { get; set; }
+        public int CompanyUniqueId { get; set; } // For internal use only
+        public string CompanyId { get; set; } // cedula juridica
         public string CompanyName { get; set;  }
         public string? Telephone { get; set; }
         public int MaxBenefits { get; set; }
