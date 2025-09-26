@@ -12,13 +12,14 @@ namespace Planilla_Backend.Repositories
         public EmployeeRepository()
         {
             var builder = WebApplication.CreateBuilder();
-            _connectionString = builder.Configuration.GetConnectionString("?");
+            _connectionString = builder.Configuration.GetConnectionString("PayrollContext");
         }
 
-        public List<EmployeeModel> GetUsers()
+        public List<EmployeeModel> GetEmployees()
         {
             using var connection = new SqlConnection(_connectionString);
-            string query = "SELECT * FROM dbo.Usuario";
+            string query = "SELECT * FROM dbo.UsuariosPorEmpresa;";
+
             return connection.Query<EmployeeModel>(query).ToList();
         }
     }
