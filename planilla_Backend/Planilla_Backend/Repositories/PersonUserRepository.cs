@@ -42,7 +42,7 @@ namespace Planilla_Backend.Repositories
         var idUser = connection.QuerySingle<int>(sqlUser, new { person.Email, Password = password, person.Status, IdPerson = idPerson }, transaction);
 
         transaction.Commit();
-        return idUser;
+        return idPerson;
       }
       catch (Exception ex)
       {
