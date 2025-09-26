@@ -11,7 +11,7 @@ namespace Planilla_Backend.Repositories
     public PayrollElementRepository()
     {
       var builder = WebApplication.CreateBuilder();
-      _connectionString = builder.Configuration.GetConnectionString("PayrollContext");
+      _connectionString = builder.Configuration.GetConnectionString("OnigiriContext");
     }
 
     public bool CheckCompanyStatus(int companyId)

@@ -150,7 +150,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import URLBaseAPI from '../axiosAPIInstances.js';
 export default {
   data() {
     return {
@@ -202,8 +202,8 @@ export default {
         return;
       }
 
-      axios
-        .post('https://localhost:7115/api/PayrollElement', {
+      URLBaseAPI
+        .post('/api/PayrollElement', {
           elementName: this.name,
           paidBy: this.calculationType === 'API' ? 'Empleador' : this.paidBy,
           calculationType: this.calculationType,
