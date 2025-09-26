@@ -191,7 +191,7 @@
                 })
             },
             GetProvince() {
-                axios.get("https://localhost:7115/api/CountryDivision/Provinces").then((response) => { 
+                axios.get("https://localhost:7071/api/CountryDivision/Provinces").then((response) => { 
                     this.provinces = response.data; 
                 });
             },
