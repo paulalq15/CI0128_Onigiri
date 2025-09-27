@@ -24,6 +24,7 @@ import CreateTimesheets from './components/CreateTimesheets.vue';
 import ViewPayroll from './components/ViewPayroll.vue';
 import CreatePayroll from './components/CreatePayroll.vue';
 import ViewPayrollElement from './components/ViewPayrollElement.vue';
+import CreatePayrollElement from './components/CreatePayrollElement.vue';
 import AssignDeduction from './components/AssignDeduction.vue';
 import SelectBenefit from './components/SelectBenefit.vue';
 import ViewPayment from './components/ViewPayment.vue';
@@ -68,6 +69,7 @@ const router = createRouter({
         { path: 'Planilla/VerPlanilla', name: 'Ver Planilla', component: ViewPayroll, meta: employerApproverEmployee},
         { path: 'Planilla/CrearPlanilla', name: 'Crear Planilla', component: CreatePayroll, meta: employerOrApprover },
         { path: 'Planilla/VerBeneficiosDeducciones', name: 'Ver Beneficios y Deducciones', component: ViewPayrollElement},
+        { path: 'Planilla/CrearBeneficiosDeducciones', name: 'Crear Beneficios y Deducciones', component: CreatePayrollElement, meta: employerOnly},
         { path: 'Planilla/AsignarDeducciones', name: 'Asignar Deducciones', component: AssignDeduction, meta: employerOrApprover },
         { path: 'Planilla/SeleccionarBeneficios', name: 'Seleccionar Beneficios', component: SelectBenefit, meta: employerApproverEmployee},
         { path: 'Pagos/VerPagos', name: 'Ver Pagos', component: ViewPayment, meta: employerApproverEmployee},
