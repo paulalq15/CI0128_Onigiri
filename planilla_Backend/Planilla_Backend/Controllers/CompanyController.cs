@@ -40,7 +40,23 @@ namespace Planilla_Backend.Controllers
 
       return BadRequest(result); // 400 error de validación u otro error del cliente
     }
+
+    [HttpGet("by-user/{userId:int}")]
+    public ActionResult<IEnumerable<CompanySummaryModel>> GetMyCompanies([FromRoute] int userId, [FromQuery] bool onlyActive = true)
+    {
+      if (userId <= 0) return BadRequest("El ID de usuario es inválido.");
+
+      var (error, companies) = createCompanyService.GetCompaniesForUser(userId, onlyActive);
+
+      if (!string.IsNullOrEmpty(error))
+      {
+        var msg = error.ToLowerInvariant();
+        if (msg.Contains("no es un empleador")) return Forbid(error);
+        return BadRequest(error);
+      }
+
+      // 200 con la lista (vacía o con datos)
+      return Ok(companies);
+    }
   }
-
-
 }
