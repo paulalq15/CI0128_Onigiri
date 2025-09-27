@@ -17,7 +17,7 @@
           >
             <span class="fs-5 fw-medium">Empresa ABC</span>
           </button>
-          <ul class="dropdown-menu dropdown-menu-end" style="">
+          <ul class="dropdown-menu dropdown-menu-end" v-if="$session.user?.typeUser === 'Empleador'">
             <li><a class="dropdown-item" href="#">Empresa DEF</a></li>
             <li><a class="dropdown-item" href="#">Empresa GHI</a></li>
           </ul>

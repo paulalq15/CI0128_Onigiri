@@ -6,7 +6,7 @@
     </div>
 
     <div class="row g-5 px-5">
-      <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+      <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2" v-if="$session.user?.typeUser === 'Empleador'">
         <home-page-card title="Empresas" icon="bi bi-buildings-fill" to="/app/Home" />
       </div>
       <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
@@ -21,7 +21,7 @@
       <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
         <home-page-card title="Pagos" icon="bi bi-credit-card-fill" to="/app/Home" />
       </div>
-      <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+      <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2" v-if="$session.user?.typeUser === 'Empleador'">
         <home-page-card title="Reportes" icon="bi bi-bar-chart-fill" to="/app/Home" />
       </div>
     </div>

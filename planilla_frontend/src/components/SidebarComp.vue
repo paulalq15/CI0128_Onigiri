@@ -18,7 +18,6 @@
       ></button>
     </div>
     <div class="offcanvas-body">
-
       <!--User name and icon-->
       <div>
         <i class="bi bi-person-circle fs-2 me-3"></i>
@@ -39,7 +38,7 @@
         </li>
 
         <!--Company menu-->
-        <li class="my-3">
+        <li class="my-3" v-if="$session.user?.typeUser === 'Empleador'">
           <button
             class="nav-link d-flex w-100 gap-2 px-2 py-2 sidebar-item collapsed"
             data-bs-toggle="collapse"
@@ -64,6 +63,13 @@
                 <RouterLink class="nav-link my-3" to="/app/CrearEmpresa">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas"
                     >Crear Empresa</span
+                  >
+                </RouterLink>
+              </li>
+              <li>
+                <RouterLink class="nav-link my-3" to="/app/Home">
+                  <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas"
+                    >Modificar Empresa</span
                   >
                 </RouterLink>
               </li>
@@ -93,10 +99,17 @@
                   >
                 </RouterLink>
               </li>
-              <li>
+              <li v-if="$session.user?.typeUser === 'Empleador'">
                 <RouterLink class="nav-link my-3" to="/app/Home">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas"
                     >Crear Empleados</span
+                  >
+                </RouterLink>
+              </li>
+              <li>
+                <RouterLink class="nav-link my-3" to="/app/Home">
+                  <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas"
+                    >Modificar Empleado</span
                   >
                 </RouterLink>
               </li>
@@ -126,7 +139,7 @@
                   >
                 </RouterLink>
               </li>
-              <li>
+              <li v-if="$session.user?.typeUser !== 'Empleado'">
                 <RouterLink class="nav-link my-3" to="/app/Home">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas"
                     >Aprobar Timesheets</span
@@ -166,7 +179,7 @@
                   >
                 </RouterLink>
               </li>
-              <li>
+              <li v-if="$session.user?.typeUser !== 'Empleado'">
                 <RouterLink class="nav-link my-3" to="/app/Home">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas"
                     >Crear planilla</span
@@ -180,14 +193,14 @@
                   >
                 </RouterLink>
               </li>
-              <li>
+              <li v-if="$session.user?.typeUser === 'Empleador'">
                 <RouterLink class="nav-link my-3" to="/app/Home">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas"
                     >Crear beneficios y deducciones</span
                   >
                 </RouterLink>
               </li>
-              <li>
+              <li v-if="$session.user?.typeUser === 'Empleador'">
                 <RouterLink class="nav-link my-3" to="/app/Home">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas"
                     >Asignar deducciones</span
@@ -227,7 +240,7 @@
                   >
                 </RouterLink>
               </li>
-              <li>
+              <li v-if="$session.user?.typeUser !== 'Empleado'">
                 <RouterLink class="nav-link my-3" to="/app/Home">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas">Crear pago</span>
                 </RouterLink>
@@ -237,7 +250,7 @@
         </li>
 
         <!--Reports menu-->
-        <li class="my-3">
+        <li class="my-3" v-if="$session.user?.typeUser !== 'Empleado'">
           <button
             class="nav-link d-flex w-100 gap-2 px-2 py-2 sidebar-item collapsed"
             data-bs-toggle="collapse"
@@ -270,14 +283,10 @@
         </li>
 
         <li class="border-top my-3"></li>
-        
+
         <!--Log out-->
         <li class="my-3">
-          <button
-            class="nav-link link-danger"
-            @click="logout"
-            data-bs-dismiss="offcanvas"
-          >
+          <button class="nav-link link-danger" @click="logout" data-bs-dismiss="offcanvas">
             <div class="gap-2 px-2 py-2">
               <i class="bi bi-box-arrow-right me-3"></i>
               <span>Cerrar sesión</span>
@@ -296,9 +305,9 @@ export default {
     logout() {
       this.$session.clear();
       this.$router.push({ name: 'Login' });
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>

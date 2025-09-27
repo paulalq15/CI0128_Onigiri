@@ -14,6 +14,7 @@ import HomePage from './components/HomePage.vue';
 import RegisterPage from './components/RegisterPage.vue';
 import CreateCompany from './components/CreateCompany.vue';
 
+const employerMeta = { requiresAuth: true, roles: ['Empleador'] }
 const router = createRouter({
   history: createWebHistory(),
   routes: [
@@ -34,7 +35,7 @@ const router = createRouter({
       meta: { requiresAuth: true },
       children: [
         { path: 'Home', name: 'Home Page', component: HomePage },
-        { path: 'CrearEmpresa', name: 'Crear Empresa', component: CreateCompany }
+        { path: 'CrearEmpresa', name: 'Crear Empresa', component: CreateCompany, meta: employerMeta }
       ]
     },
 
