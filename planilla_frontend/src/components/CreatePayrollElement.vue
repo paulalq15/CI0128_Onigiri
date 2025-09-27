@@ -1,9 +1,15 @@
 <template>
-  <div class="d-flex flex-column">
+  <!--Restrict page if user is not Employer-->
+  <div v-if="$session.user?.typeUser !== 'Empleador'" class="d-flex flex-column text-center">
+    <h3>Acceso restringido</h3>
+    <p>Esta página no está disponible</p>
+  </div>
+  <div v-else class="d-flex flex-column">
     <h1 class="text-center">Crear beneficios y deducciones</h1>
 
     <div class="container py-4 flex-fill d-flex justify-content-center">
       <form
+        ref="elementForm"
         @submit.prevent="saveElement"
         class="row g-3 needs-validation"
         novalidate
@@ -171,22 +177,17 @@ export default {
   },
   methods: {
     initBootstrapValidation() {
-      const forms = this.$el.querySelectorAll('.needs-validation');
+      const form = this.$refs.elementForm;
+      if (!form) return;
 
-      Array.from(forms).forEach((form) => {
-        form.addEventListener(
-          'submit',
-          (event) => {
-            if (!form.checkValidity()) {
-              event.preventDefault();
-              event.stopPropagation();
-            } else {
-              event.preventDefault();
-            }
-            form.classList.add('was-validated');
-          },
-          false
-        );
+      form.addEventListener('submit', (event) => {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        } else {
+          event.preventDefault();
+        }
+        form.classList.add('was-validated');
       });
     },
     addElementType() {
@@ -197,27 +198,26 @@ export default {
     },
     saveElement() {
       var self = this;
-      var form = self.$el.querySelector('.needs-validation');
+      var form = this.$refs.elementForm;
       if (!form.checkValidity()) {
         return;
       }
 
-      URLBaseAPI
-        .post('/api/PayrollElement', {
-          elementName: this.name,
-          paidBy: this.calculationType === 'API' ? 'Empleador' : this.paidBy,
-          calculationType: this.calculationType,
-          calculationValue: Number(this.calculationValue || 0),
-          companyId: Number(this.$session.user?.companyUniqueId),
-          userId: Number(this.$session.user?.userId),
-        })
+      URLBaseAPI.post('/api/PayrollElement', {
+        elementName: this.name,
+        paidBy: this.calculationType === 'API' ? 'Empleador' : this.paidBy,
+        calculationType: this.calculationType,
+        calculationValue: Number(this.calculationValue || 0),
+        companyId: Number(this.$session.user?.companyUniqueId),
+        userId: Number(this.$session.user?.userId),
+      })
         .then(function () {
           self.toastMessage = 'Elemento creado correctamente';
           self.toastType = 'bg-success';
           self.showToast = true;
           setTimeout(function () {
             self.showToast = false;
-            window.location.href = '/';
+            window.location.href = '/app/Home';
           }, self.toastTimeout);
         })
         .catch(function (error) {
@@ -236,6 +236,7 @@ export default {
     },
   },
   mounted() {
+    if (this.$session.user?.typeUser !== 'Empleador') return;
     this.initBootstrapValidation();
   },
 };
