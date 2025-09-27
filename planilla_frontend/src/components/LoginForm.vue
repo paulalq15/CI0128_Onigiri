@@ -78,7 +78,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import URLBaseAPI from '../axiosAPIInstances.js';
 
 export default {
   name: 'LoginForm',
@@ -104,7 +104,7 @@ export default {
 
       this.loading = true;
       try {
-        const { data } = await axios.post('https://localhost:7071/api/Auth/login', {
+        const { data } = await URLBaseAPI.post('/api/Auth/login', {
           email: this.email.trim(),
           password: this.password,
         });
