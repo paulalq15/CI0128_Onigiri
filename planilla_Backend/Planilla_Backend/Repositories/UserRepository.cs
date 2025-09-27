@@ -29,7 +29,7 @@ namespace Planilla_Backend.Repositories
               JOIN dbo.Empresa e  ON e.IdEmpresa = ue.IdEmpresa
               WHERE ue.IdUsuario = u.IdUsuario
                 AND e.Estado = 'Activo'
-              ORDER BY ue.IdUsEmp DESC
+              ORDER BY e.Nombre ASC, e.IdEmpresa ASC
           )                  AS CompanyUniqueId,
 
           -- PERSON (primera col para splitOn)
