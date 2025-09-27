@@ -6,23 +6,23 @@
     </div>
 
     <div class="row g-5 px-5">
-      <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2" v-if="$session.user?.typeUser === 'Empleador'">
-        <home-page-card title="Empresas" icon="bi bi-buildings-fill" to="/app/Home" />
+      <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2" v-if="$session.user?.typeUser === 'Empleador' || $session.user?.typeUser === 'Administrador'">
+        <home-page-card title="Empresas" icon="bi bi-buildings-fill" to="/app/Empresas/VerEmpresas" />
       </div>
-      <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
-        <home-page-card title="Empleados" icon="bi bi-people-fill" to="/app/Home" />
+      <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2" v-if="$session.user?.typeUser !== 'Administrador'">
+        <home-page-card title="Empleados" icon="bi bi-people-fill" to="/app/Empleados/VerEmpleados" />
       </div>
-      <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
-        <home-page-card title="Timesheets" icon="bi bi-calendar-week-fill" to="/app/Home" />
+      <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2" v-if="$session.user?.typeUser !== 'Administrador'">
+        <home-page-card title="Timesheets" icon="bi bi-calendar-week-fill" to="/app/Timesheets/VerTimesheets" />
       </div>
-      <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
-        <home-page-card title="Planilla" icon="bi bi-calculator-fill" to="/app/Home" />
+      <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2" v-if="$session.user?.typeUser !== 'Administrador'">
+        <home-page-card title="Planilla" icon="bi bi-calculator-fill" to="/app/Planilla/VerPlanilla" />
       </div>
-      <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
-        <home-page-card title="Pagos" icon="bi bi-credit-card-fill" to="/app/Home" />
+      <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2" v-if="$session.user?.typeUser !== 'Administrador'">
+        <home-page-card title="Pagos" icon="bi bi-credit-card-fill" to="/app/Pagos/VerPagos" />
       </div>
-      <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2" v-if="$session.user?.typeUser === 'Empleador'">
-        <home-page-card title="Reportes" icon="bi bi-bar-chart-fill" to="/app/Home" />
+      <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2" v-if="$session.user?.typeUser === 'Empleador' || $session.user?.typeUser === 'Aprobador'">
+        <home-page-card title="Reportes" icon="bi bi-bar-chart-fill" to="/app/Reportes/VerReportes" />
       </div>
     </div>
   </div>
