@@ -233,7 +233,10 @@ export default {
   computed: {
     daysAfterFirst() {
       if (!this.payDay1) return [];
-      return Array.from({ length: this.lastMonthDay - this.payDay1 }, (_, i) => this.payDay1 + i + 1);
+      return Array.from(
+        { length: this.lastMonthDay - this.payDay1 },
+        (_, i) => this.payDay1 + i + 1
+      );
     },
   },
   watch: {
@@ -333,7 +336,13 @@ export default {
         PayDay2: this.paymentFrequency === 'Quincenal' ? Number(this.payDay2 || 0) : null,
         CreatedBy: Number(this.$session.user?.userId),
       })
-        .then(function () {
+        .then(function (response) {
+          //Update companyId only if it is the first company
+          const newCompanyId = Number(response.data);
+          if (self.$session?.user && self.$session.user.companyUniqueId == null) {
+            self.$session.set({ ...self.$session.user, companyUniqueId: newCompanyId });
+          }
+
           self.toastMessage = 'Empresa creada correctamente';
           self.toastType = 'bg-success';
           self.showToast = true;
