@@ -110,5 +110,21 @@ namespace Planilla_Backend.Repositories
         }
       }
     }
+
+    public IEnumerable<CompanySummaryModel> GetCompaniesByUser(int userId, bool onlyActive = true)
+    {
+      using var connection = new SqlConnection(_connectionString);
+      var sql = @"
+        SELECT e.IdEmpresa       AS CompanyUniqueId,
+               e.CedulaJuridica  AS CompanyId,
+               e.Nombre          AS CompanyName
+        FROM dbo.UsuariosPorEmpresa ue
+        INNER JOIN dbo.Empresa e ON e.IdEmpresa = ue.IdEmpresa
+        WHERE ue.IdUsuario = @UserId
+          " + (onlyActive ? "AND e.Estado = 'Activo'" : "") + @"
+        ORDER BY e.Nombre;
+      ";
+      return connection.Query<CompanySummaryModel>(sql, new { UserId = userId });
+    }
   }
 }

@@ -41,7 +41,7 @@ namespace Planilla_Backend.Services
         if (company.MaxBenefits < 0 || company.MaxBenefits > maxBenefitNumber)
           return "Cantidad de beneficios inválida. Debe estar entre 0 y " + maxBenefitNumber.ToString();
 
-        if (string.IsNullOrWhiteSpace(company.PaymentFrequency) || (company.PaymentFrequency != "Quincenal" 
+        if (string.IsNullOrWhiteSpace(company.PaymentFrequency) || (company.PaymentFrequency != "Quincenal"
           && company.PaymentFrequency != "Mensual"))
           return "Frecuencia de pago inválida. Debe ser 'Quincenal' o 'Mensual'.";
 
@@ -91,6 +91,25 @@ namespace Planilla_Backend.Services
       }
 
       return string.Empty; ;
+    }
+    
+    public (string error, IEnumerable<CompanySummaryModel> companies) GetCompaniesForUser(int userId, bool onlyActive = true)
+    {
+      try
+      {
+        if (userId <= 0)
+          return ("El ID de usuario es inválido.", Enumerable.Empty<CompanySummaryModel>());
+
+        if (!createCompanyRepository.ValidateUserType(userId))
+          return ("El usuario actual no es un Empleador activo.", Enumerable.Empty<CompanySummaryModel>());
+
+        var rows = createCompanyRepository.GetCompaniesByUser(userId, onlyActive);
+        return (string.Empty, rows);
+      }
+      catch (Exception ex)
+      {
+        return ($"Error obteniendo empresas: {ex.Message}", Enumerable.Empty<CompanySummaryModel>());
+      }
     }
   }
 }

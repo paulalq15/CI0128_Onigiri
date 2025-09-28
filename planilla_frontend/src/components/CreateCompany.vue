@@ -1,9 +1,15 @@
 <template>
-  <div class="d-flex flex-column">
+  <!--Restrict page if user is not Employer-->
+  <div v-if="$session.user?.typeUser !== 'Empleador'" class="d-flex flex-column text-center">
+    <h3>Acceso restringido</h3>
+    <p>Esta página no está disponible</p>
+  </div>
+  <div v-else class="d-flex flex-column">
     <h1 class="text-center">Crear nueva empresa</h1>
 
     <div class="container py-4 flex-fill d-flex justify-content-center">
       <form
+        ref="companyForm"
         @submit.prevent="saveCompany"
         class="row g-3 needs-validation"
         novalidate
@@ -233,7 +239,10 @@ export default {
   computed: {
     daysAfterFirst() {
       if (!this.payDay1) return [];
-      return Array.from({ length: this.lastMonthDay - this.payDay1 }, (_, i) => this.payDay1 + i + 1);
+      return Array.from(
+        { length: this.lastMonthDay - this.payDay1 },
+        (_, i) => this.payDay1 + i + 1
+      );
     },
   },
   watch: {
@@ -248,22 +257,17 @@ export default {
   },
   methods: {
     initBootstrapValidation() {
-      const forms = this.$el.querySelectorAll('.needs-validation');
+      const form = this.$refs.companyForm;
+      if (!form) return;
 
-      Array.from(forms).forEach((form) => {
-        form.addEventListener(
-          'submit',
-          (event) => {
-            if (!form.checkValidity()) {
-              event.preventDefault();
-              event.stopPropagation();
-            } else {
-              event.preventDefault();
-            }
-            form.classList.add('was-validated');
-          },
-          false
-        );
+      form.addEventListener('submit', (event) => {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        } else {
+          event.preventDefault();
+        }
+        form.classList.add('was-validated');
       });
     },
     getProvince() {
@@ -316,7 +320,7 @@ export default {
     },
     saveCompany() {
       var self = this;
-      var form = self.$el.querySelector('.needs-validation');
+      var form = this.$refs.companyForm;
       if (!form.checkValidity()) {
         return;
       }
@@ -333,13 +337,19 @@ export default {
         PayDay2: this.paymentFrequency === 'Quincenal' ? Number(this.payDay2 || 0) : null,
         CreatedBy: Number(this.$session.user?.userId),
       })
-        .then(function () {
+        .then(function (response) {
+          //Update companyId only if it is the first company
+          const newCompanyId = Number(response.data);
+          if (self.$session?.user && self.$session.user.companyUniqueId == null) {
+            self.$session.set({ ...self.$session.user, companyUniqueId: newCompanyId });
+          }
+
           self.toastMessage = 'Empresa creada correctamente';
           self.toastType = 'bg-success';
           self.showToast = true;
           setTimeout(function () {
             self.showToast = false;
-            window.location.href = '/';
+            window.location.href = '/app/Home';
           }, self.toastTimeout);
         })
         .catch(function (error) {
@@ -358,6 +368,7 @@ export default {
     },
   },
   mounted() {
+    if (this.$session.user?.typeUser !== 'Empleador') return;
     this.initBootstrapValidation();
     this.getProvince();
   },
