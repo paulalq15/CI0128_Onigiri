@@ -21,7 +21,9 @@ namespace Planilla_Backend.Services
       {
         int idUser = personUserRepository.savePersonAndUser(person, password);
         return idUser;
-      } catch (Exception) {
+      }
+      catch (Exception)
+      {
         return -1;
       }
     }
@@ -33,13 +35,15 @@ namespace Planilla_Backend.Services
       {
         PersonUser? personUser = personUserRepository.getPersonUserByCredentials(email, password);
         return personUser;
-      } catch (Exception) {
+      }
+      catch (Exception)
+      {
         return null;
       }
     }
 
     // Servicio para guardar la dirección de una persona
-    public int savePersonDirection(int idPerson, string zipCode , string otherSigns)
+    public int savePersonDirection(int idPerson, string zipCode, string otherSigns)
     {
       int idDivision = directionsRepository.getDivisionByZipCode(zipCode);
 
@@ -49,7 +53,9 @@ namespace Planilla_Backend.Services
         {
           int idDirection = directionsRepository.saveDirection(idDivision, otherSigns, null, idPerson);
           return idDirection;
-        } catch (Exception) {
+        }
+        catch (Exception)
+        {
           return -1;
         }
       }
@@ -61,10 +67,56 @@ namespace Planilla_Backend.Services
     {
       try
       {
-        int idPerson = personUserRepository.getUserIdByEmail(email);
-        return idPerson;
-      } catch (Exception) {
+        int idUser = personUserRepository.getUserIdByEmail(email);
+        return idUser;
+      }
+      catch (Exception)
+      {
         return -1;
+      }
+    }
+
+    public int UpdateUserPesonStatusToActivate(int idPerson)
+    {
+      try
+      {
+        int updateResult = personUserRepository.SetUserPersonStatusToActiveByIdPerson(idPerson);
+        return updateResult;
+      }
+      catch (Exception)
+      {
+        return -1;
+      }
+    }
+
+    public PersonUser? GetPersonUserById(int idPerson)
+    {
+      try
+      {
+        PersonUser? personUser = personUserRepository.GetPersonUserByIdPerson(idPerson);
+        return personUser;
+      } catch (Exception)
+      {
+        return null;
+      }
+    }
+
+    public bool IsUserPersonActive(int idPerson)
+    {
+      PersonUser? personUser = personUserRepository.GetPersonUserByIdPerson(idPerson);
+      return personUser != null && personUser.Status == "Activo";
+    }
+
+    public PersonUser? GetPersonUserbyIdUser(int idUser)
+    {
+      try
+      {
+        PersonUser? personUser = personUserRepository.GetPersonUserByIdUser(idUser);
+        return personUser;
+      }
+      catch (Exception)
+      {
+        return null;
       }
     }
   }

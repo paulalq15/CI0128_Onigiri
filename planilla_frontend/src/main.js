@@ -14,6 +14,8 @@ import HomePage from './components/HomePage.vue';
 import RegisterPage from './components/RegisterPage.vue';
 import CreateCompany from './components/CreateCompany.vue';
 import CreatePayrollElement from './components/CreatePayrollElement.vue';
+import ActivationAccountPage from './components/ActivationAccountpage.vue';
+import ResendActivationAccountPage from './components/ResendActivationAccountPage.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -24,7 +26,9 @@ const router = createRouter({
       component: AuthLayout,
       children: [
         { path: 'Login', name: 'Login', component: LoginForm },
-        { path: 'Register', name: 'RegisterAccount', component: RegisterPage }
+        { path: 'Register', name: 'RegisterAccount', component: RegisterPage },
+        { path: 'ActivateAccount', name: 'ActivateAccount', component: ActivationAccountPage },
+        { path: 'ResendActivationAccount', name: 'ResendActivation', component: ResendActivationAccountPage}
       ]
     },
 
