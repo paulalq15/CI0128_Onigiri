@@ -40,7 +40,6 @@
           v-model="Employee.IdCard"
         />
         <span class="text-danger" v-if="errors.IdCard">{{ errors.IdCard }}</span>
-        
         <!--Fecha nacimiento-->
         <InputType
           label="Fecha de nacimiento"
@@ -49,7 +48,6 @@
           v-model="Employee.BirthdayDate"
         />
         <span class="text-danger" v-if="errors.BirthdayDate">{{ errors.BirthdayDate }}</span>
-        
         <!--Correo electrónico-->
         <InputType
           label="Correo electrónico"
@@ -59,15 +57,25 @@
           v-model="Employee.Email"
         />
         <span class="text-danger" v-if="errors.Email">{{ errors.Email }}</span>
-
         <!--Puesto-->
         <InputType label="Puesto" id="position" v-model="Contract.Position" />
         <span class="text-danger" v-if="errors.Position">{{ errors.Position }}</span>
-
         <!--Departamento-->
-        <InputType label="Departamento" id="department" v-model="Contract.Department" />
+        <SelectType
+          label="Departamento"
+          id="department"
+          v-model="Contract.Department"
+          :options="[
+            { value: 'Administracion', text: 'Administración' },
+            { value: 'Contabilidad', text: 'Contabilidad' },
+            { value: 'Mercadeo', text: 'Mercadeo' },
+            { value: 'Operaciones', text: 'Operaciones' },
+            { value: 'Produccion', text: 'Producción' },
+            { value: 'Recursos Humanos', text: 'Recursos Humanos' },
+            { value: 'Ventas', text: 'Ventas' }
+          ]"
+        />
         <span class="text-danger" v-if="errors.Department">{{ errors.Department }}</span>
-
         <!--Salario-->
         <InputType
           label="Salario"
@@ -76,7 +84,6 @@
           v-model="Contract.Salary"
         />
         <span class="text-danger" v-if="errors.Salary">{{ errors.Salary }}</span>
-
         <!--Tipo de empleado-->
         <SelectType
           label="Tipo de empleado"
@@ -89,7 +96,6 @@
           ]"
         />
         <span class="text-danger" v-if="errors.EmployeeType">{{ errors.EmployeeType }}</span>
-
         <!--Fecha de inicio-->
         <InputType
           label="Fecha de inicio"
@@ -98,7 +104,6 @@
           v-model="Contract.StartDate"
         />
         <span class="text-danger" v-if="errors.StartDate">{{ errors.StartDate }}</span>
-
         <!--Cuenta bancaria IBAN-->
         <InputType
           label="Cuenta bancaria IBAN"
@@ -106,7 +111,6 @@
           v-model="Contract.BankAccount"
         />
         <span class="text-danger" v-if="errors.BankAccount">{{ errors.BankAccount }}</span>
-
         <!--Botón confirmar-->
         <div class="form-group text-center">
           <LinkButton type="button" @click="saveRegisterData" text="Registrar" />
@@ -152,6 +156,7 @@ export default {
         BirthdayDate: '',
         TypePerson: 'Empleado',
         Status: 'Inactivo',
+        Password: 'Temporary01!'
       },
 
       Contract: {
