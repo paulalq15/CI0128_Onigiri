@@ -92,5 +92,10 @@ namespace Planilla_Backend.Services
 
       return string.Empty; ;
     }
+
+    public List<CompanyModel> getCompanies()
+    {
+      return this.createCompanyRepository.getCompanies();
+    }
   }
 }

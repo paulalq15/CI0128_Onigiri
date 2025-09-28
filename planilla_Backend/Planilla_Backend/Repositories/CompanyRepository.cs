@@ -110,5 +110,23 @@ namespace Planilla_Backend.Repositories
         }
       }
     }
+
+    public List<CompanyModel> getCompanies()
+    {
+      const string query = @"SELECT
+                           IdEmpresa AS CompanyUniqueId,
+                           CedulaJuridica AS CompanyId,
+                           Nombre AS CompanyName,
+                           Telefono AS Telephone,
+                           CantidadBeneficios AS MaxBenefits,
+                           FrecuenciaPago AS PaymentFrequency,
+                           DiaPago1 AS PayDay1,
+                           DiaPago2 AS PayDay2
+                           FROM dbo.Empresa;";
+
+      using var connection = new SqlConnection(_connectionString);
+
+      return connection.Query<CompanyModel>(query).ToList();
+    }
   }
 }

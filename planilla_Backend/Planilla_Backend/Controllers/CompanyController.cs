@@ -40,7 +40,12 @@ namespace Planilla_Backend.Controllers
 
       return BadRequest(result); // 400 error de validación u otro error del cliente
     }
+
+    [HttpGet("getCompanies")]
+    public List<CompanyModel> getCompanies()
+    {
+      var companies = this.createCompanyService.getCompanies();
+      return companies;
+    }
   }
-
-
 }
