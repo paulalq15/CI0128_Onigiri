@@ -1,4 +1,11 @@
 <template>
+  <!--Restrict page if user is not Employer-->
+    <div v-if="$session.user?.typeUser !== 'Empleador'" class="d-flex flex-column text-center">
+        <h3>Acceso restringido</h3>
+        <p>Esta página no está disponible</p>
+    </div>
+    <div v-else class="d-flex flex-column"></div>
+
     <div class="container mt-5">
         <h1 class="display-4 text-center">Lista de Empresas</h1>
 
@@ -36,6 +43,8 @@
 
 <script>
 import axios from "axios";
+import { getUser } from '../session.js';
+
     export default {
         name: "CompaniesList",
 
@@ -45,16 +54,23 @@ import axios from "axios";
             };
         },
 
-        methods: {
-            getCompanies() {
-                axios.get("https://localhost:7071/api/Company/getCompanies").then((response) => {
-                this.companies = response.data;
-
-                }).catch(error => {
-                    console.error("Error al obtener compañías:", error);
-                });
-            },
+    computed: {
+        user() {
+            return getUser();
         },
+    },
+
+    methods: {
+        getCompanies() {
+            axios.get(`https://localhost:7071/api/Company/getCompanies?employerId=${this.user.userId}`)
+            .then((response) => {
+            this.companies = response.data;
+
+            }).catch(error => {
+                console.error("Error al obtener compañías:", error);
+            });
+        },
+    },
 
         created: function () {
             this.getCompanies();

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Planilla_Backend.Models;
 using Planilla_Backend.Services;
@@ -42,10 +43,9 @@ namespace Planilla_Backend.Controllers
     }
 
     [HttpGet("getCompanies")]
-    public List<CompanyModel> getCompanies()
+    public List<CompanyModel> getCompanies([FromQuery] int? employerId)
     {
-      var companies = this.createCompanyService.getCompanies();
-      return companies;
+      return this.createCompanyService.getCompanies(employerId.Value);
     }
   }
 }
