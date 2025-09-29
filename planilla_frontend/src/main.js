@@ -31,13 +31,14 @@ import ViewPayment from './components/ViewPayment.vue';
 import CreatePayment from './components/CreatePayment.vue';
 import ViewReports from './components/ViewReports.vue';
 import CreateReport from './components/CreateReport.vue';
+import ActivationAccountPage from './components/ActivationAccountpage.vue';
+import ResendActivationAccountPage from './components/ResendActivationAccountPage.vue';
+import reactiveTable from './components/ReactiveArrayTable.vue';
 
 const employerOnly = { requiresAuth: true, roles: ['Empleador'] }
 const employerOrAdmin = { requiresAuth: true, roles: ['Empleador','Administrador'] }
 const employerOrApprover = { requiresAuth: true, roles: ['Empleador','Aprobador'] }
 const employerApproverEmployee = { requiresAuth: true, roles: ['Empleador','Aprobador','Empleado'] }
-import ActivationAccountPage from './components/ActivationAccountpage.vue';
-import ResendActivationAccountPage from './components/ResendActivationAccountPage.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -79,7 +80,8 @@ const router = createRouter({
         { path: 'Pagos/VerPagos', name: 'Ver Pagos', component: ViewPayment, meta: employerApproverEmployee},
         { path: 'Pagos/CrearPago', name: 'Crear Pago', component: CreatePayment, meta: employerOrApprover },
         { path: 'Reportes/VerReportes', name: 'Ver Reportes', component: ViewReports, meta: employerOrApprover },
-        { path: 'Reportes/CrearReporte', name: 'Crear Reporte', component: CreateReport, meta: employerOrApprover }
+        { path: 'Reportes/CrearReporte', name: 'Crear Reporte', component: CreateReport, meta: employerOrApprover },
+        { path: 'reactiveTable', name: 'reactiveTable', component: reactiveTable}
       ]
     },
 
