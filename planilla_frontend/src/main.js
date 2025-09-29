@@ -36,6 +36,8 @@ const employerOnly = { requiresAuth: true, roles: ['Empleador'] }
 const employerOrAdmin = { requiresAuth: true, roles: ['Empleador','Administrador'] }
 const employerOrApprover = { requiresAuth: true, roles: ['Empleador','Aprobador'] }
 const employerApproverEmployee = { requiresAuth: true, roles: ['Empleador','Aprobador','Empleado'] }
+import ActivationAccountPage from './components/ActivationAccountpage.vue';
+import ResendActivationAccountPage from './components/ResendActivationAccountPage.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -46,7 +48,9 @@ const router = createRouter({
       component: AuthLayout,
       children: [
         { path: 'Login', name: 'Login', component: LoginForm },
-        { path: 'Register', name: 'RegisterAccount', component: RegisterPage }
+        { path: 'Register', name: 'RegisterAccount', component: RegisterPage },
+        { path: 'ActivateAccount', name: 'ActivateAccount', component: ActivationAccountPage },
+        { path: 'ResendActivationAccount', name: 'ResendActivation', component: ResendActivationAccountPage}
       ]
     },
 

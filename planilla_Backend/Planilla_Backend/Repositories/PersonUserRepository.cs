@@ -10,7 +10,7 @@ namespace Planilla_Backend.Repositories
     public PersonUserRepository()
     {
       var builder = WebApplication.CreateBuilder();
-      _connectionString = builder.Configuration.GetConnectionString("OnigiriContext");
+      _connectionString = builder.Configuration.GetConnectionString("OnigiriContext")!;
     }
 
     // Método para guardar una nueva Persona y su Usuario en la base de datos
@@ -71,7 +71,8 @@ namespace Planilla_Backend.Repositories
 
         resultPerson = connection.QueryFirstOrDefault<PersonUser>(sql, new { Email = email, Password = password });
       }
-      catch (Exception ex) {
+      catch (Exception ex)
+      {
         throw new Exception("Error al obtener usuario" + ex.Message);
       }
 
@@ -87,9 +88,9 @@ namespace Planilla_Backend.Repositories
       try
       {
         // Obtener idUsuario
-        var sql = @"SELECT u.IdUsuario
-              FROM Usuario u
-              WHERE u.Correo = @Email";
+        var sql = @"SELECT IdUsuario
+              FROM Usuario
+              WHERE Correo = @Email";
 
         resultUserdID = connection.QueryFirstOrDefault<int>(sql, new { Email = email });
       }
@@ -101,5 +102,102 @@ namespace Planilla_Backend.Repositories
       // Si no existe el correo, devuelve 0
       return resultUserdID;
     }
+
+
+    public int SetUserPersonStatusToActiveByIdPerson(int idPerson)
+    {
+      using var connection = new SqlConnection(_connectionString);
+
+      int activationResult = 0;
+
+      try
+      {
+        var activationQuery = @"
+          UPDATE Usuario
+          SET Estado = 'Activo'
+          WHERE IdPersona = @idPerson";
+
+        activationResult = connection.Execute(activationQuery, new { idPerson = idPerson });
+      }
+      catch (Exception ex)
+      {
+        throw new Exception("Error al activar usuario" + ex.Message);
+      }
+
+      return activationResult;
+    }
+
+    public PersonUser? GetPersonUserByIdPerson(int idPerson)
+    {
+      using var connection = new SqlConnection(_connectionString);
+
+      PersonUser? personUser = null;
+
+      try
+      {
+        var sqlGetPerson = @"
+            SELECT
+              u.IdUsuario AS IdUser,
+              u.Correo AS Email,
+              u.Estado AS Status,
+              p.IdPersona AS IdPerson,
+              p.Cedula AS IdCard,
+              p.Nombre1 AS Name1,
+              p.Nombre2 AS Name2,
+              p.Apellido1 AS Surname1,
+              p.Apellido2 AS Surname2,
+              p.Telefono AS Number,
+              p.FechaNacimiento AS BirthdayDate,
+              p.TipoPersona AS TypePerson
+            FROM Persona p
+            INNER JOIN Usuario u ON u.IdPersona = p.IdPersona
+            WHERE p.IdPersona = @IdPerson";
+
+        personUser = connection.QueryFirstOrDefault<PersonUser>(sqlGetPerson, new { IdPerson = idPerson });
+      }
+      catch (Exception ex)
+      {
+        throw new Exception("Error al obtener persona" + ex.Message);
+      }
+
+      return personUser;
+    }
+
+    public PersonUser? GetPersonUserByIdUser(int idUser)
+    {
+      using var connection = new SqlConnection(_connectionString);
+
+      PersonUser? personUser = null;
+
+      try
+      {
+        var sqlGetPerson = @"
+            SELECT
+              u.IdUsuario AS IdUser,
+              u.Correo AS Email,
+              u.Estado AS Status,
+              p.IdPersona AS IdPerson,
+              p.Cedula AS IdCard,
+              p.Nombre1 AS Name1,
+              p.Nombre2 AS Name2,
+              p.Apellido1 AS Surname1,
+              p.Apellido2 AS Surname2,
+              p.Telefono AS Number,
+              p.FechaNacimiento AS BirthdayDate,
+              p.TipoPersona AS TypePerson
+            FROM Persona p
+            INNER JOIN Usuario u ON u.IdPersona = p.IdPersona
+            WHERE u.IdUsuario = @IdUser";
+
+        personUser = connection.QueryFirstOrDefault<PersonUser>(sqlGetPerson, new { IdUser = idUser });
+      }
+      catch (Exception ex)
+      {
+        throw new Exception("Error al obtener persona por IdUsuario: " + ex.Message);
+      }
+
+      return personUser;
+    }
+
   }
 }
