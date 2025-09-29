@@ -45,4 +45,8 @@ export default {
 </script>
 
 <style scoped>
+
+  table.table td {
+    border: none;
+  }
 </style>
