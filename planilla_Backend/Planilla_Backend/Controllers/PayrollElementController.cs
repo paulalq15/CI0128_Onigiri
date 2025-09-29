@@ -33,5 +33,11 @@ namespace Planilla_Backend.Controllers
         return BadRequest(result);
       }
     }
+
+    [HttpGet("getPayrollElements")]
+    public List<PayrollElementModel> getPayrollElements([FromQuery] string paidBy)
+    {
+      return this.payrollElementService.getPayrollElements(paidBy);
+    }
   }
 }
