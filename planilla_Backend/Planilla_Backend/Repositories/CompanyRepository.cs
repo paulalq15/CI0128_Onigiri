@@ -111,24 +111,40 @@ namespace Planilla_Backend.Repositories
       }
     }
 
+    public IEnumerable<CompanySummaryModel> GetCompaniesByUser(int userId, bool onlyActive = true)
+    {
+      using var connection = new SqlConnection(_connectionString);
+      var sql = @"
+        SELECT e.IdEmpresa       AS CompanyUniqueId,
+               e.CedulaJuridica  AS CompanyId,
+               e.Nombre          AS CompanyName
+        FROM dbo.UsuariosPorEmpresa ue
+        INNER JOIN dbo.Empresa e ON e.IdEmpresa = ue.IdEmpresa
+        WHERE ue.IdUsuario = @UserId
+          " + (onlyActive ? "AND e.Estado = 'Activo'" : "") + @"
+        ORDER BY e.Nombre;
+      ";
+      return connection.Query<CompanySummaryModel>(sql, new { UserId = userId });
+    }
+
     public List<CompanyModel> getCompanies(int employerId)
     {
-        const string query = @"
+      const string query = @"
         SELECT
-            IdEmpresa AS CompanyUniqueId,
-            CedulaJuridica AS CompanyId,
-            Nombre AS CompanyName,
-            Telefono AS Telephone,
-            CantidadBeneficios AS MaxBenefits,
-            FrecuenciaPago AS PaymentFrequency,
-            DiaPago1 AS PayDay1,
-            DiaPago2 AS PayDay2
+          IdEmpresa AS CompanyUniqueId,
+          CedulaJuridica AS CompanyId,
+          Nombre AS CompanyName,
+          Telefono AS Telephone,
+          CantidadBeneficios AS MaxBenefits,
+          FrecuenciaPago AS PaymentFrequency,
+          DiaPago1 AS PayDay1,
+          DiaPago2 AS PayDay2
         FROM dbo.Empresa
         WHERE IdCreadoPor = @EmployerId;";
 
-        using var connection = new SqlConnection(_connectionString);
+      using var connection = new SqlConnection(_connectionString);
 
-        return connection.Query<CompanyModel>(query, new { EmployerId = employerId }).ToList();
+      return connection.Query<CompanyModel>(query, new { EmployerId = employerId }).ToList();
     }
   }
 }

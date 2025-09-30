@@ -166,7 +166,7 @@
 
         <!--Botón confirmar-->
         <div class="form-group text-center">
-          <LinkButton type="button" @click="saveRegisterData" text="Registrarse" />
+          <LinkButton @click="saveRegisterData" text="Registrarse" />
         </div>
       </form>
     </div>
@@ -389,7 +389,7 @@ export default {
           );
 
           // Redireccionamiento que permite mantener la alerta
-          this.$router.push('/');
+          this.$router.push('/auth/Login');
         })
         .catch((error) => {
           if (error.response) console.log('Error del backend:', error.response.data);
