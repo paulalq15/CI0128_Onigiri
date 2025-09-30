@@ -65,7 +65,8 @@ namespace Planilla_Backend.Controllers
           if (isAlreadyActive)
           {
             redirectUrl += "already-active";
-          } else
+          }
+          else
           {
             int updateResult = this.personUserService.UpdateUserPesonStatusToActivate(idPerson);
             redirectUrl += updateResult < 1 ? "failed" : "success";
@@ -112,6 +113,58 @@ namespace Planilla_Backend.Controllers
       }
 
       return Ok(new { message = "¡Correo de activación reenviado!" });
+    }
+    
+    [HttpGet("ActivateEmployee")]
+    public IActionResult ActivateEmployee(string token)
+    {
+      string redirectUrl = "http://localhost:8080/auth/EmployeeActivation?status="; // URL base del frontend
+
+      try
+      {
+        var handler = new JwtSecurityTokenHandler();
+        var claimsPrincipal = handler.ValidateToken(token, new TokenValidationParameters
+        {
+          ValidateIssuerSigningKey = true,
+          IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.configuration["JWT:KEY"]!)),
+          ValidateIssuer = false,
+          ValidateAudience = false,
+          ValidateLifetime = true,
+          ClockSkew = TimeSpan.Zero
+        }, out var validatedToken);
+
+        var tokenType = claimsPrincipal.FindFirstValue("TokenType");
+        var idPersonString = claimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (tokenType != "Activation")
+        {
+          redirectUrl += "invalid-token";
+        }
+        else if (string.IsNullOrEmpty(idPersonString))
+        {
+          redirectUrl += "invalid-user";
+        }
+        else
+        {
+          int idPerson = int.Parse(idPersonString);
+
+          bool isAlreadyActive = this.personUserService.IsUserPersonActive(idPerson);
+          if (isAlreadyActive)
+          {
+            redirectUrl += "already-active";
+          } else
+          {
+            int updateResult = this.personUserService.UpdateUserPesonStatusToActivate(idPerson);
+            redirectUrl += updateResult < 1 ? "failed" : "success";
+          }
+        }
+      }
+      catch (Exception)
+      {
+        redirectUrl += "expired";
+      }
+
+      return Redirect(redirectUrl);
     }
   }
 }
