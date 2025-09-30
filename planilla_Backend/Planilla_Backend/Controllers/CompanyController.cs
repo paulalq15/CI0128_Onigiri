@@ -61,9 +61,9 @@ namespace Planilla_Backend.Controllers
     }
 
     [HttpGet("getCompanies")]
-    public List<CompanyModel> getCompanies([FromQuery] int? employerId)
+    public List<CompanyModel> getCompanies([FromQuery] int employerId)
     {
-      return this.createCompanyService.getCompanies(employerId.Value);
+      return this.createCompanyService.getCompanies(employerId);
     }
   }
 }
