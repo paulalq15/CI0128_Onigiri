@@ -101,6 +101,7 @@
 
   async function GetCompanyPayrollElements(idCompany) {
     console.log("Company id: " + idCompany);
+    elements.value = [];
     await URLBaseAPI.get("/api/PayrollElement/GetPayRollElements", {params: {idCompany: idCompany}})
         .then((response) => {
           console.log(response.data);
