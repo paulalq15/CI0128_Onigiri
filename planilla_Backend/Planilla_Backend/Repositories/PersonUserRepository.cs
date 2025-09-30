@@ -108,7 +108,9 @@ namespace Planilla_Backend.Repositories
               SELECT
                 p.Cedula AS IdCard,
                 p.Nombre1 AS Name1,
+                p.Nombre2 AS Name2,
                 p.Apellido1 AS Surname1,
+                p.Apellido2 AS Surname2,
                 p.FechaNacimiento AS BirthDate,
                 u.Correo AS Email,
                 c.Tipo AS ContractType,
