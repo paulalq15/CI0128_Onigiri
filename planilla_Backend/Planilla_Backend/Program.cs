@@ -1,5 +1,7 @@
 using Planilla_Backend.Services;
 using Planilla_Backend.Repositories;
+using Planilla_Backend.Services.EmailService;
+using Planilla_Backend.Services.Utils;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
@@ -25,6 +27,11 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Service for Email
+builder.Services.AddTransient<IEmailService, EmailService>();
+
+builder.Services.AddSingleton<Utils>();
 
 var app = builder.Build();
 
