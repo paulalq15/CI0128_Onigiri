@@ -12,7 +12,7 @@
       <form
         class="form-signig p-5 h-100 d-inline-block"
         style="max-width: 550px; width: 100%"
-        @submit.prevent="saveRegisterData"
+        @submit.prevent="saveEmployee"
       >
         <h2 class="font-weigth-normal text-center mb-4">Registrar un empleado</h2>
         <!--Primer nombre-->
