@@ -20,7 +20,7 @@
                         icon="bi bi-people-fill"
                         :actions="[
                             { label: 'Crear Empleado', icon: 'bi bi-pencil-square', to: '/' },
-                            { label: 'Ver Empleados', icon: 'bi bi-search', to: '/ListaEmpleados' }
+                            { label: 'Ver Empleados', icon: 'bi bi-search', to: '/' }
                         ]"
                     />
                 </div>
