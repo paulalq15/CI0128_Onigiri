@@ -102,23 +102,27 @@ namespace Planilla_Backend.Repositories
       return resultUserdID;
     }
 
-    public List<Person> getEmployees()
+    public List<PersonUser> getEmployeesByCompanyId(int companyId)
     {
-      const string query = @"SELECT
-                           IdPersona AS PersonID,
-                           Cedula,
-                           Nombre1 AS Name1,
-                           Nombre2 AS Name2,
-                           Apellido1 AS Surname1,
-                           Apellido2 AS Surname2,
-                           Telefono AS Phone,
-                           FechaNacimiento AS BirthDate,
-                           TipoPersona AS PersonType
-                           FROM dbo.Persona;";
+            const string query = @"
+              SELECT
+                p.Cedula AS IdCard,
+                p.Nombre1 AS Name1,
+                p.Apellido1 AS Surname1,
+                p.FechaNacimiento AS BirthDate,
+                u.Correo AS Email,
+                c.Tipo AS ContractType,
+                c.Puesto AS JobPosition,
+                c.Departamento AS Department
+              FROM UsuariosPorEmpresa upe
+                JOIN Usuario u ON upe.IdUsuario = u.IdUsuario
+                JOIN Persona p ON u.IdPersona = p.IdPersona
+                JOIN Contrato c ON p.IdPersona = c.IdPersona
+              WHERE upe.IdEmpresa = @companyId;
+             ";
 
       using var connection = new SqlConnection(_connectionString);
-
-      return connection.Query<Person>(query).ToList();
+      return connection.Query<PersonUser>(query, new { companyId }).ToList();
     }
   }
 }

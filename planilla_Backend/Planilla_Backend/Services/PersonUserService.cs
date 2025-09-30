@@ -68,9 +68,9 @@ namespace Planilla_Backend.Services
       }
     }
 
-    public List<Person> getEmployees()
+    public List<PersonUser> getEmployeesByCompanyId(int companyId)
     {
-      return personUserRepository.getEmployees();
+      return personUserRepository.getEmployeesByCompanyId(companyId);
     }
   }
 }
