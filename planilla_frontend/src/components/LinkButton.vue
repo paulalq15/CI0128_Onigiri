@@ -1,5 +1,5 @@
 <template>
-  <button class="btn btn-lg btn-primary btn-block w-100" type="submit">
+  <button class="btn btn-lg btn-block w-100" v-bind:type="type">
     {{ text }}
   </button>
 </template>
@@ -11,20 +11,48 @@ export default {
     text: {
       type: String,
       required: true
+    },
+
+    type: {
+      type: String,
+      default: "button"
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-  #container > div > form > div.form-group.text-center > button  {
+  button {
     background-color: #1C4532;
     border-color: #1C4532;
+    color: white;
   }
 
-  #container > div > form > div.form-group.text-center > button:hover {
+  button:hover {
     color: #1C4532;
     border-color: #6FB595;
     background-color: #6FB595;
+  }
+
+  button:focus {
+    background-color: #1C4532;
+    border-color: #6FB595;
+    box-shadow: none;
+    color: white;
+  }
+
+  button:active {
+    background-color: #1C4532;
+    border-color: #6FB595;
+    box-shadow: none;
+    color: white;
+  }
+
+  button:disabled {
+    background-color: #6FB595;
+    border-color: #6FB595;
+    color: #ffffffa0;
+    cursor: not-allowed;
+    opacity: 0.7;
   }
 </style>
