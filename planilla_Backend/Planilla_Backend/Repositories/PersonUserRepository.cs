@@ -7,10 +7,9 @@ namespace Planilla_Backend.Repositories
   public class PersonUserRepository
   {
     private readonly string _connectionString;
-    public PersonUserRepository()
+    public PersonUserRepository(IConfiguration config)
     {
-      var builder = WebApplication.CreateBuilder();
-      _connectionString = builder.Configuration.GetConnectionString("OnigiriContext")!;
+      _connectionString = config.GetConnectionString("OnigiriContext");
     }
 
     // Método para guardar una nueva Persona y su Usuario en la base de datos

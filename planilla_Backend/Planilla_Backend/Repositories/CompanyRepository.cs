@@ -8,10 +8,9 @@ namespace Planilla_Backend.Repositories
   public class CompanyRepository
   {
     private readonly string _connectionString;
-    public CompanyRepository()
+    public CompanyRepository(IConfiguration config)
     {
-      var builder = WebApplication.CreateBuilder();
-      _connectionString = builder.Configuration.GetConnectionString("OnigiriContext");
+      _connectionString = config.GetConnectionString("OnigiriContext");
     }
 
     public bool ZipExists(string zipCode)
@@ -185,6 +184,55 @@ namespace Planilla_Backend.Repositories
         Console.WriteLine("Error al obtener el resumen de todas las compañias: \n" + ex.Message);
         return new List<CompanySummaryModel>();
       }
+    }
+
+    public string? GetUserType(int userId)
+    {
+      using var cn = new SqlConnection(_connectionString);
+      const string sql = @"
+    SELECT p.TipoPersona
+    FROM dbo.Usuario u
+    INNER JOIN dbo.Persona p ON p.IdPersona = u.IdPersona
+    WHERE u.IdUsuario = @Id AND u.Estado = 'Activo'";
+      return cn.ExecuteScalar<string?>(sql, new { Id = userId });
+    }
+
+    public List<CompanyModel> GetCompaniesWithStats(int employerId, int viewerUserId)
+    {
+      using var connection = new SqlConnection(_connectionString);
+
+      var viewerType = GetUserType(viewerUserId);
+      bool isAdmin = string.Equals(viewerType, "Administrador", StringComparison.OrdinalIgnoreCase);
+
+      const string sql = @"
+        SELECT
+          e.IdEmpresa AS CompanyUniqueId,
+          e.CedulaJuridica AS CompanyId,
+          e.Nombre AS CompanyName,
+          e.Telefono AS Telephone,
+          e.CantidadBeneficios AS MaxBenefits,
+          e.FrecuenciaPago AS PaymentFrequency,
+          e.DiaPago1 AS PayDay1,
+          e.DiaPago2 AS PayDay2,
+          e.IdCreadoPor AS CreatedBy,
+
+          (SELECT COUNT(*) FROM dbo.UsuariosPorEmpresa upe WHERE upe.IdEmpresa = e.IdEmpresa) AS EmployeeCount,
+
+          CASE WHEN @IsAdmin = 1 THEN
+            (
+              SELECT TOP 1
+              CONCAT(p.Nombre1, ' ', ISNULL(p.Nombre2, ''), ' ', p.Apellido1, ' ', p.Apellido2)
+              FROM dbo.Usuario u
+              INNER JOIN dbo.Persona p ON p.IdPersona = u.IdPersona
+              WHERE u.IdUsuario = e.IdCreadoPor
+            )
+          ELSE NULL END AS EmployerName
+
+        FROM dbo.Empresa e
+        WHERE (@IsAdmin = 1) OR (e.IdCreadoPor = @EmployerId)
+        ORDER BY e.Nombre;";
+
+      return connection.Query<CompanyModel>(sql, new { EmployerId = employerId, IsAdmin = isAdmin ? 1 : 0 }).ToList();
     }
   }
 }

@@ -8,10 +8,9 @@ namespace Planilla_Backend.Repositories
   public class PayrollElementRepository
   {
     private readonly string _connectionString;
-    public PayrollElementRepository()
+    public PayrollElementRepository(IConfiguration config)
     {
-      var builder = WebApplication.CreateBuilder();
-      _connectionString = builder.Configuration.GetConnectionString("OnigiriContext");
+      _connectionString = config.GetConnectionString("OnigiriContext");
     }
 
     public bool CheckCompanyStatus(int companyId)
