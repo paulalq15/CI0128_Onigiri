@@ -4,7 +4,6 @@
       <h2 class="card-title mb-4">{{ messageTitle }}</h2>
       <p class="card-text mb-4">{{ messageBody }}</p>
 
-      <!-- Formulario de contraseña sólo cuando status=success-->
       <div v-if="showPasswordForm" class="text-start mx-auto" style="max-width: 420px;">
         <form
           class="p-5 h-100 d-inline-block"
@@ -40,12 +39,14 @@
           <div v-if="errorMsg" class="text-danger mb-2">{{ errorMsg }}</div>
           <div v-if="successMsg" class="text-success mb-2">{{ successMsg }}</div>
 
+          <LinkButton :text="textInButton" @click="savePassword" />
         </form>
         <hr class="my-4" />
       </div>
-
-      <!-- Botón externo (navegación) -->
-      <LinkButton :text="textInButton" @click="savePassword" />
+      <div v-else class="text-start mx-auto" style="max-width: 420px;">
+        <!-- Botón externo (navegación) -->
+        <LinkButton :text="textInButton" @click="goToLink" />
+      </div>
     </div>
   </div>
 </template>
@@ -59,17 +60,17 @@ import InputType from './InputType.vue'
 const route = useRoute()
 const router = useRouter()
 
-// UI: textos del card y botón
 const textInButton = ref('#')
 const messageTitle = ref('#')
-const messageBody  = ref('') // ← estaba cambiada con el texto del botón
+const messageBody  = ref('')
 const link         = ref('/auth/Login')
 
 // Estado del flujo/URL
-const status = computed(() => (route.query.status ?? '').toString().toLowerCase().trim())
-const showPasswordForm = computed(() => status.value === 'success')
+const status   = computed(() => (route.query.status ?? '').toString().toLowerCase().trim())
+const token    = computed(() => (route.query.token ?? '').toString())
+const hasToken = computed(() => token.value.length > 0)
+const showPasswordForm = computed(() => status.value === 'success' && hasToken.value)
 
-// Form: campos, errores y flags (¡inicializados!)
 const password     = ref('')
 const confPassword = ref('')
 const errors = reactive({
@@ -119,17 +120,18 @@ const bodyCard = {
   }
 }
 
-// Sin "this": funciones puras Composition API
 function hydrateFromStatus() {
-  const s = status.value
-  if (s && bodyCard[s]) {
+  let s = status.value
+  if (s === 'success' && !hasToken.value) {
+    s = 'invalid-token'
+  }
+  if (s && Object.prototype.hasOwnProperty.call(bodyCard, s)) {
     const card = bodyCard[s]
     messageTitle.value = card.title
     messageBody.value  = card.body
     textInButton.value = card.buttonText
     link.value         = card.buttonLink
   } else {
-    // fallback
     messageTitle.value = 'Activación'
     messageBody.value  = 'Revise el enlace recibido.'
     textInButton.value = 'Ir a Iniciar Sesión'
@@ -138,7 +140,6 @@ function hydrateFromStatus() {
 }
 
 function validateForm() {
-  // limpiar errores
   errors.password = ''
   errors.confPassword = ''
   errorMsg.value = ''
@@ -170,13 +171,11 @@ async function savePassword() {
   if (!validateForm()) return
   try {
     saving.value = true
-    // Ejemplo de llamada (ajusta URL, headers y payload a tu backend):
-    // await axios.post('/api/users/set-password', { password: password.value }, { params: { token: route.query.token } })
-
+    
     successMsg.value = 'Contraseña actualizada.'
     errorMsg.value = ''
 
-    router.push(link.value) // puede ser string directo
+    router.push(link.value)
 
   } catch (e) {
     successMsg.value = ''
@@ -186,9 +185,12 @@ async function savePassword() {
   }
 }
 
-// Inicializa en mount y reacciona si cambia el query
 onMounted(hydrateFromStatus)
 watch(status, hydrateFromStatus)
+
+function goToLink() {
+  router.push(link.value)
+}
 </script>
 
 <style>
