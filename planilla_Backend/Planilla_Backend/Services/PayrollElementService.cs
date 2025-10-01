@@ -10,9 +10,9 @@ namespace Planilla_Backend.Services
     private const decimal maxPercentageValue = 100m;
     private const int maxElementNameLength = 40;
     private readonly PayrollElementRepository payrollElementRepository;
-    public PayrollElementService()
+    public PayrollElementService(PayrollElementRepository payrollElementRepo)
     {
-      payrollElementRepository = new PayrollElementRepository();
+      payrollElementRepository = payrollElementRepo;
     }
 
     public string CreatePayrollElement(PayrollElementModel element)

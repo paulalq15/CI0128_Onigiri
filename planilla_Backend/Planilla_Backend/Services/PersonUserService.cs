@@ -8,10 +8,10 @@ namespace Planilla_Backend.Services
     private readonly PersonUserRepository personUserRepository;
     private readonly DirectionsRepository directionsRepository;
 
-    public PersonUserService()
+    public PersonUserService(PersonUserRepository personUserRepo, DirectionsRepository directionsRepo)
     {
-      personUserRepository = new PersonUserRepository();
-      directionsRepository = new DirectionsRepository();
+      personUserRepository = personUserRepo;
+      directionsRepository = directionsRepo;
     }
 
     // Servicio para guardar una nueva Persona y su Usuario

@@ -10,9 +10,9 @@ namespace Planilla_Backend.Controllers
   public class PayrollElementController : ControllerBase
   {
     private readonly PayrollElementService payrollElementService;
-    public PayrollElementController()
+    public PayrollElementController(PayrollElementService payrollElementServ)
     {
-      payrollElementService = new PayrollElementService();
+      payrollElementService = payrollElementServ;
     }
 
     [HttpPost]

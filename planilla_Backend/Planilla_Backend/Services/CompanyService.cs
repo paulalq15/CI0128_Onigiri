@@ -12,9 +12,9 @@ namespace Planilla_Backend.Services
     private const int maxNameLength = 150;
     private const int maxAddressLength = 250;
 
-    public CompanyService()
+    public CompanyService(CompanyRepository createCompanyRepo)
     {
-      createCompanyRepository = new CompanyRepository();
+      createCompanyRepository = createCompanyRepo;
     }
     public string CreateCompany(CompanyModel company, out int companyId)
     {
@@ -125,6 +125,11 @@ namespace Planilla_Backend.Services
     public async Task<List<CompanySummaryModel>> GetAllCompaniesSummary()
     {
       return await this.createCompanyRepository.GetAllCompaniesSummary();
+    }
+
+    public List<CompanyModel> GetCompaniesWithStats(int employerId, int viewerUserId)
+    {
+      return createCompanyRepository.GetCompaniesWithStats(employerId, viewerUserId);
     }
   }
 }

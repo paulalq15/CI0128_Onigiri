@@ -12,9 +12,9 @@ namespace Planilla_Backend.Controllers
   public class CompanyController : ControllerBase
   {
     private readonly CompanyService createCompanyService;
-    public CompanyController()
+    public CompanyController(CompanyService createCompanyServ)
     {
-      createCompanyService = new CompanyService();
+      createCompanyService = createCompanyServ;
     }
 
     [HttpPost]
@@ -68,7 +68,8 @@ namespace Planilla_Backend.Controllers
     }
 
     [HttpGet("getTotalEmployees")]
-    public int getTotalEmployees(int companyId) {
+    public int getTotalEmployees(int companyId)
+    {
       return this.createCompanyService.getTotalEmployees(companyId);
     }
 
@@ -78,6 +79,15 @@ namespace Planilla_Backend.Controllers
       List<CompanySummaryModel> companySummaryModelsList = await this.createCompanyService.GetAllCompaniesSummary();
 
       return Ok(companySummaryModelsList);
+    }
+
+    [HttpGet("getCompaniesWithStats")]
+    public ActionResult<List<CompanyModel>> GetCompaniesWithStats([FromQuery] int employerId, [FromQuery] int viewerUserId)
+    {
+      if (employerId <= 0 || viewerUserId <= 0) return BadRequest("Invalid parameters.");
+
+      var rows = createCompanyService.GetCompaniesWithStats(employerId, viewerUserId);
+      return Ok(rows);
     }
   }
 }
