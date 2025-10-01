@@ -8,7 +8,7 @@
   <!-- Mostrar tabla solo si es Empleado -->
   <div v-else-if="$session.user?.typeUser === 'Empleado'" class="d-flex flex-column">
     <div class="container mt-5">
-      <h1 class="display-4 text-center">Lista de Beneficios</h1>
+      <h1 class="display-4 text-center">Beneficios Disponibles</h1>
 
       <div class="row justify-content-end">
         <div class="col-2"></div>
@@ -40,7 +40,7 @@
     </div>
 
     <div class="container mt-5">
-      <h1 class="display-4 text-center">Lista de Beneficios Aplicados</h1>
+      <h1 class="display-4 text-center">Beneficios Aplicados</h1>
 
       <div class="row justify-content-end">
         <div class="col-2"></div>
@@ -54,7 +54,6 @@
             <th>Fecha Fin</th>
             <th>Estado</th>
             <th>Acción</th>
-            
           </tr>
         </thead>
 
@@ -62,10 +61,10 @@
           <!-- Filas de elementos aplicados -->
           <tr v-for="(appliedElement, index) of appliedElements" :key="index">
             <td>{{ appliedElement.elementName }}</td>
-            <td>{{ appliedElement.startDate }}</td>
-            <td>{{ appliedElement.endDate }}</td>
+            <td>{{ this.formatDate(appliedElement.startDate) }}</td>
+            <td>{{ this.formatDate(appliedElement.endDate) }}</td>
             <td>{{ appliedElement.status }}</td>
-            <td><button class="btn btn-secondary btn-sm">Seleccionar</button></td>
+            <td><button class="btn btn-danger btn-sm">Desactivar</button></td>
           </tr>
 
           <!-- Fila con contador total -->
@@ -100,14 +99,15 @@
         benefits: [],
         appliedElements: [],
         totalCompanyBenefits: 0,
-        employeeBenefits: appliedElements.length,
-        user: getUser(),
+        totalSelectedEmployeeBenefits: 0,
+        companyId: 0,
+        user: 0,
       };
     },
 
     methods: {
       getBenefits() {
-        axios.get(`https://localhost:7071/api/PayrollElement/getPayrollElements?paidBy=Empleador`)
+        axios.get(`https://localhost:7071/api/PayrollElement/GetPayrollElements?companyId=${2}`)
         .then((response) => {
         this.benefits = response.data;
 
@@ -117,8 +117,7 @@
       },
 
       getAppliedElements() {
-        var user = getUser();
-        axios.get(`https://localhost:7071/api/AppliedElement/getAppliedElements?employeeId=${user.userId}`)
+        axios.get(`https://localhost:7071/api/AppliedElement/getAppliedElements?employeeId=${this.user.userId}`)
         .then((response) => {
         this.appliedElements = response.data;
 
@@ -127,14 +126,22 @@
         });
       },
 
-      addAppliedElement() {
-        // ...
-        axios.post(``);
+      formatDate(dateString) {
+        if (dateString == null) {
+          return "-"
+        }
+
+        const date = new Date(dateString);
+        return date.toLocaleDateString();
       }
     },
 
     created: function () {
       this.totalCompanyBenefits = 0;
+      this.totalSelectedEmployeeBenefits = 0;
+      this.user = getUser();
+      this.companyId = 0;
+
       this.getBenefits();
       this.getAppliedElements();
     },

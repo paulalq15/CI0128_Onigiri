@@ -49,22 +49,6 @@ namespace Planilla_Backend.Repositories
       return rowsAffected > 0;
     }
 
-    public List<PayrollElementModel> getPayrollElements(string paidBy)
-    {
-      const string query = @"
-      SELECT
-      Nombre AS ElementName,
-      PagadoPor AS PaidBy,
-      Tipo AS CalculationType,
-      Valor AS CalculationValue,
-      IdEmpresa AS CompanyId
-      FROM dbo.ElementoPlanilla
-      WHERE PagadoPor = @PaidBy";
-
-      using var connection = new SqlConnection(_connectionString);
-
-      return connection.Query<PayrollElementModel>(query, new { PaidBy = paidBy }).ToList();
-
     public async Task<List<PayrollElementModel>> GetPayrollElementsByIdCompany(int idCompany)
     {
       try

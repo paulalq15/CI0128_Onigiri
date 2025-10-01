@@ -55,11 +55,6 @@ namespace Planilla_Backend.Services
       return string.Empty;
     }
 
-    public List<PayrollElementModel> getPayrollElements(string paidBy)
-    {
-      return this.payrollElementRepository.getPayrollElements(paidBy);
-    }
-
     public async Task<List<PayrollElementModel>> GetPayrollElementsByIdCompany(int idCompany)
     {
       List<PayrollElementModel> payrollElementsList = await this.payrollElementRepository.GetPayrollElementsByIdCompany(idCompany)!;

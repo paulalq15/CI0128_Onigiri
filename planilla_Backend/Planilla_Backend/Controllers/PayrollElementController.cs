@@ -34,12 +34,6 @@ namespace Planilla_Backend.Controllers
       }
     }
 
-    [HttpGet("getPayrollElements")]
-    public List<PayrollElementModel> getPayrollElements([FromQuery] string paidBy)
-    {
-      return this.payrollElementService.getPayrollElements(paidBy);
-    }
-
     [HttpGet("GetPayRollElements")]
     public async Task<ActionResult<List<PayrollElementModel>>> GetPayrollElements(int idCompany)
     {
