@@ -76,6 +76,11 @@ namespace Planilla_Backend.Services
       }
     }
 
+    public List<PersonUser> getEmployeesByCompanyId(int companyId)
+    {
+      return personUserRepository.getEmployeesByCompanyId(companyId);
+    }
+
     public int UpdateUserPesonStatusToActivate(int idPerson)
     {
       try

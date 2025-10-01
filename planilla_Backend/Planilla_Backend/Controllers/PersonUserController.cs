@@ -74,5 +74,11 @@ namespace Planilla_Backend.Controllers
 
       return idPersona;
     }
+
+    [HttpGet("getEmployeesByCompanyId")]
+    public List<PersonUser> getEmployeesByCompanyId(int companyId)
+    {
+      return personUserService.getEmployeesByCompanyId(companyId);
+    }
   }
 }
