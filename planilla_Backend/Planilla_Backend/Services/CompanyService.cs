@@ -117,7 +117,7 @@ namespace Planilla_Backend.Services
       return this.createCompanyRepository.getCompanies(employerId);
     }
 
-    public List<CompanyModel> getTotalEmployees(int companyId)
+    public int getTotalEmployees(int companyId)
     {
       return this.createCompanyRepository.getTotalEmployees(companyId);
     }

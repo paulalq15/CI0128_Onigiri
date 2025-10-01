@@ -10,9 +10,6 @@
     <div v-else class="d-flex flex-column">
       <div class="container mt-5">
         <h1 class="display-4 text-center">Lista de Empresas</h1>
-        <div class="row justify-content-end">
-          <div class="col-2"></div>
-        </div>
         <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
           <thead>
             <tr>
@@ -28,7 +25,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(company, index) of companies" :key="index">
+            <tr v-for="(company, index) in companies" :key="index">
               <td>{{ company.companyId }}</td>
               <td>{{ company.companyName }}</td>
               <td>{{ company.telephone }}</td>
@@ -36,7 +33,7 @@
               <td>{{ company.paymentFrequency }}</td>
               <td>{{ company.payDay1 }}</td>
               <td>{{ company.payDay2 }}</td>
-              <td>{{  }}</td>
+              <td>{{ employeeCounts[String(company.companyId)] || 0 }}</td>
               <td>{{  }}</td>
             </tr>
           </tbody>
@@ -50,38 +47,53 @@
 import axios from "axios";
 import { getUser } from '../session.js';
 
-    export default {
-        name: "CompaniesList",
+export default {
+  name: "CompaniesList",
 
-        data() {
-            return {
-                companies: [],
-            };
-        },
-
-    computed: {
-        user() {
-            return getUser();
-        },
-    },
-
-    methods: {
-        getCompanies() {
-            axios.get(`https://localhost:7071/api/Company/getCompanies/?employerId=${this.user.userId}`)
-            .then((response) => {
-            this.companies = response.data;
-
-            }).catch(error => {
-                console.error("Error al obtener compañías:", error);
-            });
-        },
-    },
-
-        created: function () {
-            this.getCompanies();
-        },
+  data() {
+    return {
+      companies: [],
+      employeeCounts: {},
     };
+  },
 
+  computed: {
+    user() {
+      return getUser();
+    },
+  },
+
+  methods: {
+    getCompanies() {
+      axios.get(`https://localhost:7071/api/Company/getCompanies/?employerId=${this.user.userId}`)
+        .then((response) => {
+        this.companies = response.data;
+        this.companies.forEach(company => {
+          this.getTotalEmployees(company.companyId);
+        });
+        })
+        .catch(error => {
+          console.error("Error al obtener compañías:", error);
+        });
+    },
+
+    getTotalEmployees(companyId) {
+      axios.get(`https://localhost:7071/api/Company/getTotalEmployees/?companyId=${companyId}`)
+      .then((response) => {
+      console.log("Employees API response:", response.data, typeof response.data);
+      const total = parseInt(response.data, 10) || 0;
+      this.$set(this.employeeCounts, String(companyId), total);
+      })
+      .catch((error) => {
+        console.error("Error al obtener el total de empleados:", error);
+      });
+    }
+  },
+
+  created() {
+    this.getCompanies();
+  },
+};
 </script>
 
 <style lang="scss" scoped></style>

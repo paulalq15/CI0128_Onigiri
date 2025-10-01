@@ -150,16 +150,17 @@ namespace Planilla_Backend.Repositories
     public int getTotalEmployees(int companyId)
     {
       const string query = @"
-      SELECT COUNT(*) AS TotalEmpleados
-      FROM UsuariosPorEmpresa upe
-      JOIN Usuario u ON upe.IdUsuario = u.IdUsuario
-      WHERE upe.IdEmpresa = @CompanyId
-      AND u.TipoUsuario = 'Empleado';
+        SELECT COUNT(*) AS TotalEmpleados
+        FROM UsuariosPorEmpresa UPE
+        INNER JOIN Usuario U ON UPE.IdUsuario = U.IdUsuario
+        INNER JOIN Persona P ON U.IdPersona = P.IdPersona
+        WHERE UPE.IdEmpresa = @companyId
+        AND P.TipoPersona = 'Empleado';
       ";
 
       using var connection = new SqlConnection(_connectionString);
 
-      return connection.Query<int>(query, new { companyId });
+      return connection.QuerySingle<int>(query, new { companyId });
     }
   }
 }
