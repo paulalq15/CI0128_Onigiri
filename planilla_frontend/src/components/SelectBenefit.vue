@@ -26,7 +26,7 @@
           <!-- Filas de beneficios -->
           <tr v-for="(benefit, index) of benefits" :key="index">
             <td>{{ benefit.elementName }}</td>
-            <td><button class="btn btn-secondary btn-sm">Seleccionar</button></td>
+            <td><button class="btn btn-secondary btn-sm" @click="addAppliedElement(index)">Seleccionar</button></td>
           </tr>
 
           <!-- Fila con contador total -->
@@ -99,8 +99,8 @@
       return {
         benefits: [],
         appliedElements: [],
-        totalBenefits: 0,
-        selectedBenefits: 0,
+        totalCompanyBenefits: 0,
+        employeeBenefits: appliedElements.length,
         user: getUser(),
       };
     },
@@ -126,9 +126,15 @@
           console.error("Error al obtener los elementos aplicados:", error);
         });
       },
+
+      addAppliedElement() {
+        // ...
+        axios.post(``);
+      }
     },
 
     created: function () {
+      this.totalCompanyBenefits = 0;
       this.getBenefits();
       this.getAppliedElements();
     },
