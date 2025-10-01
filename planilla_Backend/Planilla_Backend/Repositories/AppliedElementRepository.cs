@@ -29,8 +29,6 @@ namespace Planilla_Backend.Repositories
 
             using var connection = new SqlConnection(_connectionString);
 
-            // return connection.Query<AppliedElement>(query, new { UserId = employeeId }).ToList();
-            // return connection.Query<AppliedElement>(query, new { employeeId = employeeId }).ToList();
             return connection.Query<AppliedElement>(query, new { employeeId }).ToList();
         }
     }
