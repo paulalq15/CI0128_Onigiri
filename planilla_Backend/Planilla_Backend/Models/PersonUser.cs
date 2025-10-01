@@ -17,8 +17,8 @@ namespace Planilla_Backend.Models
     public string TypePerson { get; set; }
 
     // Contract attributes:
-    public string ContractType { get; set; }
-    public string JobPosition { get; set; }
-    public string Department { get; set; }
+    public string? ContractType { get; set; }
+    public string? JobPosition { get; set; }
+    public string? Department { get; set; }
   }
 }
