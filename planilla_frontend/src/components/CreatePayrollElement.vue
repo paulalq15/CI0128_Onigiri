@@ -210,6 +210,7 @@ export default {
         calculationValue: Number(this.calculationValue || 0),
         companyId: Number(this.$session.user?.companyUniqueId),
         userId: Number(this.$session.user?.userId),
+        status: 'Active',
       })
         .then(function () {
           self.toastMessage = 'Elemento creado correctamente';
