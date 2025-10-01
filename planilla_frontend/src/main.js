@@ -33,6 +33,7 @@ import ViewReports from './components/ViewReports.vue';
 import CreateReport from './components/CreateReport.vue';
 import ActivationAccountPage from './components/ActivationAccountpage.vue';
 import ResendActivationAccountPage from './components/ResendActivationAccountPage.vue';
+import ForbiddenPage from './components/ForbiddenPage.vue';
 
 const employerOnly = { requiresAuth: true, roles: ['Empleador'] }
 const employerOrAdmin = { requiresAuth: true, roles: ['Empleador','Administrador'] }
@@ -80,6 +81,7 @@ const router = createRouter({
         { path: 'Pagos/CrearPago', name: 'Crear Pago', component: CreatePayment, meta: employerOrApprover },
         { path: 'Reportes/VerReportes', name: 'Ver Reportes', component: ViewReports, meta: employerOrApprover },
         { path: 'Reportes/CrearReporte', name: 'Crear Reporte', component: CreateReport, meta: employerOrApprover },
+        { path: 'AccesoRestringido', name: 'AccesoRestringido', component: ForbiddenPage },
       ]
     },
 
@@ -102,7 +104,7 @@ router.beforeEach((to, from, next) => {
     const usrRoles = Array.isArray(u?.typeUser) ? u.typeUser : [u?.typeUser].filter(Boolean);
     const allow = new Set(allowedRoles.map(x => String(x).toLowerCase()));
     const ok = usrRoles.some(r => allow.has(String(r).toLowerCase()));
-    if (!ok) return next({ name: 'Home Page' });
+    if (!ok) return next({ name: 'AccesoRestringido' }); 
   }
 
   next()
