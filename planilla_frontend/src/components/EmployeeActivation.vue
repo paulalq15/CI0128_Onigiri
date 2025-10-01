@@ -57,6 +57,8 @@ import { useRoute, useRouter } from 'vue-router'
 import LinkButton from './LinkButton.vue'
 import InputType from './InputType.vue'
 
+import URLBaseAPI from '../axiosAPIInstances.js';
+
 const route = useRoute()
 const router = useRouter()
 
@@ -168,20 +170,42 @@ function validateForm() {
 }
 
 async function savePassword() {
-  if (!validateForm()) return
-  try {
-    saving.value = true
-    
-    successMsg.value = 'Contraseña actualizada.'
-    errorMsg.value = ''
+  if (!validateForm()) return;
 
-    router.push(link.value)
+  const jwt = String(route.query.token || '');
+  if (!jwt) {
+    errorMsg.value = 'Falta el token de seguridad.';
+    return;
+  }
+
+  try {
+    saving.value = true;
+
+    const res = await URLBaseAPI.post(
+      '/api/Tokens/SetPassword', password.value,
+      { headers: { Authorization: `Bearer ${jwt}` } }
+    );
+
+    successMsg.value = res?.data?.message || 'Contraseña actualizada.';
+    errorMsg.value = '';
+
+    // (Opcional de seguridad) quita el token del URL actual antes de navegar
+    // router.replace({ path: route.path, query: { status: 'success' } });
+
+    // Navega (login o donde corresponda)
+    router.push(link.value);
 
   } catch (e) {
-    successMsg.value = ''
-    errorMsg.value = 'No se pudo actualizar la contraseña.'
+    successMsg.value = '';
+    // Mensaje de error más claro según el server
+    const msg =
+      e?.response?.data?.message ||
+      e?.response?.data ||
+      (e?.response?.status === 401 ? 'Token inválido o expirado.' : null) ||
+      'No se pudo actualizar la contraseña.';
+    errorMsg.value = msg;
   } finally {
-    saving.value = false
+    saving.value = false;
   }
 }
 
