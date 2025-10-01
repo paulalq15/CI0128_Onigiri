@@ -23,6 +23,8 @@
               <th>Frecuencia de Pago</th>
               <th>Día de Pago #1</th>
               <th>Día de Pago #2</th>
+              <th>Total Empleados</th>
+              <th>Empleador</th>
             </tr>
           </thead>
           <tbody>
@@ -34,6 +36,8 @@
               <td>{{ company.paymentFrequency }}</td>
               <td>{{ company.payDay1 }}</td>
               <td>{{ company.payDay2 }}</td>
+              <td>{{  }}</td>
+              <td>{{  }}</td>
             </tr>
           </tbody>
         </table>

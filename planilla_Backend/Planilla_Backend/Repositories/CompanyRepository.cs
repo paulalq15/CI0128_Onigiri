@@ -146,5 +146,20 @@ namespace Planilla_Backend.Repositories
 
       return connection.Query<CompanyModel>(query, new { EmployerId = employerId }).ToList();
     }
+
+    public int getTotalEmployees(int companyId)
+    {
+      const string query = @"
+      SELECT COUNT(*) AS TotalEmpleados
+      FROM UsuariosPorEmpresa upe
+      JOIN Usuario u ON upe.IdUsuario = u.IdUsuario
+      WHERE upe.IdEmpresa = @CompanyId
+      AND u.TipoUsuario = 'Empleado';
+      ";
+
+      using var connection = new SqlConnection(_connectionString);
+
+      return connection.Query<int>(query, new { companyId });
+    }
   }
 }

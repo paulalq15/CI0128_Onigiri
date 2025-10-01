@@ -65,5 +65,10 @@ namespace Planilla_Backend.Controllers
     {
       return this.createCompanyService.getCompanies(employerId);
     }
+
+    [HttpGet("getTotalEmployees")]
+    public int getTotalEmployees(int companyId) {
+      return this.createCompanyService.getTotalEmployees(companyId);
+    }
   }
 }
