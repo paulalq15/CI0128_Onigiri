@@ -61,26 +61,6 @@ namespace Planilla_Backend.Controllers
       return Ok(companies);
     }
 
-    [HttpGet("getCompanies")]
-    public List<CompanyModel> getCompanies([FromQuery] int employerId)
-    {
-      return this.createCompanyService.getCompanies(employerId);
-    }
-
-    [HttpGet("getTotalEmployees")]
-    public int getTotalEmployees(int companyId)
-    {
-      return this.createCompanyService.getTotalEmployees(companyId);
-    }
-
-    [HttpGet("GetAllCompaniesSummary")]
-    public async Task<ActionResult<List<CompanySummaryModel>>> GetAllCompaniesSummary()
-    {
-      List<CompanySummaryModel> companySummaryModelsList = await this.createCompanyService.GetAllCompaniesSummary();
-
-      return Ok(companySummaryModelsList);
-    }
-
     [HttpGet("getCompaniesWithStats")]
     public ActionResult<List<CompanyModel>> GetCompaniesWithStats([FromQuery] int employerId, [FromQuery] int viewerUserId)
     {

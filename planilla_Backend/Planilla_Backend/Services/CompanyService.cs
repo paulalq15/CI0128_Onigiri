@@ -72,7 +72,8 @@ namespace Planilla_Backend.Services
         if (company.CreatedBy <= 0)
           return "El ID del usuario actual es inválido.";
 
-        if (!createCompanyRepository.ValidateUserType(company.CreatedBy))
+        var userType = createCompanyRepository.GetUserType(company.CreatedBy);
+        if (!string.Equals(userType?.Trim(), "Empleador", StringComparison.OrdinalIgnoreCase))
           return "El usuario actual no es un Empleador activo.";
 
         if (!createCompanyRepository.ZipExists(company.ZipCode))
@@ -100,7 +101,8 @@ namespace Planilla_Backend.Services
         if (userId <= 0)
           return ("El ID de usuario es inválido.", Enumerable.Empty<CompanySummaryModel>());
 
-        if (!createCompanyRepository.ValidateUserType(userId))
+        var userType = createCompanyRepository.GetUserType(userId);
+        if (!string.Equals(userType?.Trim(), "Empleador", StringComparison.OrdinalIgnoreCase))
           return ("El usuario actual no es un Empleador activo.", Enumerable.Empty<CompanySummaryModel>());
 
         var rows = createCompanyRepository.GetCompaniesByUser(userId, onlyActive);
@@ -110,21 +112,6 @@ namespace Planilla_Backend.Services
       {
         return ($"Error obteniendo empresas: {ex.Message}", Enumerable.Empty<CompanySummaryModel>());
       }
-    }
-
-    public List<CompanyModel> getCompanies(int employerId)
-    {
-      return this.createCompanyRepository.getCompanies(employerId);
-    }
-
-    public int getTotalEmployees(int companyId)
-    {
-      return this.createCompanyRepository.getTotalEmployees(companyId);
-    }
-
-    public async Task<List<CompanySummaryModel>> GetAllCompaniesSummary()
-    {
-      return await this.createCompanyRepository.GetAllCompaniesSummary();
     }
 
     public List<CompanyModel> GetCompaniesWithStats(int employerId, int viewerUserId)

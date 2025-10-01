@@ -29,15 +29,14 @@ namespace Planilla_Backend.Repositories
       return r.HasValue;
     }
 
-    public bool ValidateUserType(int userId)
+    public string? GetUserType(int userId)
     {
       using var connection = new SqlConnection(_connectionString);
       const string sql = @"SELECT p.TipoPersona
                           FROM dbo.Usuario u
                           INNER JOIN dbo.Persona p ON p.IdPersona = u.IdPersona
                           WHERE u.IdUsuario = @Id AND u.Estado = 'Activo'";
-      var type = connection.ExecuteScalar<string?>(sql, new { Id = userId });
-      return string.Equals(type, "Empleador", StringComparison.OrdinalIgnoreCase);
+      return connection.ExecuteScalar<string?>(sql, new { Id = userId });
     }
 
     public int CreateCompany(CompanyModel company)
@@ -124,77 +123,6 @@ namespace Planilla_Backend.Repositories
         ORDER BY e.Nombre;
       ";
       return connection.Query<CompanySummaryModel>(sql, new { UserId = userId });
-    }
-
-    public List<CompanyModel> getCompanies(int employerId)
-    {
-      const string query = @"
-        SELECT
-          IdEmpresa AS CompanyUniqueId,
-          CedulaJuridica AS CompanyId,
-          Nombre AS CompanyName,
-          Telefono AS Telephone,
-          CantidadBeneficios AS MaxBenefits,
-          FrecuenciaPago AS PaymentFrequency,
-          DiaPago1 AS PayDay1,
-          DiaPago2 AS PayDay2
-        FROM dbo.Empresa
-        WHERE IdCreadoPor = @EmployerId;";
-
-      using var connection = new SqlConnection(_connectionString);
-
-      return connection.Query<CompanyModel>(query, new { EmployerId = employerId }).ToList();
-    }
-
-    public int getTotalEmployees(int companyId)
-    {
-      const string query = @"
-        SELECT COUNT(*) AS TotalEmpleados
-        FROM UsuariosPorEmpresa UPE
-        INNER JOIN Usuario U ON UPE.IdUsuario = U.IdUsuario
-        INNER JOIN Persona P ON U.IdPersona = P.IdPersona
-        WHERE UPE.IdEmpresa = @companyId
-        AND P.TipoPersona = 'Empleado';
-      ";
-
-      using var connection = new SqlConnection(_connectionString);
-
-      return connection.QuerySingle<int>(query, new { companyId });
-    }
-
-    public async Task<List<CompanySummaryModel>> GetAllCompaniesSummary()
-    {
-      try
-      {
-        using var connection = new SqlConnection(_connectionString);
-
-        var sqlCompaniesSummary = @"
-            SELECT
-              IdEmpresa AS CompanyUniqueId,
-              CedulaJuridica AS CompanyId,
-              Nombre AS CompanyName
-            FROM
-              Empresa
-        ";
-
-        var companiesList = await connection.QueryAsync<CompanySummaryModel>(sqlCompaniesSummary);
-        return companiesList.ToList();
-      } catch (Exception ex)
-      {
-        Console.WriteLine("Error al obtener el resumen de todas las compañias: \n" + ex.Message);
-        return new List<CompanySummaryModel>();
-      }
-    }
-
-    public string? GetUserType(int userId)
-    {
-      using var cn = new SqlConnection(_connectionString);
-      const string sql = @"
-    SELECT p.TipoPersona
-    FROM dbo.Usuario u
-    INNER JOIN dbo.Persona p ON p.IdPersona = u.IdPersona
-    WHERE u.IdUsuario = @Id AND u.Estado = 'Activo'";
-      return cn.ExecuteScalar<string?>(sql, new { Id = userId });
     }
 
     public List<CompanyModel> GetCompaniesWithStats(int employerId, int viewerUserId)
