@@ -199,5 +199,26 @@ namespace Planilla_Backend.Repositories
       return personUser;
     }
 
+    public int SetUserPassword(int userID, string password)
+    {
+      using var connection = new SqlConnection(_connectionString);
+
+      int activationResult = 0;
+
+      try
+      {
+        var setPwdQuery = @"
+          UPDATE Usuario
+          SET Contrasena = @password
+          WHERE IdUsuario = @userID";
+
+        activationResult = connection.Execute(setPwdQuery, new { userID = userID, password = password });
+      }
+      catch (Exception ex)
+      {
+        throw new Exception("Error al guardar contraseña" + ex.Message);
+      }
+      return activationResult;
+    }
   }
 }
