@@ -155,41 +155,41 @@ namespace Planilla_Backend.Controllers
           }
           else
           {
-              int idPerson = int.Parse(idPersonString);
+            int idPerson = int.Parse(idPersonString);
 
-              if (personUserService.IsUserPersonActive(idPerson))
-              {
-                  status = "already-active";
-              }
-              else
-              {
-                
-                var updated = personUserService.UpdateUserPesonStatusToActivate(idPerson);
-                status = updated < 1 ? "failed" : "success";
+            if (personUserService.IsUserPersonActive(idPerson))
+            {
+              status = "already-active";
+            }
+            else
+            {
 
-                if (status == "success")
+              var updated = personUserService.UpdateUserPesonStatusToActivate(idPerson);
+              status = updated < 1 ? "failed" : "success";
+
+              if (status == "success")
+              {
+                var user = personUserService.GetPersonUserById(idPerson);
+                if (user is null)
                 {
-                  var user = personUserService.GetPersonUserById(idPerson);
-                  if (user is null)
-                  {
-                      status = "invalid-user";
-                  }
-                  else
-                  {
-                    setPwdToken = utils.GenerateSetPasswordToken(user.IdUser, minutes: 15);
-                  }
+                  status = "invalid-user";
                 }
+                else
+                {
+                  setPwdToken = utils.GenerateSetPasswordToken(user.IdUser, minutes: 15);
+                }
+              }
             }
           }
         }
       }
       catch (SecurityTokenExpiredException)
       {
-          status = "expired";
+        status = "expired";
       }
       catch
       {
-          status = "failed";
+        status = "failed";
       }
       // Construye la URL de redirección al Front
       var query = new Dictionary<string, string?> { ["status"] = status };
@@ -198,6 +198,67 @@ namespace Planilla_Backend.Controllers
 
       var redirectUrl = QueryHelpers.AddQueryString(frontBaseUrl, query);
       return Redirect(redirectUrl);
+    }
+    
+    [HttpPost("SetPassword")]
+    public IActionResult SetPassword(
+      [FromBody] string password,
+      [FromHeader(Name = "Authorization")] string? authHeader = null,
+      [FromQuery] string? token = null)
+    {
+
+      string? bearer = null;
+      if (!string.IsNullOrWhiteSpace(authHeader) && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+        bearer = authHeader.Substring("Bearer ".Length).Trim();
+
+      var tokenToValidate = !string.IsNullOrWhiteSpace(bearer) ? bearer : token;
+      if (string.IsNullOrWhiteSpace(tokenToValidate))
+        return Unauthorized("Token requerido.");
+
+      ClaimsPrincipal claimsPrincipal;
+      try
+      {
+        var handler = new JwtSecurityTokenHandler();
+        claimsPrincipal = handler.ValidateToken(tokenToValidate, new TokenValidationParameters
+        {
+          ValidateIssuerSigningKey = true,
+          IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.configuration["JWT:KEY"]!)),
+          ValidateIssuer = false,
+          ValidateAudience = false,
+          ValidateLifetime = true,
+          ClockSkew = TimeSpan.Zero
+        }, out var _);
+      }
+      catch (SecurityTokenExpiredException)
+      {
+        return Unauthorized("Token expirado.");
+      }
+      catch
+      {
+        return Unauthorized("Token inválido.");
+      }
+
+      var tokenType = claimsPrincipal.FindFirstValue("TokenType");
+      if (!string.Equals(tokenType, "SetPassword", StringComparison.Ordinal))
+        return Unauthorized("Token inválido para cambio de contraseña.");
+
+      var nameId = claimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier);
+      if (string.IsNullOrWhiteSpace(nameId))
+        return Unauthorized("Token sin identificador.");
+
+      if (!int.TryParse(nameId, out var idFromClaim))
+        return Unauthorized("Identificador inválido.");
+
+      var user = personUserService.GetPersonUserbyIdUser(idFromClaim);
+      if (user is null)
+      {
+        return NotFound("Usuario no encontrado.");
+      }
+
+        // llemar service de update pwd
+        personUserService.SetUserPassword(user.IdUser, password);
+
+        return Ok(new { Success = true, Message = "Contraseña actualizada." });
     }
   }
 }
