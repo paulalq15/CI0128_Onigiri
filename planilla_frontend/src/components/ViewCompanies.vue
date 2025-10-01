@@ -1,13 +1,6 @@
 <template>
   <div>
-    <!-- Restrict page if user is not 'Empleador' -->
-    <div v-if="$session.user?.typeUser !== 'Empleador'" class="d-flex flex-column text-center">
-      <h3>Acceso restringido</h3>
-      <p>Esta página no está disponible</p>
-    </div>
-
-    <!-- Show page content only if user is 'Empleador' -->
-    <div v-else class="d-flex flex-column">
+    <div class="d-flex flex-column">
       <div class="container mt-5">
         <h1 class="display-4 text-center">Lista de Empresas</h1>
         <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
@@ -21,7 +14,7 @@
               <th>Día de Pago #1</th>
               <th>Día de Pago #2</th>
               <th>Total Empleados</th>
-              <th>Empleador</th>
+              <th v-if="$session.user?.typeUser === 'Administrador'">Employer</th>
             </tr>
           </thead>
           <tbody>
@@ -33,8 +26,8 @@
               <td>{{ company.paymentFrequency }}</td>
               <td>{{ company.payDay1 }}</td>
               <td>{{ company.payDay2 }}</td>
-              <td>{{ employeeCounts[String(company.companyId)] || 0 }}</td>
-              <td>{{  }}</td>
+              <td>{{ company.employeeCount }}</td>
+              <td v-if="$session.user?.typeUser === 'Administrador'">{{ company.employerName }}</td>
             </tr>
           </tbody>
         </table>
@@ -44,8 +37,7 @@
 </template>
 
 <script>
-import axios from "axios";
-import { getUser } from '../session.js';
+import URLBaseAPI from '../axiosAPIInstances.js';
 
 export default {
   name: "CompaniesList",
@@ -53,45 +45,31 @@ export default {
   data() {
     return {
       companies: [],
-      employeeCounts: {},
     };
   },
 
-  computed: {
-    user() {
-      return getUser();
-    },
-  },
-
   methods: {
-    getCompanies() {
-      axios.get(`https://localhost:7071/api/Company/getCompanies/?employerId=${this.user.userId}`)
-        .then((response) => {
-        this.companies = response.data;
-        this.companies.forEach(company => {
-          this.getTotalEmployees(company.companyId);
-        });
-        })
-        .catch(error => {
-          console.error("Error al obtener compañías:", error);
-        });
-    },
+  fetchCompanies() {
+      const userId = this.$session.user?.userId;
+      if (!userId) return;
 
-    getTotalEmployees(companyId) {
-      axios.get(`https://localhost:7071/api/Company/getTotalEmployees/?companyId=${companyId}`)
+      URLBaseAPI.get('/api/Company/getCompaniesWithStats', {
+        params: {
+          employerId: userId,
+          viewerUserId: userId,
+        },
+      })
       .then((response) => {
-      console.log("Employees API response:", response.data, typeof response.data);
-      const total = parseInt(response.data, 10) || 0;
-      this.$set(this.employeeCounts, String(companyId), total);
+        this.companies = Array.isArray(response.data) ? response.data : [];
       })
       .catch((error) => {
-        console.error("Error al obtener el total de empleados:", error);
+        console.error('Error fetching companies:', error);
       });
-    }
+    },
   },
 
   created() {
-    this.getCompanies();
+    this.fetchCompanies();
   },
 };
 </script>
