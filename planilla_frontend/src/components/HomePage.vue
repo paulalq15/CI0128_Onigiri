@@ -9,7 +9,7 @@
       <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2" v-if="$session.user?.typeUser === 'Empleador' || $session.user?.typeUser === 'Administrador'">
         <home-page-card title="Empresas" icon="bi bi-buildings-fill" to="/app/Empresas/VerEmpresas" />
       </div>
-      <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2" v-if="$session.user?.typeUser !== 'Administrador'">
+      <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2" v-if="$session.user?.typeUser === 'Empleador' || $session.user?.typeUser === 'Aprobador'">
         <home-page-card title="Empleados" icon="bi bi-people-fill" to="/app/Empleados/VerEmpleados" />
       </div>
       <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2" v-if="$session.user?.typeUser !== 'Administrador'">
