@@ -1,13 +1,5 @@
 <template>
-  <!-- Restrict page if user is Admin or Employee -->
-  <div v-if="$session.user?.typeUser === 'Administrador' || $session.user?.typeUser === 'Empleado'" 
-       class="d-flex flex-column text-center">
-    <h3>Acceso restringido</h3>
-    <p>Esta página no está disponible</p>
-  </div>
-
-  <!-- Show the employees table only if user is NOT Admin or Employee -->
-  <div v-else class="d-flex flex-column">
+  <div class="d-flex flex-column">
     <div class="container mt-5">
       <h1 class="display-4 text-center">Lista de Empleados</h1>
 

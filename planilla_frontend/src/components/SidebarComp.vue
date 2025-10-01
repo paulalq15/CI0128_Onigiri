@@ -90,7 +90,7 @@
           </button>
           <div class="collapse" id="employee-collapse" data-bs-parent="#sidebar-accordion">
             <ul class="list-unstyled ms-4 ps-2 small">
-              <li>
+              <li v-if="session.user?.typeUser !== 'Empleado'">
                 <RouterLink class="nav-link my-3" to="/app/Empleados/VerEmpleados">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas">Ver Empleados</span>
                 </RouterLink>
