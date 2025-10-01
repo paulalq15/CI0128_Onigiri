@@ -4,7 +4,7 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import { createRouter, createWebHistory } from 'vue-router';
-import { isAuthed } from './session';
+import { isAuthed, getUser } from './session';
 import { useSession } from './utils/useSession'
 import App from './App.vue';
 import AuthLayout from './layouts/AuthLayout.vue';
@@ -33,7 +33,6 @@ import ViewReports from './components/ViewReports.vue';
 import CreateReport from './components/CreateReport.vue';
 import ActivationAccountPage from './components/ActivationAccountpage.vue';
 import ResendActivationAccountPage from './components/ResendActivationAccountPage.vue';
-import EmployeeActivation from './components/EmployeeActivation.vue';
 
 const employerOnly = { requiresAuth: true, roles: ['Empleador'] }
 const employerOrAdmin = { requiresAuth: true, roles: ['Empleador','Administrador'] }
@@ -51,8 +50,7 @@ const router = createRouter({
         { path: 'Login', name: 'Login', component: LoginForm },
         { path: 'Register', name: 'RegisterAccount', component: RegisterPage },
         { path: 'ActivateAccount', name: 'ActivateAccount', component: ActivationAccountPage },
-        { path: 'ResendActivationAccount', name: 'ResendActivation', component: ResendActivationAccountPage},
-        { path: 'EmployeeActivation', name: 'EmployeeActivation', component: EmployeeActivation}
+        { path: 'ResendActivationAccount', name: 'ResendActivation', component: ResendActivationAccountPage}
       ]
     },
 
@@ -66,7 +64,7 @@ const router = createRouter({
         { path: 'Empresas/VerEmpresas', name: 'Ver Empresas', component: ViewCompanies, meta: employerOrAdmin },
         { path: 'Empresas/CrearEmpresa', name: 'Crear Empresa', component: CreateCompany, meta: employerOnly },
         { path: 'Empresas/ModificarEmpresa', name: 'Modificar Empresa', component: ModifyCompany, meta: employerOnly },
-        { path: 'Empleados/VerEmpleados', name: 'Ver Empleados', component: ViewEmployees, meta: employerApproverEmployee},
+        { path: 'Empleados/VerEmpleados', name: 'Ver Empleados', component: ViewEmployees, meta: employerOrApprover},
         { path: 'Empleados/CrearEmpleado', name: 'Crear Empleado', component: CreateEmployee, meta: employerOnly },
         { path: 'Empleados/ModificarEmpleado', name: 'Modificar Empleado', component: ModifyEmployees, meta: employerApproverEmployee},
         { path: 'Timesheets/VerTimesheets', name: 'Ver Timesheets', component: ViewTimesheets, meta: employerApproverEmployee},
@@ -93,10 +91,20 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const authed = isAuthed();
-  const needsAuth = to.matched.some(r => r.meta?.requiresAuth)
+  const requiresAuth = to.matched.some(r => r.meta?.requiresAuth);
+  const allowedRoles = to.matched.flatMap(r => r.meta?.roles ?? []);
 
-  if (needsAuth && !authed) return next({ name: 'Login' })
+  if (requiresAuth && !authed) return next({ name: 'Login' })
   if (to.name === 'Login' && authed) return next({ name: 'Home Page' })
+
+  if (allowedRoles.length > 0) {
+    const u = getUser();
+    const usrRoles = Array.isArray(u?.typeUser) ? u.typeUser : [u?.typeUser].filter(Boolean);
+    const allow = new Set(allowedRoles.map(x => String(x).toLowerCase()));
+    const ok = usrRoles.some(r => allow.has(String(r).toLowerCase()));
+    if (!ok) return next({ name: 'Home Page' });
+  }
+
   next()
 });
 

@@ -1,10 +1,5 @@
 <template>
-  <!--Restrict page if user is not Employer-->
-  <div v-if="$session.user?.typeUser !== 'Empleador'" class="d-flex flex-column text-center">
-    <h3>Acceso restringido</h3>
-    <p>Esta página no está disponible</p>
-  </div>
-  <div v-else class="d-flex flex-column">
+  <div class="d-flex flex-column">
     <h1 class="text-center">Crear beneficios y deducciones</h1>
 
     <div class="container py-4 flex-fill d-flex justify-content-center">
