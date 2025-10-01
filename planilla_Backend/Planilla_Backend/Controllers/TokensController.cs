@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -114,56 +115,88 @@ namespace Planilla_Backend.Controllers
 
       return Ok(new { message = "¡Correo de activación reenviado!" });
     }
-    
+
     [HttpGet("ActivateEmployee")]
     public IActionResult ActivateEmployee(string token)
     {
-      string redirectUrl = "http://localhost:8080/auth/EmployeeActivation?status="; // URL base del frontend
+      const string frontBaseUrl = "http://localhost:8080/auth/EmployeeActivation";
+      string status;
+      string? setPwdToken = null;
 
       try
       {
-        var handler = new JwtSecurityTokenHandler();
-        var claimsPrincipal = handler.ValidateToken(token, new TokenValidationParameters
+        if (string.IsNullOrWhiteSpace(token))
         {
-          ValidateIssuerSigningKey = true,
-          IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.configuration["JWT:KEY"]!)),
-          ValidateIssuer = false,
-          ValidateAudience = false,
-          ValidateLifetime = true,
-          ClockSkew = TimeSpan.Zero
-        }, out var validatedToken);
-
-        var tokenType = claimsPrincipal.FindFirstValue("TokenType");
-        var idPersonString = claimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        if (tokenType != "Activation")
-        {
-          redirectUrl += "invalid-token";
-        }
-        else if (string.IsNullOrEmpty(idPersonString))
-        {
-          redirectUrl += "invalid-user";
+          status = "invalid-token";
         }
         else
         {
-          int idPerson = int.Parse(idPersonString);
+          var handler = new JwtSecurityTokenHandler();
+          var principal = handler.ValidateToken(token, new TokenValidationParameters
+          {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.configuration["JWT:KEY"]!)),
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero
+          }, out _);
 
-          bool isAlreadyActive = this.personUserService.IsUserPersonActive(idPerson);
-          if (isAlreadyActive)
+          var tokenType = principal.FindFirstValue("TokenType");
+          var idPersonString = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+
+          if (!string.Equals(tokenType, "Activation", StringComparison.Ordinal))
           {
-            redirectUrl += "already-active";
-          } else
+            status = "invalid-token";
+          }
+          else if (string.IsNullOrWhiteSpace(idPersonString))
           {
-            int updateResult = this.personUserService.UpdateUserPesonStatusToActivate(idPerson);
-            redirectUrl += updateResult < 1 ? "failed" : "success";
+            status = "invalid-user";
+          }
+          else
+          {
+              int idPerson = int.Parse(idPersonString);
+
+              if (personUserService.IsUserPersonActive(idPerson))
+              {
+                  status = "already-active";
+              }
+              else
+              {
+                
+                var updated = personUserService.UpdateUserPesonStatusToActivate(idPerson);
+                status = updated < 1 ? "failed" : "success";
+
+                if (status == "success")
+                {
+                  var user = personUserService.GetPersonUserById(idPerson);
+                  if (user is null)
+                  {
+                      status = "invalid-user";
+                  }
+                  else
+                  {
+                    setPwdToken = utils.GenerateSetPasswordToken(user.IdUser, minutes: 15);
+                  }
+                }
+            }
           }
         }
       }
-      catch (Exception)
+      catch (SecurityTokenExpiredException)
       {
-        redirectUrl += "expired";
+          status = "expired";
       }
+      catch
+      {
+          status = "failed";
+      }
+      // Construye la URL de redirección al Front
+      var query = new Dictionary<string, string?> { ["status"] = status };
+      if (status == "success" && !string.IsNullOrEmpty(setPwdToken))
+        query["token"] = setPwdToken;
 
+      var redirectUrl = QueryHelpers.AddQueryString(frontBaseUrl, query);
       return Redirect(redirectUrl);
     }
   }
