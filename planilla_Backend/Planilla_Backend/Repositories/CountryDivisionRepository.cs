@@ -8,10 +8,9 @@ namespace Planilla_Backend.Repositories
   public class CountryDivisionRepository
   {
     private readonly string _connectionString;
-    public CountryDivisionRepository()
+    public CountryDivisionRepository(IConfiguration config)
     {
-      var builder = WebApplication.CreateBuilder();
-      _connectionString = builder.Configuration.GetConnectionString("OnigiriContext");
+      _connectionString = config.GetConnectionString("OnigiriContext");
     }
 
     public List<DivisionModel> GetProvince()

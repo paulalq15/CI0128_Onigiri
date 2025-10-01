@@ -12,9 +12,9 @@ namespace Planilla_Backend.Controllers
   {
     private readonly CountryDivisionService countryDivisionService;
 
-    public CountryDivisionController()
+    public CountryDivisionController(CountryDivisionService countryDivisionServ)
     {
-      countryDivisionService = new CountryDivisionService();
+      countryDivisionService = countryDivisionServ;
     }
 
     [HttpGet("Provinces")]

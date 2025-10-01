@@ -21,9 +21,9 @@ namespace Planilla_Backend.Controllers
     private readonly IConfiguration configuration;
     private readonly Utils utils;
     private readonly IEmailService emailService;
-    public TokensController(IConfiguration configuration, Utils utils, IEmailService emailService)
+    public TokensController(PersonUserService personUserServ, IConfiguration configuration, Utils utils, IEmailService emailService)
     {
-      this.personUserService = new PersonUserService();
+      this.personUserService = personUserServ;
       this.configuration = configuration;
       this.utils = utils;
       this.emailService = emailService;

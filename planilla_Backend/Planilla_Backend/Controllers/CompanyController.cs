@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+
 using Planilla_Backend.Models;
 using Planilla_Backend.Services;
 
@@ -9,9 +12,9 @@ namespace Planilla_Backend.Controllers
   public class CompanyController : ControllerBase
   {
     private readonly CompanyService createCompanyService;
-    public CompanyController()
+    public CompanyController(CompanyService createCompanyServ)
     {
-      createCompanyService = new CompanyService();
+      createCompanyService = createCompanyServ;
     }
 
     [HttpPost]
@@ -58,12 +61,13 @@ namespace Planilla_Backend.Controllers
       return Ok(companies);
     }
 
-    [HttpGet("GetAllCompaniesSummary")]
-    public async Task<ActionResult<List<CompanySummaryModel>>> GetAllCompaniesSummary()
+    [HttpGet("getCompaniesWithStats")]
+    public ActionResult<List<CompanyModel>> GetCompaniesWithStats([FromQuery] int employerId, [FromQuery] int viewerUserId)
     {
-      List<CompanySummaryModel> companySummaryModelsList = await this.createCompanyService.GetAllCompaniesSummary();
+      if (employerId <= 0 || viewerUserId <= 0) return BadRequest("Invalid parameters.");
 
-      return Ok(companySummaryModelsList);
+      var rows = createCompanyService.GetCompaniesWithStats(employerId, viewerUserId);
+      return Ok(rows);
     }
   }
 }

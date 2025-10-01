@@ -7,9 +7,9 @@ namespace Planilla_Backend.Services
   public class CountryDivisionService
   {
     private readonly CountryDivisionRepository countryDivisionRepository;
-    public CountryDivisionService()
+    public CountryDivisionService(CountryDivisionRepository countryDivisionRepo)
     {
-      countryDivisionRepository = new CountryDivisionRepository();
+      countryDivisionRepository = countryDivisionRepo;
     }
     public List<DivisionModel> GetProvince()
     {

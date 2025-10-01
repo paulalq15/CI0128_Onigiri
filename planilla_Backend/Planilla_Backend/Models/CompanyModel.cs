@@ -16,5 +16,8 @@
     //Address details
     public string AddressDetails { get; set; }
     public string ZipCode { get; set; }
+
+    public int? EmployeeCount { get; set; }
+    public string? EmployerName { get; set; }
   }
 }

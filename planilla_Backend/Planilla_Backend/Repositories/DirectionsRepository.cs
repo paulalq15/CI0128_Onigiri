@@ -7,9 +7,8 @@ namespace Planilla_Backend.Repositories
   public class DirectionsRepository
   {
     private readonly string _connectionString;
-    public DirectionsRepository() {
-      var builder = WebApplication.CreateBuilder();
-      _connectionString = builder.Configuration.GetConnectionString("OnigiriContext");
+    public DirectionsRepository(IConfiguration config) {
+      _connectionString = config.GetConnectionString("OnigiriContext");
     }
 
     // Comprobar si el zip code existe y devolver el id de la división territorial

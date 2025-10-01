@@ -12,9 +12,9 @@ namespace Planilla_Backend.Services
     private const int maxNameLength = 150;
     private const int maxAddressLength = 250;
 
-    public CompanyService()
+    public CompanyService(CompanyRepository createCompanyRepo)
     {
-      createCompanyRepository = new CompanyRepository();
+      createCompanyRepository = createCompanyRepo;
     }
     public string CreateCompany(CompanyModel company, out int companyId)
     {
@@ -72,7 +72,8 @@ namespace Planilla_Backend.Services
         if (company.CreatedBy <= 0)
           return "El ID del usuario actual es inválido.";
 
-        if (!createCompanyRepository.ValidateUserType(company.CreatedBy))
+        var userType = createCompanyRepository.GetUserType(company.CreatedBy);
+        if (!string.Equals(userType?.Trim(), "Empleador", StringComparison.OrdinalIgnoreCase))
           return "El usuario actual no es un Empleador activo.";
 
         if (!createCompanyRepository.ZipExists(company.ZipCode))
@@ -92,7 +93,7 @@ namespace Planilla_Backend.Services
 
       return string.Empty; ;
     }
-    
+
     public (string error, IEnumerable<CompanySummaryModel> companies) GetCompaniesForUser(int userId, bool onlyActive = true)
     {
       try
@@ -100,7 +101,8 @@ namespace Planilla_Backend.Services
         if (userId <= 0)
           return ("El ID de usuario es inválido.", Enumerable.Empty<CompanySummaryModel>());
 
-        if (!createCompanyRepository.ValidateUserType(userId))
+        var userType = createCompanyRepository.GetUserType(userId);
+        if (!string.Equals(userType?.Trim(), "Empleador", StringComparison.OrdinalIgnoreCase))
           return ("El usuario actual no es un Empleador activo.", Enumerable.Empty<CompanySummaryModel>());
 
         var rows = createCompanyRepository.GetCompaniesByUser(userId, onlyActive);
@@ -112,9 +114,9 @@ namespace Planilla_Backend.Services
       }
     }
 
-    public async Task<List<CompanySummaryModel>> GetAllCompaniesSummary()
+    public List<CompanyModel> GetCompaniesWithStats(int employerId, int viewerUserId)
     {
-      return await this.createCompanyRepository.GetAllCompaniesSummary();
+      return createCompanyRepository.GetCompaniesWithStats(employerId, viewerUserId);
     }
   }
 }

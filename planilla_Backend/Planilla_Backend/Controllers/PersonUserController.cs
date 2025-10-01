@@ -16,9 +16,9 @@ namespace Planilla_Backend.Controllers
     private readonly IEmailService emailService;
     private readonly Utils utils;
 
-    public PersonUserController(IEmailService emailService, Utils utils)
+    public PersonUserController(PersonUserService personUserServ, IEmailService emailService, Utils utils)
     {
-      personUserService = new PersonUserService();
+      personUserService = personUserServ;
       this.emailService = emailService;
       this.utils = utils;
     }
