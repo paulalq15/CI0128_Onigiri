@@ -35,5 +35,26 @@ namespace Planilla_Backend.Services.Utils
 
       return new JwtSecurityTokenHandler().WriteToken(jwTokenConfig);
     }
+
+    public string GenerateSetPasswordToken(int idUser, int minutes = 15)
+    {
+        var key   = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:KEY"]!));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, idUser.ToString()),
+            new Claim("TokenType", "SetPassword")
+        };
+
+        var jwt = new JwtSecurityToken(
+            claims: claims,
+            notBefore: DateTime.UtcNow,
+            expires: DateTime.UtcNow.AddMinutes(minutes),
+            signingCredentials: creds
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(jwt);
+    }
   }
 }

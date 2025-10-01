@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -65,7 +66,8 @@ namespace Planilla_Backend.Controllers
           if (isAlreadyActive)
           {
             redirectUrl += "already-active";
-          } else
+          }
+          else
           {
             int updateResult = this.personUserService.UpdateUserPesonStatusToActivate(idPerson);
             redirectUrl += updateResult < 1 ? "failed" : "success";
@@ -112,6 +114,151 @@ namespace Planilla_Backend.Controllers
       }
 
       return Ok(new { message = "¡Correo de activación reenviado!" });
+    }
+
+    [HttpGet("ActivateEmployee")]
+    public IActionResult ActivateEmployee(string token)
+    {
+      const string frontBaseUrl = "http://localhost:8080/auth/EmployeeActivation";
+      string status;
+      string? setPwdToken = null;
+
+      try
+      {
+        if (string.IsNullOrWhiteSpace(token))
+        {
+          status = "invalid-token";
+        }
+        else
+        {
+          var handler = new JwtSecurityTokenHandler();
+          var principal = handler.ValidateToken(token, new TokenValidationParameters
+          {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.configuration["JWT:KEY"]!)),
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero
+          }, out _);
+
+          var tokenType = principal.FindFirstValue("TokenType");
+          var idPersonString = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+
+          if (!string.Equals(tokenType, "Activation", StringComparison.Ordinal))
+          {
+            status = "invalid-token";
+          }
+          else if (string.IsNullOrWhiteSpace(idPersonString))
+          {
+            status = "invalid-user";
+          }
+          else
+          {
+            int idPerson = int.Parse(idPersonString);
+
+            if (personUserService.IsUserPersonActive(idPerson))
+            {
+              status = "already-active";
+            }
+            else
+            {
+
+              var updated = personUserService.UpdateUserPesonStatusToActivate(idPerson);
+              status = updated < 1 ? "failed" : "success";
+
+              if (status == "success")
+              {
+                var user = personUserService.GetPersonUserById(idPerson);
+                if (user is null)
+                {
+                  status = "invalid-user";
+                }
+                else
+                {
+                  setPwdToken = utils.GenerateSetPasswordToken(user.IdUser, minutes: 15);
+                }
+              }
+            }
+          }
+        }
+      }
+      catch (SecurityTokenExpiredException)
+      {
+        status = "expired";
+      }
+      catch
+      {
+        status = "failed";
+      }
+      // Construye la URL de redirección al Front
+      var query = new Dictionary<string, string?> { ["status"] = status };
+      if (status == "success" && !string.IsNullOrEmpty(setPwdToken))
+        query["token"] = setPwdToken;
+
+      var redirectUrl = QueryHelpers.AddQueryString(frontBaseUrl, query);
+      return Redirect(redirectUrl);
+    }
+    
+    [HttpPost("SetPassword")]
+    public IActionResult SetPassword(
+      [FromBody] string password,
+      [FromHeader(Name = "Authorization")] string? authHeader = null,
+      [FromQuery] string? token = null)
+    {
+
+      string? bearer = null;
+      if (!string.IsNullOrWhiteSpace(authHeader) && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+        bearer = authHeader.Substring("Bearer ".Length).Trim();
+
+      var tokenToValidate = !string.IsNullOrWhiteSpace(bearer) ? bearer : token;
+      if (string.IsNullOrWhiteSpace(tokenToValidate))
+        return Unauthorized("Token requerido.");
+
+      ClaimsPrincipal claimsPrincipal;
+      try
+      {
+        var handler = new JwtSecurityTokenHandler();
+        claimsPrincipal = handler.ValidateToken(tokenToValidate, new TokenValidationParameters
+        {
+          ValidateIssuerSigningKey = true,
+          IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.configuration["JWT:KEY"]!)),
+          ValidateIssuer = false,
+          ValidateAudience = false,
+          ValidateLifetime = true,
+          ClockSkew = TimeSpan.Zero
+        }, out var _);
+      }
+      catch (SecurityTokenExpiredException)
+      {
+        return Unauthorized("Token expirado.");
+      }
+      catch
+      {
+        return Unauthorized("Token inválido.");
+      }
+
+      var tokenType = claimsPrincipal.FindFirstValue("TokenType");
+      if (!string.Equals(tokenType, "SetPassword", StringComparison.Ordinal))
+        return Unauthorized("Token inválido para cambio de contraseña.");
+
+      var nameId = claimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier);
+      if (string.IsNullOrWhiteSpace(nameId))
+        return Unauthorized("Token sin identificador.");
+
+      if (!int.TryParse(nameId, out var idFromClaim))
+        return Unauthorized("Identificador inválido.");
+
+      var user = personUserService.GetPersonUserbyIdUser(idFromClaim);
+      if (user is null)
+      {
+        return NotFound("Usuario no encontrado.");
+      }
+
+        // llemar service de update pwd
+        personUserService.SetUserPassword(user.IdUser, password);
+
+        return Ok(new { Success = true, Message = "Contraseña actualizada." });
     }
   }
 }

@@ -33,6 +33,7 @@ import ViewReports from './components/ViewReports.vue';
 import CreateReport from './components/CreateReport.vue';
 import ActivationAccountPage from './components/ActivationAccountpage.vue';
 import ResendActivationAccountPage from './components/ResendActivationAccountPage.vue';
+import EmployeeActivation from './components/EmployeeActivation.vue';
 
 const employerOnly = { requiresAuth: true, roles: ['Empleador'] }
 const employerOrAdmin = { requiresAuth: true, roles: ['Empleador','Administrador'] }
@@ -50,7 +51,8 @@ const router = createRouter({
         { path: 'Login', name: 'Login', component: LoginForm },
         { path: 'Register', name: 'RegisterAccount', component: RegisterPage },
         { path: 'ActivateAccount', name: 'ActivateAccount', component: ActivationAccountPage },
-        { path: 'ResendActivationAccount', name: 'ResendActivation', component: ResendActivationAccountPage}
+        { path: 'ResendActivationAccount', name: 'ResendActivation', component: ResendActivationAccountPage},
+        { path: 'EmployeeActivation', name: 'EmployeeActivation', component: EmployeeActivation}
       ]
     },
 

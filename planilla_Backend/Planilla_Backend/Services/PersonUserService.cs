@@ -100,7 +100,8 @@ namespace Planilla_Backend.Services
       {
         PersonUser? personUser = personUserRepository.GetPersonUserByIdPerson(idPerson);
         return personUser;
-      } catch (Exception)
+      }
+      catch (Exception)
       {
         return null;
       }
@@ -122,6 +123,19 @@ namespace Planilla_Backend.Services
       catch (Exception)
       {
         return null;
+      }
+    }
+    
+    public int SetUserPassword(int userId, string password)
+    {
+      try
+      {
+        int updateResult = personUserRepository.SetUserPassword(userId, password);
+        return updateResult;
+      }
+      catch (Exception)
+      {
+        return -1;
       }
     }
   }
