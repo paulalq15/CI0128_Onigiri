@@ -270,12 +270,14 @@ export default {
         companyUniqueId: Number(this.$session.user?.companyUniqueId)
       };
 
+      const alert = useGlobalAlert();
+
       URLBaseAPI.post('/api/Employee', payload)
         .then((response) => {
           console.log('OK:', response.data);
 
           // Uso de alerta global para notificar un registro exitoso
-          const alert = useGlobalAlert();
+
 
           alert.show(
             'Registro exitoso.',
@@ -286,8 +288,14 @@ export default {
           this.$router.push('/home');
         })
         .catch((error) => {
-          if (error.response) console.log('Error del backend:', error.response.data);
-          else console.log('Error de red:', error.message);
+          if (error.response) {
+            alert.show ('Error al registrar empleado:' + error.response.data, 'warning')
+            console.log('Error del backend:', error.response.data)
+          } 
+          else {
+            alert.show ('Error de red:' + error.message, 'warning')
+            console.log('Error de red:', error.message)
+          }
         });
     },
   },
