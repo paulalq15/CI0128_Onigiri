@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+
 using Planilla_Backend.Models;
 using Planilla_Backend.Services;
 
@@ -69,6 +70,14 @@ namespace Planilla_Backend.Controllers
     [HttpGet("getTotalEmployees")]
     public int getTotalEmployees(int companyId) {
       return this.createCompanyService.getTotalEmployees(companyId);
+    }
+
+    [HttpGet("GetAllCompaniesSummary")]
+    public async Task<ActionResult<List<CompanySummaryModel>>> GetAllCompaniesSummary()
+    {
+      List<CompanySummaryModel> companySummaryModelsList = await this.createCompanyService.GetAllCompaniesSummary();
+
+      return Ok(companySummaryModelsList);
     }
   }
 }

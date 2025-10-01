@@ -49,5 +49,31 @@ namespace Planilla_Backend.Repositories
       return rowsAffected > 0;
     }
 
+    public async Task<List<PayrollElementModel>> GetPayrollElementsByIdCompany(int idCompany)
+    {
+      try
+      {
+        using var connection = new SqlConnection(_connectionString);
+
+        const string sqlGetPayrollElements = @"
+          SELECT
+          Nombre AS ElementName,
+          Tipo AS CalculationType,
+          Valor AS CalculationValue,
+          PagadoPor AS PaidBy,
+          Estado AS Status,
+          IdEmpresa AS CompanyId
+          FROM
+          ElementoPlanilla
+          WHERE
+          IdEmpresa = @idCompany";
+
+        var elementsList = await connection.QueryAsync<PayrollElementModel>(sqlGetPayrollElements, new { idCompany });
+        return elementsList.ToList();
+      } catch (Exception ex) {
+        Console.WriteLine("Error al obtener elementos de planilla: " + ex.Message);
+        return new List<PayrollElementModel>();
+      }
+    }
   }
 }
