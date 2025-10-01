@@ -162,5 +162,50 @@ namespace Planilla_Backend.Repositories
 
       return connection.Query<CompanyModel>(sql, new { EmployerId = employerId, IsAdmin = isAdmin ? 1 : 0 }).ToList();
     }
+
+    public List<CompanyModel> getCompanies(int employerId)
+    {
+      const string query = @"
+        SELECT
+          IdEmpresa AS CompanyUniqueId,
+          CedulaJuridica AS CompanyId,
+          Nombre AS CompanyName,
+          Telefono AS Telephone,
+          CantidadBeneficios AS MaxBenefits,
+          FrecuenciaPago AS PaymentFrequency,
+          DiaPago1 AS PayDay1,
+          DiaPago2 AS PayDay2
+        FROM dbo.Empresa
+        WHERE IdCreadoPor = @EmployerId;";
+
+      using var connection = new SqlConnection(_connectionString);
+
+      return connection.Query<CompanyModel>(query, new { EmployerId = employerId }).ToList();
+    }
+    
+    public async Task<List<CompanySummaryModel>> GetAllCompaniesSummary()
+    {
+      try
+      {
+        using var connection = new SqlConnection(_connectionString);
+
+        var sqlCompaniesSummary = @"
+            SELECT
+              IdEmpresa AS CompanyUniqueId,
+              CedulaJuridica AS CompanyId,
+              Nombre AS CompanyName
+            FROM
+              Empresa
+        ";
+
+        var companiesList = await connection.QueryAsync<CompanySummaryModel>(sqlCompaniesSummary);
+        return companiesList.ToList();
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine("Error al obtener el resumen de todas las compañias: \n" + ex.Message);
+        return new List<CompanySummaryModel>();
+      }
+    }
   }
 }

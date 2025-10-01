@@ -118,5 +118,15 @@ namespace Planilla_Backend.Services
     {
       return createCompanyRepository.GetCompaniesWithStats(employerId, viewerUserId);
     }
+
+    public List<CompanyModel> getCompanies(int employerId)
+    {
+      return this.createCompanyRepository.getCompanies(employerId);
+    }
+
+    public async Task<List<CompanySummaryModel>> GetAllCompaniesSummary()
+    {
+      return await this.createCompanyRepository.GetAllCompaniesSummary();
+    }
   }
 }
