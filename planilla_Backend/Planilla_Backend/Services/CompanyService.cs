@@ -116,5 +116,14 @@ namespace Planilla_Backend.Services
     {
       return await this.createCompanyRepository.GetAllCompaniesSummary();
     }
+
+    public int getCompanyIdByUserId(int userId) {
+      return this.createCompanyRepository.getCompanyIdByUserId(userId);
+    }
+
+    public int getCompanyTotalBenefitsByCompanyId(int companyId)
+    {
+        return this.createCompanyRepository.getCompanyTotalUsersByCompanyId(companyId);
+    }
   }
 }

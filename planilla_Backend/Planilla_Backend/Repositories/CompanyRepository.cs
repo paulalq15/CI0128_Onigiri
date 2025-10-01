@@ -150,5 +150,30 @@ namespace Planilla_Backend.Repositories
         return new List<CompanySummaryModel>();
       }
     }
+
+    public int getCompanyIdByUserId(int userId) {
+      using var connection = new SqlConnection(_connectionString);
+
+      const string query = @"
+        SELECT IdEmpresa 
+        FROM UsuariosPorEmpresa
+        WHERE IdUsuario = @userId;
+      ";
+
+      return connection.QuerySingle<int>(query, new { userId });
+    }
+
+    public int getCompanyTotalUsersByCompanyId(int companyId)
+    {
+      using var connection = new SqlConnection(_connectionString);
+
+      const string query = @"
+        SELECT CantidadBeneficios
+        FROM Empresa
+        WHERE IdEmpresa = @companyId;
+      ";
+
+      return connection.QuerySingle<int>(query, new { companyId });
+    }
   }
 }

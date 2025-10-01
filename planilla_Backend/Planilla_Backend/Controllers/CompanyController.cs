@@ -65,5 +65,16 @@ namespace Planilla_Backend.Controllers
 
       return Ok(companySummaryModelsList);
     }
+
+    [HttpGet("getCompanyIdByUserId")]
+    public int getCompanyIdByUserId(int userId) {
+      return this.createCompanyService.getCompanyIdByUserId(userId);
+    }
+
+    [HttpGet("getCompanyTotalBenefitsByCompanyId")]
+    public int getCompanyTotalBenefitsByCompanyId(int companyId)
+    {
+       return this.createCompanyService.getCompanyTotalBenefitsByCompanyId(companyId);
+    }
   }
 }
