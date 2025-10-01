@@ -126,5 +126,29 @@ namespace Planilla_Backend.Repositories
       ";
       return connection.Query<CompanySummaryModel>(sql, new { UserId = userId });
     }
+
+    public async Task<List<CompanySummaryModel>> GetAllCompaniesSummary()
+    {
+      try
+      {
+        using var connection = new SqlConnection(_connectionString);
+
+        var sqlCompaniesSummary = @"
+            SELECT
+              IdEmpresa AS CompanyUniqueId,
+              CedulaJuridica AS CompanyId,
+              Nombre AS CompanyName
+            FROM
+              Empresa
+        ";
+
+        var companiesList = await connection.QueryAsync<CompanySummaryModel>(sqlCompaniesSummary);
+        return companiesList.ToList();
+      } catch (Exception ex)
+      {
+        Console.WriteLine("Error al obtener el resumen de todas las compañias: \n" + ex.Message);
+        return new List<CompanySummaryModel>();
+      }
+    }
   }
 }

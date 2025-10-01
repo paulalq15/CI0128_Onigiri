@@ -33,5 +33,15 @@ namespace Planilla_Backend.Controllers
         return BadRequest(result);
       }
     }
+
+    [HttpGet("GetPayRollElements")]
+    public async Task<ActionResult<List<PayrollElementModel>>> GetPayrollElements(int idCompany)
+    {
+      var payrollElements = await this.payrollElementService.GetPayrollElementsByIdCompany(idCompany);
+
+      if (payrollElements == null || !payrollElements.Any()) return NotFound("No se encontraron elementos de planilla");
+
+      return Ok(payrollElements);
+    }
   }
 }
