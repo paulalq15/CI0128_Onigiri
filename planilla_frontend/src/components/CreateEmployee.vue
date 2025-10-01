@@ -214,6 +214,25 @@ export default {
           console.error(error);
         }
       }
+
+      // Salario
+      if(!this.Contract.salary) this.errors.salary = 'El salario es obligatorio';
+      else {
+        if (this.Contract.salary < '0') this.errors.salary = 'El salario debe ser mayor a 0'
+      }
+
+      //Fecha Inicio
+      if(!this.Contract.startDate) this.errors.startDate = 'La fecha de inicio es obligatorio';
+
+      //IBAN
+      if(!this.Contract.bankAccount) this.errors.bankAccount = 'La cuenta bancaria es obligatorio';
+      else if (this.Contract.bankAccount.length !== 22)
+        this.errors.bankAccount = 'Tamaño de cuenta incorrecto';
+      else {
+        if (!/^CR\d{20}$/.test(this.Contract.bankAccount))
+          this.errors.bankAccount = 'Formato IBAN de Costa Rica inválido (CR + 20 dígitos)';
+      }
+
       // Si no hay errores, el formulario es válido
       return Object.keys(this.errors).length === 0;
     },
