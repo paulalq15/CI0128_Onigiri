@@ -38,7 +38,7 @@
             <td>{{ employee.name2 }}</td>
             <td>{{ employee.surname1 }}</td>
             <td>{{ employee.surname2 }}</td>
-            <td>{{ employee.birthdayDate }}</td>
+            <td>{{ this.formatDate(employee.birthdayDate) }}</td>
             <td>{{ employee.email }}</td>
             <td>{{ employee.contractType }}</td>
             <td>{{ employee.jobPosition }}</td>
@@ -80,6 +80,11 @@ export default {
         this.employees = response.data;
       });
     },
+
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleDateString();
+    }
   },
 
   created: function () {

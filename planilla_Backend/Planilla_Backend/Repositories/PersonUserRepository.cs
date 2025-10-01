@@ -111,7 +111,7 @@ namespace Planilla_Backend.Repositories
                 p.Nombre2 AS Name2,
                 p.Apellido1 AS Surname1,
                 p.Apellido2 AS Surname2,
-                p.FechaNacimiento AS BirthDate,
+                p.FechaNacimiento AS BirthdayDate,
                 u.Correo AS Email,
                 c.Tipo AS ContractType,
                 c.Puesto AS JobPosition,

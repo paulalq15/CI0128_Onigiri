@@ -13,7 +13,7 @@ namespace Planilla_Backend.Models
     public string Surname1 { get; set; }
     public string Surname2 { get; set; }
     public string Number { get; set; }
-    public DateTime BirthdayDate { get; set; }
+    public string BirthdayDate { get; set; }
     public string TypePerson { get; set; }
 
     // Contract attributes:
