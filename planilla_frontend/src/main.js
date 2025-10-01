@@ -31,6 +31,8 @@ import ViewPayment from './components/ViewPayment.vue';
 import CreatePayment from './components/CreatePayment.vue';
 import ViewReports from './components/ViewReports.vue';
 import CreateReport from './components/CreateReport.vue';
+import ActivationAccountPage from './components/ActivationAccountpage.vue';
+import ResendActivationAccountPage from './components/ResendActivationAccountPage.vue';
 
 const employerOnly = { requiresAuth: true, roles: ['Empleador'] }
 const employerOrAdmin = { requiresAuth: true, roles: ['Empleador','Administrador'] }
@@ -46,7 +48,9 @@ const router = createRouter({
       component: AuthLayout,
       children: [
         { path: 'Login', name: 'Login', component: LoginForm },
-        { path: 'Register', name: 'RegisterAccount', component: RegisterPage }
+        { path: 'Register', name: 'RegisterAccount', component: RegisterPage },
+        { path: 'ActivateAccount', name: 'ActivateAccount', component: ActivationAccountPage },
+        { path: 'ResendActivationAccount', name: 'ResendActivation', component: ResendActivationAccountPage}
       ]
     },
 
@@ -75,7 +79,7 @@ const router = createRouter({
         { path: 'Pagos/VerPagos', name: 'Ver Pagos', component: ViewPayment, meta: employerApproverEmployee},
         { path: 'Pagos/CrearPago', name: 'Crear Pago', component: CreatePayment, meta: employerOrApprover },
         { path: 'Reportes/VerReportes', name: 'Ver Reportes', component: ViewReports, meta: employerOrApprover },
-        { path: 'Reportes/CrearReporte', name: 'Crear Reporte', component: CreateReport, meta: employerOrApprover }
+        { path: 'Reportes/CrearReporte', name: 'Crear Reporte', component: CreateReport, meta: employerOrApprover },
       ]
     },
 

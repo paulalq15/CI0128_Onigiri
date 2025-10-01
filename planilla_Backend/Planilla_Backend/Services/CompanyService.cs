@@ -111,5 +111,10 @@ namespace Planilla_Backend.Services
         return ($"Error obteniendo empresas: {ex.Message}", Enumerable.Empty<CompanySummaryModel>());
       }
     }
+
+    public async Task<List<CompanySummaryModel>> GetAllCompaniesSummary()
+    {
+      return await this.createCompanyRepository.GetAllCompaniesSummary();
+    }
   }
 }
