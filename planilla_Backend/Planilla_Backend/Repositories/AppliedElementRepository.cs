@@ -19,13 +19,16 @@ namespace Planilla_Backend.Repositories
         {
             const string query = @"
             SELECT
-              IdElementoAplicado AS ElementId,
-              IdUsuario As UserId,
-              FechaInicio AS StartDate,
-              FechaFin AS EndDate,
-              Estado AS Status
-            FROM dbo.ElementoAplicado
-            WHERE IdUsuario = @employeeId;";
+              ea.IdElementoAplicado AS AppliedElementId,
+              ea.IdElemento AS ElementId,
+              ep.Nombre AS ElementName,
+              ea.IdUsuario As UserId,
+              ea.FechaInicio AS StartDate,
+              ea.FechaFin AS EndDate,
+              ea.Estado AS Status
+            FROM dbo.ElementoAplicado ea
+            JOIN dbo.ElementoPlanilla ep ON ea.IdElemento = ep.IdElemento
+            WHERE ea.IdUsuario = @employeeId;";
 
             using var connection = new SqlConnection(_connectionString);
 

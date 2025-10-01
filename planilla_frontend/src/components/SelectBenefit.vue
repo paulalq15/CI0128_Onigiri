@@ -61,7 +61,7 @@
         <tbody>
           <!-- Filas de elementos aplicados -->
           <tr v-for="(appliedElement, index) of appliedElements" :key="index">
-            <td>{{ appliedElement.elementId }}</td>
+            <td>{{ appliedElement.elementName }}</td>
             <td>{{ appliedElement.startDate }}</td>
             <td>{{ appliedElement.endDate }}</td>
             <td>{{ appliedElement.status }}</td>

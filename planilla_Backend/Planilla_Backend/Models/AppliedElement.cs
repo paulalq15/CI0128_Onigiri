@@ -2,6 +2,7 @@
 {
   public class AppliedElement
   {
+    public int AppliedElementId { get; set; }
     public int ElementId { get; set; }
     public string ElementName { get; set; }
     public int UserId { get; set; }
