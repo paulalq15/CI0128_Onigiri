@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PensionAPI.Controllers {
     [ApiController]
-    [Route("api/[controller]")]  // URL: https://localhost:7019/api/controller
+    [Route("api")]  // URL: https://localhost:7019/api/controller
 
     public class API_Controller : ControllerBase {
-        [HttpGet]
+        [HttpGet("API_Pensiones_Voluntarias")]
         public IActionResult Get(char? planType, double? grossSalary) {
             try {
                 // Validate the sent parameters:
@@ -47,13 +47,12 @@ namespace PensionAPI.Controllers {
                 }
 
                 // 200:
-                return Ok(new
-                {
-                    PlanType = planType,
-                    GrossSalary = grossSalary,
-                    EmployerContribution = employerContribution,
-                    EmployeeContribution = employeeContribution,
-                });
+                return Ok(new {
+                    deductions = new[] {
+                        new { Type = "ER", Amount = employerContribution },
+                        new { Type = "EE", Amount = employeeContribution }
+                    }
+               });
             }
             
             catch (Exception ex) {
