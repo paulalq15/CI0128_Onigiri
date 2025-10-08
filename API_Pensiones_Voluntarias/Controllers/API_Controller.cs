@@ -6,7 +6,7 @@ namespace PensionAPI.Controllers {
     [Route("api")]  // URL: https://localhost:7019/api/controller
 
     public class API_Controller : ControllerBase {
-        [HttpGet("API_Pensiones_Voluntarias")]
+        [HttpGet("PensionesVoluntarias")]
         public IActionResult Get(char? planType, double? grossSalary) {
             try {
                 // Validate the sent parameters:
