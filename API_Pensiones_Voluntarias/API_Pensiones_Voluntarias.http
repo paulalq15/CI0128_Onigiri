@@ -1,0 +1,6 @@
+@API_Pensiones_Voluntarias_HostAddress = http://localhost:5135
+
+GET {{API_Pensiones_Voluntarias_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

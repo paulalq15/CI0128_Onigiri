@@ -1,26 +1,20 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <router-view></router-view>
+  <!--Alerta global-->
+    <div v-if="alert.message"
+         :class="['alert', `alert-${alert.type}`, 'alert-dismissible', 'fade', 'show']"
+         role="alert"
+         style="position:fixed; top:20px; right:20px; min-width:250px;">
+      {{ alert.message }}
+      <button type="button" class="btn-close" @click="alert.clear()"></button>
+    </div>
 </template>
 
-<script>
-import HelloWorld from './components/HelloWorld.vue'
+<script setup>
+  // Código que permite mantener una alerta entre pantallas
+  import { useGlobalAlert } from '@/utils/alerts'
 
-export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
+  const alert = useGlobalAlert()
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+<style></style>

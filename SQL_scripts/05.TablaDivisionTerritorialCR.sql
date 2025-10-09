@@ -1,0 +1,8 @@
+﻿CREATE TABLE DivisionTerritorialCR( 
+IdDivision INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+Provincia VARCHAR(10) NOT NULL,
+Canton VARCHAR(19) NOT NULL,
+Distrito VARCHAR(25) NOT NULL,
+CodigoPostal CHAR(5) NOT NULL,
+) 
+GO
