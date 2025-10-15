@@ -2,15 +2,18 @@
 using Microsoft.Data.SqlClient;
 using Planilla_Backend.CleanArchitecture.Application.Ports;
 using Planilla_Backend.CleanArchitecture.Domain.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace Planilla_Backend.CleanArchitecture.Infrastructure
 {
   public class PayrollRepository : IPayrollRepository
   {
     private readonly string _connectionString;
-    public PayrollRepository(IConfiguration config)
+    private readonly ILogger<PayrollRepository> _logger;
+    public PayrollRepository(IConfiguration config, ILogger<PayrollRepository> logger)
     {
       _connectionString = config.GetConnectionString("OnigiriContext");
+      _logger = logger;
     }
 
     // =======================
@@ -31,8 +34,8 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       }
       catch (Exception ex)
       {
-        Console.WriteLine("Error getting company: " + ex.Message);
-        return new CompanyModel();
+        _logger.LogError(ex, "GetCompany failed. companyId: {CompanyId}", companyId);
+        throw;
       }      
     }
 
