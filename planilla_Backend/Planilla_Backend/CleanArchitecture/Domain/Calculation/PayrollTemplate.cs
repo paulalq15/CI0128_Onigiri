@@ -5,27 +5,44 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
   //Template Method Design Pattern
   public abstract class PayrollTemplate
   {
-    public PayrollSummary Run(int companyId, DateOnly dateFrom, DateOnly dateTo, PayrollContext ctx)
+    public List<PayrollDetailModel> RunCalculation(int companyId, DateOnly dateFrom, DateOnly dateTo, PayrollContext ctx)
     {
+      var payrollDetails = new List<PayrollDetailModel>();
 
+      List<EmployeeModel> employees = SelectEmployees(companyId, dateFrom, dateTo, ctx);
 
+      int i = 0;
+      while (i < employees.Count)
+      {
+        EmployeeModel employee = employees[i];
 
+        ContractModel contract = SelectContract(employee, ctx);
+        if (contract != null)
+        {
+          PayrollDetailModel baseLine = CreateBaseLine(employee, contract, ctx);
+          
+          var emptyElements = new List<ElementModel>();
+          List<PayrollDetailModel> conceptLines = ApplyConcepts(employee, baseLine, emptyElements, ctx);
 
-      var summary = new PayrollSummary();
-      return summary;
+          payrollDetails.Add(baseLine);
+
+          int j = 0;
+          while (j < conceptLines.Count)
+          {
+            payrollDetails.Add(conceptLines[j]);
+            j++;
+          }
+        }
+
+        i++;
+      }
+
+      return payrollDetails;
     }
+
     protected abstract List<EmployeeModel> SelectEmployees(int companyId, DateOnly dateFrom, DateOnly dateTo, PayrollContext ctx);
-
     protected abstract ContractModel SelectContract(EmployeeModel emp, PayrollContext ctx);
-
     protected abstract PayrollDetailModel CreateBaseLine(EmployeeModel employee, ContractModel contract, PayrollContext ctx);
-
-    protected abstract List<PayrollDetailModel> ApplyConcepts(EmployeeModel employee, PayrollDetailModel @base, List<ElementModel> elements, PayrollContext ctx);
-
-    protected abstract CompanyPayrollModel ConsolidateCompanyTotals(List<PayrollDetailModel> lines, PayrollContext ctx);
-
-    protected abstract CompanyPayrollModel BuildCompanyPayrollModel(CompanyModel company, List<PayrollDetailModel> details, PayrollContext ctx);
-
-    protected abstract List<PayrollDetailModel> PersistResults(CompanyPayrollModel header, List<PayrollDetailModel> details, PayrollContext ctx);
+    protected abstract List<PayrollDetailModel> ApplyConcepts(EmployeeModel employee, PayrollDetailModel baseLine, List<ElementModel> elements, PayrollContext ctx);
   }
 }

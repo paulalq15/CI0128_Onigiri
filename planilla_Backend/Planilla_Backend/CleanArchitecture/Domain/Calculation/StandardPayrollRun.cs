@@ -22,24 +22,10 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
       throw new NotImplementedException();
     }
 
-    protected override List<PayrollDetailModel> ApplyConcepts(EmployeeModel employee, PayrollDetailModel @base, List<ElementModel> elements, PayrollContext ctx)
-{
+    protected override List<PayrollDetailModel> ApplyConcepts(EmployeeModel employee, PayrollDetailModel baseLine, List<ElementModel> elements, PayrollContext ctx)
+    {
       throw new NotImplementedException();
     }
 
-    protected override CompanyPayrollModel ConsolidateCompanyTotals(List<PayrollDetailModel> lines, PayrollContext ctx)
-{
-      throw new NotImplementedException();
-    }
-
-    protected override CompanyPayrollModel BuildCompanyPayrollModel(CompanyModel company, List<PayrollDetailModel> details, PayrollContext ctx)
-{
-      throw new NotImplementedException();
-    }
-
-    protected override List<PayrollDetailModel> PersistResults(CompanyPayrollModel header, List<PayrollDetailModel> details, PayrollContext ctx)
-{
-      throw new NotImplementedException();
-    }
   }
 }
