@@ -79,9 +79,34 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       }
     }
 
-    public Task<IEnumerable<ElementModel>> GetElementsForEmployee(int companyId, int employeeId, DateOnly dateFrom, DateOnly dateTo)
+    public async Task<IEnumerable<ElementModel>> GetElementsForEmployee(int companyId, int employeeId, DateOnly dateFrom, DateOnly dateTo)
     {
-      return Task.FromResult<IEnumerable<ElementModel>>(new List<ElementModel>());
+      try
+      {
+        using var connection = new SqlConnection(_connectionString);
+        const string query = @"SELECT ea.IdElementoAplicado AS Id, e.Nombre AS Name, e.Valor AS Value, p.IdPersona AS EmployeeId,
+                              CASE WHEN e.Tipo = 'Monto Fijo' THEN 'FixedAmount'
+                                   WHEN e.Tipo = 'Porcentaje' THEN 'Percentage'
+                                   WHEN e.Tipo = 'API' THEN 'ExternalAPI'
+                              END AS CalculationType,
+                              CASE WHEN e.PagadoPor = 'Empleador' THEN 'Benefit'
+                                   WHEN e.PagadoPor = 'Empleado' THEN 'EmployeeDeduction'
+                              END AS ItemType
+                              FROM ElementoAplicado AS ea
+                              JOIN Elemento AS e ON ea.IdElemento = e.IdElemento
+                              JOIN Usuario AS u ON ea.IdUsuario = u.IdUsuario
+                              JOIN Persona AS p ON u.IdPersona = p.IdPersona
+                              WHERE p.IdPersona = @employeeId AND e.IdEmpresa = @companyId 
+                              AND CAST(ea.FechaInicio AS date) <= @dateFrom
+                              AND (ea.FechaFin IS NULL OR CAST(ea.FechaFin AS date) >= @dateTo";
+        var elements = await connection.QueryAsync<ElementModel>(query, new { companyId });
+        return elements;
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, "GetEmployees failed. companyId: {CompanyId}", companyId);
+        throw;
+      }
     }
 
     public async Task<IEnumerable<TaxModel>> GetTaxes(DateOnly dateFrom, DateOnly dateTo)
