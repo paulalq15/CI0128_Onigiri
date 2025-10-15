@@ -4,22 +4,31 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
 {
   public class CalculationFactory
   {
-    private readonly Salary_FixedStrategy _fixedStrategy;
-    private readonly Salary_HourlyStrategy _hourlyStrategy;
+    private readonly IEnumerable<ISalaryBaseStrategy> _baseStrategies;
+    private readonly IEnumerable<IConceptStrategy> _conceptStrategies;
 
-    public CalculationFactory(Salary_FixedStrategy fixedStrategy, Salary_HourlyStrategy hourlyStrategy)
+    public CalculationFactory(IEnumerable<ISalaryBaseStrategy> baseStrategies, IEnumerable<IConceptStrategy> conceptStrategies)
     {
-      _fixedStrategy = fixedStrategy ?? throw new ArgumentNullException(nameof(fixedStrategy));
-      _hourlyStrategy = hourlyStrategy ?? throw new ArgumentNullException(nameof(hourlyStrategy));
+      _baseStrategies = baseStrategies ?? throw new ArgumentNullException(nameof(baseStrategies));
+      _conceptStrategies = conceptStrategies ?? Array.Empty<IConceptStrategy>();
     }
     public ISalaryBaseStrategy CreateBaseStrategy(ContractModel contract, CompanyModel company)
     {
       if (contract == null) throw new ArgumentNullException(nameof(contract));
 
-      if (_hourlyStrategy.Applicable(contract)) return (ISalaryBaseStrategy)_hourlyStrategy;
-      if (_fixedStrategy.Applicable(contract)) return (ISalaryBaseStrategy)_fixedStrategy;
+      ISalaryBaseStrategy selected = null;
+      foreach (var s in _baseStrategies)
+      {
+        if (s != null && s.Applicable(contract))
+        {
+          selected = s;
+          break;
+        }
+      }
 
-      throw new InvalidOperationException("No base salary strategy found for the contract type.");
+      if (selected == null) throw new InvalidOperationException("No base salary strategy found for the contract type.");
+
+      return selected;
 
     }
 

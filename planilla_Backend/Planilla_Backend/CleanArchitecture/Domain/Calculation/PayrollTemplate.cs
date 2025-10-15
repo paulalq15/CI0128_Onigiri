@@ -7,8 +7,12 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
   {
     public PayrollSummary Run(int companyId, DateOnly dateFrom, DateOnly dateTo, PayrollContext ctx)
     {
-      // TODO: flow orchestration
-      throw new NotImplementedException();
+
+
+
+
+      var summary = new PayrollSummary();
+      return summary;
     }
     protected abstract List<EmployeeModel> SelectEmployees(int companyId, DateOnly dateFrom, DateOnly dateTo, PayrollContext ctx);
 

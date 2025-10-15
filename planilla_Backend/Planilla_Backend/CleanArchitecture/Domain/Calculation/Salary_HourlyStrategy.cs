@@ -2,7 +2,7 @@
 
 namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
 {
-  public class Salary_HourlyStrategy
+  public class Salary_HourlyStrategy : ISalaryBaseStrategy
   {
     public bool Applicable(ContractModel contract)
     {

@@ -45,6 +45,9 @@ builder.Services.AddScoped<IPayrollRepository, PayrollRepository>();
 builder.Services.AddScoped<PayrollTemplate, StandardPayrollRun>();
 builder.Services.AddScoped<CalculationFactory>();
 
+builder.Services.AddScoped<ISalaryBaseStrategy, Salary_FixedStrategy>();
+builder.Services.AddScoped<ISalaryBaseStrategy, Salary_HourlyStrategy>();
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
