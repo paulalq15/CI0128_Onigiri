@@ -4,6 +4,6 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
 {
   public interface ICreatePayrollCommand
   {
-    Task<PayrollSummary> Execute(int companyId, DateOnly DateFrom, DateOnly DateTo);
+    Task<PayrollSummary> Execute(int companyId, DateOnly dateFrom, DateOnly dateTo);
   }
 }
