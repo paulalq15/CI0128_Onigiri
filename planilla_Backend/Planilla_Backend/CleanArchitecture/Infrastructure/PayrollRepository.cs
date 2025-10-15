@@ -60,9 +60,13 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       try
       {
         using var connection = new SqlConnection(_connectionString);
-        const string query = @"SELECT IdContrato AS Id, IdPersona AS EmployeeId, Tipo AS ContractType, FechaInicio AS StartDate, FechaFin AS EndDate
-                              FROM Contrato
-                              WHERE IdEmpresa = @companyId 
+        const string query = @"SELECT c.IdContrato AS Id, c.IdPersona AS EmployeeId, c.Tipo AS ContractType, c.FechaInicio AS StartDate, c.FechaFin AS EndDate
+                              FROM Contrato AS c
+                              JOIN Personas AS p ON c.IdPersona = p.IdPersona
+                              JOIN Usuario AS u ON p.IdPersona = u.IdPersona
+                              JOIN UsuariosPorEmpresa AS ue ON u.IdUsuario = ue.IdUsuario
+                              JOIN Empresa AS e ON ue.IdEmpresa = e.IdEmpresa
+                              WHERE e.IdEmpresa = @companyId
                               AND CAST(StartDate AS date) <= @dateFrom
                               AND (EndDate IS NULL OR CAST(EndDate AS date) >= @dateTo";
         var contracts = await connection.QueryAsync<ContractModel>(query, new { companyId });
