@@ -4,6 +4,7 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
 {
   public interface IConceptStrategy
   {
-    PayrollDetailModel Apply(PayrollDetailModel @base, ElementModel concept, PayrollContext ctx);
+    bool Applicable(ElementModel concept);
+    PayrollDetailModel Apply(EmployeePayrollModel employeePayroll, ElementModel concept, PayrollContext ctx);
   }
 }
