@@ -1,4 +1,6 @@
-﻿using Planilla_Backend.CleanArchitecture.Application.Ports;
+﻿using Dapper;
+using Microsoft.Data.SqlClient;
+using Planilla_Backend.CleanArchitecture.Application.Ports;
 using Planilla_Backend.CleanArchitecture.Domain.Entities;
 
 namespace Planilla_Backend.CleanArchitecture.Infrastructure
@@ -15,9 +17,23 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
     //  TODO: READ METHODS
     // =======================
 
-    public Task<CompanyModel> GetCompany(int companyId)
+    public async Task<CompanyModel> GetCompany(int companyId)
     {
-      return Task.FromResult(new CompanyModel());
+      try
+      {
+        using var connection = new SqlConnection(_connectionString);
+        const string query = @"SELECT IdEmpresa AS Id, FrecuenciaPago AS PaymentFrequency, DiaPago1 AS PayDay1, DiaPago2 AS PayDay2
+                             FROM Empresa
+                             WHERE IdEmpresa = @companyId";
+
+        var company = await connection.QuerySingleOrDefaultAsync<CompanyModel>(query, new { companyId });
+        return company ?? new CompanyModel();
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine("Error getting company: " + ex.Message);
+        return new CompanyModel();
+      }      
     }
 
     public Task<IEnumerable<EmployeeModel>> GetEmployees(int companyId)
