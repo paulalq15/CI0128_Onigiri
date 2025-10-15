@@ -5,7 +5,7 @@
   {
     // Queries
     Task<CompanyModel> GetCompany(int companyId);
-    Task<IEnumerable<EmployeeModel>> GetEmployees(int companyId);
+    Task<IEnumerable<EmployeeModel>> GetEmployees(int companyId, DateOnly dateFrom, DateOnly dateTo);
     Task<IEnumerable<ContractModel>> GetContracts(int companyId, DateOnly dateFrom, DateOnly dateTo);
     Task<IEnumerable<ElementModel>> GetElementsForEmployee(int companyId, int employeeId, DateOnly dateFrom, DateOnly dateTo);
     Task<IDictionary<int, decimal>> GetEmployeeTimesheets(int companyId, DateOnly dateFrom, DateOnly dateTo);

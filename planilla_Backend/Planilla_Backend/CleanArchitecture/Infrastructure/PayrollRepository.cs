@@ -24,9 +24,10 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       try
       {
         using var connection = new SqlConnection(_connectionString);
-        const string query = @"SELECT IdEmpresa AS Id, FrecuenciaPago AS PaymentFrequency, DiaPago1 AS PayDay1, DiaPago2 AS PayDay2
-                             FROM Empresa
-                             WHERE IdEmpresa = @companyId";
+        const string query =
+          @"SELECT IdEmpresa AS Id, FrecuenciaPago AS PaymentFrequency, DiaPago1 AS PayDay1, DiaPago2 AS PayDay2
+            FROM Empresa
+            WHERE IdEmpresa = @companyId;";
 
         var company = await connection.QuerySingleOrDefaultAsync<CompanyModel>(query, new { companyId });
         return company ?? new CompanyModel();
@@ -38,17 +39,32 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       }      
     }
 
-    public async Task<IEnumerable<EmployeeModel>> GetEmployees(int companyId)
+    public async Task<IEnumerable<EmployeeModel>> GetEmployees(int companyId, DateOnly dateFrom, DateOnly dateTo)
     {
       try {
         using var connection = new SqlConnection(_connectionString);
-        const string query = @"SELECT p.IdPersona AS Id, p.TipoPersona AS PersonType
-                              FROM Persona AS p
-                              JOIN Usuario AS u ON p.IdPersona = u.IdPersona
-                              JOIN UsuariosPorEmpresa AS ue ON u.IdUsuario = ue.IdUsuario
-                              JOIN Empresa AS e ON ue.IdEmpresa = e.IdEmpresa
-                              WHERE e.IdEmpresa = @companyId AND p.TipoPersona IN ('Empleado', 'Aprobador')";
-        var employees = await connection.QueryAsync<EmployeeModel>(query, new { companyId });
+        const string query =
+          @"SELECT p.IdPersona AS Id, p.TipoPersona AS PersonType
+            FROM Persona AS p
+            JOIN Usuario AS u ON p.IdPersona = u.IdPersona
+            JOIN UsuariosPorEmpresa AS ue ON u.IdUsuario = ue.IdUsuario
+            JOIN Empresa AS e ON ue.IdEmpresa = e.IdEmpresa
+            WHERE e.IdEmpresa = @companyId
+            AND p.IdPersona = @employeeId
+            AND p.TipoPersona IN ('Empleado', 'Aprobador')
+            AND p.IdPersona IN (
+	            SELECT h.IdEmpleado
+	            FROM HojaHoras AS h
+	            WHERE CAST(h.Fecha AS date) >= @dateFrom AND CAST(h.Fecha AS date) <= @dateTo
+	            GROUP BY h.IdEmpleado
+	            HAVING SUM(CAST(h.Horas AS decimal(10,2))) > 0)
+            AND p.IdPersona IN (
+	            SELECT c.IdPersona
+	            FROM Contrato AS c
+	            WHERE CAST(c.FechaInicio AS date) <= @dateFrom
+	            AND (c.FechaFin IS NULL OR CAST(c.FechaFin AS date) >= @dateTo));";
+
+        var employees = await connection.QueryAsync<EmployeeModel>(query, new { companyId, dateFrom, dateTo });
         return employees;
       }
       catch(Exception ex)
@@ -63,15 +79,23 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       try
       {
         using var connection = new SqlConnection(_connectionString);
-        const string query = @"SELECT c.IdContrato AS Id, c.IdPersona AS EmployeeId, c.Tipo AS ContractType, c.FechaInicio AS StartDate, c.FechaFin AS EndDate, c.Salario AS Salary, c.CuentaPago AS PaymentAccount
-                              FROM Contrato AS c
-                              JOIN Persona AS p ON c.IdPersona = p.IdPersona
-                              JOIN Usuario AS u ON p.IdPersona = u.IdPersona
-                              JOIN UsuariosPorEmpresa AS ue ON u.IdUsuario = ue.IdUsuario
-                              JOIN Empresa AS e ON ue.IdEmpresa = e.IdEmpresa
-                              WHERE e.IdEmpresa = @companyId
-                              AND CAST(c.FechaInicio AS date) <= @dateFrom
-                              AND (c.FechaFin IS NULL OR CAST(c.FechaFin AS date) >= @dateTo";
+        const string query =
+          @"SELECT c.IdContrato AS Id, c.IdPersona AS EmployeeId, c.Tipo AS ContractType, c.FechaInicio AS StartDate, c.FechaFin AS EndDate, c.Salario AS Salary, c.CuentaPago AS PaymentAccount
+            FROM Contrato AS c
+            JOIN Persona AS p ON c.IdPersona = p.IdPersona
+            JOIN Usuario AS u ON p.IdPersona = u.IdPersona
+            JOIN UsuariosPorEmpresa AS ue ON u.IdUsuario = ue.IdUsuario
+            JOIN Empresa AS e ON ue.IdEmpresa = e.IdEmpresa
+            WHERE e.IdEmpresa = @companyId
+            AND CAST(c.FechaInicio AS date) <= @dateFrom
+            AND (c.FechaFin IS NULL OR CAST(c.FechaFin AS date) >= @dateTo)
+            AND p.IdPersona IN (
+	            SELECT h.IdEmpleado
+	            FROM HojaHoras AS h
+	            WHERE CAST(h.Fecha AS date) >= @dateFrom AND CAST(h.Fecha AS date) <= @dateTo
+	            GROUP BY h.IdEmpleado
+	            HAVING SUM(CAST(h.Horas AS decimal(10,2))) > 0);";
+
         var contracts = await connection.QueryAsync<ContractModel>(query, new { companyId, dateFrom, dateTo });
         return contracts;
       }
@@ -87,27 +111,29 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       try
       {
         using var connection = new SqlConnection(_connectionString);
-        const string query = @"SELECT ea.IdElementoAplicado AS Id, e.Nombre AS Name, e.Valor AS Value, p.IdPersona AS EmployeeId,
-                              CASE WHEN e.Tipo = 'Monto Fijo' THEN 'FixedAmount'
-                                   WHEN e.Tipo = 'Porcentaje' THEN 'Percentage'
-                                   WHEN e.Tipo = 'API' THEN 'ExternalAPI'
-                              END AS CalculationType,
-                              CASE WHEN e.PagadoPor = 'Empleador' THEN 'Benefit'
-                                   WHEN e.PagadoPor = 'Empleado' THEN 'EmployeeDeduction'
-                              END AS ItemType
-                              FROM ElementoAplicado AS ea
-                              JOIN Elemento AS e ON ea.IdElemento = e.IdElemento
-                              JOIN Usuario AS u ON ea.IdUsuario = u.IdUsuario
-                              JOIN Persona AS p ON u.IdPersona = p.IdPersona
-                              WHERE p.IdPersona = @employeeId AND e.IdEmpresa = @companyId 
-                              AND CAST(ea.FechaInicio AS date) <= @dateFrom
-                              AND (ea.FechaFin IS NULL OR CAST(ea.FechaFin AS date) >= @dateTo";
+        const string query =
+          @"SELECT ea.IdElementoAplicado AS Id, e.Nombre AS Name, e.Valor AS Value, p.IdPersona AS EmployeeId,
+            CASE WHEN e.Tipo = 'Monto' THEN 'FixedAmount'
+            WHEN e.Tipo = 'Porcentaje' THEN 'Percentage'
+            WHEN e.Tipo = 'API' THEN 'ExternalAPI'
+            END AS CalculationType,
+            CASE WHEN e.PagadoPor = 'Empleador' THEN 'Benefit'
+            WHEN e.PagadoPor = 'Empleado' THEN 'EmployeeDeduction'
+            END AS ItemType
+            FROM ElementoAplicado AS ea
+            JOIN ElementoPlanilla AS e ON ea.IdElemento = e.IdElemento
+            JOIN Usuario AS u ON ea.IdUsuario = u.IdUsuario
+            JOIN Persona AS p ON u.IdPersona = p.IdPersona
+            WHERE e.IdEmpresa = @companyId 
+            AND CAST(ea.FechaInicio AS date) <= @dateFrom
+            AND (ea.FechaFin IS NULL OR CAST(ea.FechaFin AS date) >= @dateTo);";
+
         var elements = await connection.QueryAsync<ElementModel>(query, new { companyId, employeeId, dateFrom, dateTo });
         return elements;
       }
       catch (Exception ex)
       {
-        _logger.LogError(ex, "GetEmployees failed. companyId: {CompanyId}", companyId);
+        _logger.LogError(ex, "GetElementsForEmployee failed. companyId: {CompanyId}", companyId);
         throw;
       }
     }
@@ -118,14 +144,16 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       {
         using var connection = new SqlConnection(_connectionString);
 
-        const string query = @"SELECT h.IdEmpleado AS EmployeeId, SUM(CAST(h.Horas AS decimal(10,2))) AS TotalHours
-                              FROM HojaHoras AS h
-                              JOIN Persona ON Persona.IdPersona = HojaHoras.IdEmpleado
-                              JOIN Usuario ON Usuario.IdPersona = Persona.IdPersona
-                              JOIN UsuariosPorEmpresa AS ue ON ue.IdUsuario = Usuario.IdUsuario
-                              JOIN Empresa AS e ON ue.IdEmpresa = Empresa.IdEmpresa
-                              WHERE e.IdEmpresa = @companyId AND h.Fecha >= @dateFrom AND h.Fecha <= @dateTo
-                              GroupBy h.IdEmpleado";
+        const string query = 
+          @"SELECT h.IdEmpleado AS EmployeeId, SUM(CAST(h.Horas AS decimal(10,2))) AS TotalHours
+            FROM HojaHoras AS h
+            JOIN Persona AS p ON p.IdPersona = h.IdEmpleado
+            JOIN Usuario AS u ON u.IdPersona = p.IdPersona
+            JOIN UsuariosPorEmpresa AS ue ON ue.IdUsuario = u.IdUsuario
+            JOIN Empresa AS e ON ue.IdEmpresa = e.IdEmpresa
+            WHERE e.IdEmpresa = @companyId AND CAST(h.Fecha AS date) >= @dateFrom AND CAST(h.Fecha AS date) <= @dateTo
+            GROUP BY h.IdEmpleado;";
+
         var rows = await connection.QueryAsync<(int EmployeeId, decimal TotalHours)>(
           new CommandDefinition(query, new { companyId, dateFrom, dateTo }));
 
@@ -147,10 +175,12 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       try
       {
         using var connection = new SqlConnection(_connectionString);
-        const string query = @"SELECT IdImpuestoRenta AS Id, MontoMinimo AS Min, MontoMaximo AS Max, Porcentaje AS Rate, 'Tax' AS ItemType
-                              FROM ImpuestoRenta
-                              WHERE AND CAST(FechaInicio AS date) <= @dateFrom
-                              AND (FechaFin IS NULL OR CAST(FechaFin AS date) >= @dateTo)";
+        const string query = 
+          @"SELECT IdImpuestoRenta AS Id, MontoMinimo AS Min, MontoMaximo AS Max, Porcentaje AS Rate, 'Tax' AS ItemType
+            FROM ImpuestoRenta
+            WHERE CAST(FechaInicio AS date) <= @dateFrom
+            AND (FechaFin IS NULL OR CAST(FechaFin AS date) >= @dateTo)";
+
         var taxBrackets = await connection.QueryAsync<TaxModel>(query, new {dateFrom, dateTo });
         return taxBrackets;
       }
@@ -166,13 +196,15 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       try
       {
         using var connection = new SqlConnection(_connectionString);
-        const string query = @"SELECT IdCCSS AS Id, Categoria AS Category, Concepto AS Concept, Porcentaje AS Rate, 
-                              CASE WHEN PagadoPor = 'Empleado' THEN 'EmployeeDeduction'
-                                   WHEN PagadoPor = 'Empleador' THEN 'EmployerContribution'
-                              END AS ItemType
-                              FROM ImpuestoRenta
-                              WHERE AND CAST(FechaInicio AS date) <= @dateFrom
-                              AND (FechaFin IS NULL OR CAST(FechaFin AS date) >= @dateTo)";
+        const string query = 
+          @"SELECT IdCCSS AS Id, Categoria AS Category, Concepto AS Concept, Porcentaje AS Rate, 
+              CASE WHEN PagadoPor = 'Empleado' THEN 'EmployeeDeduction'
+                    WHEN PagadoPor = 'Empleador' THEN 'EmployerContribution'
+              END AS ItemType
+              FROM CCSS
+              WHERE CAST(FechaInicio AS date) <= @dateFrom
+              AND (FechaFin IS NULL OR CAST(FechaFin AS date) >= @dateTo)";
+
         var ccssLines = await connection.QueryAsync<CCSSModel>(query, new { dateFrom, dateTo });
         return ccssLines;
       }
