@@ -4,6 +4,11 @@ using Planilla_Backend.LayeredArchitecture.Services.EmailService;
 using Planilla_Backend.LayeredArchitecture.Services.Utils;
 using Planilla_Backend.LayeredArchitecture.Models;
 
+using Planilla_Backend.CleanArchitecture.Application.Ports;
+using Planilla_Backend.CleanArchitecture.Application.UseCases;
+using Planilla_Backend.CleanArchitecture.Domain.Calculation;
+using Planilla_Backend.CleanArchitecture.Infrastructure;
+
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +37,13 @@ builder.Services.AddScoped <PayrollElementRepository>();
 builder.Services.AddScoped <PayrollElementService>();
 builder.Services.AddScoped <PersonUserRepository>();
 builder.Services.AddScoped <PersonUserService>();
+
+builder.Services.AddScoped<ICreatePayrollCommand, CreatePayrollCommand>();
+builder.Services.AddScoped<IPayPayrollCommand, PayPayrollCommand>();
+builder.Services.AddScoped<IGetPayrollSummaryQuery, GetPayrollSummaryQuery>();
+builder.Services.AddScoped<IPayrollRepository, PayrollRepository>();
+builder.Services.AddScoped<PayrollTemplate, StandardPayrollRun>();
+builder.Services.AddScoped<CalculationFactory>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
