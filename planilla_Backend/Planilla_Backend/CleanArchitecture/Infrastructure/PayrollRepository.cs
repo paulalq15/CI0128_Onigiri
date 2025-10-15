@@ -1,8 +1,9 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Logging;
 using Planilla_Backend.CleanArchitecture.Application.Ports;
 using Planilla_Backend.CleanArchitecture.Domain.Entities;
-using Microsoft.Extensions.Logging;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Planilla_Backend.CleanArchitecture.Infrastructure
 {
@@ -56,9 +57,24 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       }
     }
 
-    public Task<IEnumerable<ContractModel>> GetContracts(int companyId, DateOnly DateFrom, DateOnly DateTo)
+    public async Task<IEnumerable<ContractModel>> GetContracts(int companyId, DateOnly DateFrom, DateOnly DateTo)
     {
-      return Task.FromResult<IEnumerable<ContractModel>>(new List<ContractModel>());
+      try
+      {
+        using var connection = new SqlConnection(_connectionString);
+        const string query = @"SELECT IdContrato AS Id, IdPersona AS EmployeeId, Tipo AS ContractType, FechaInicio AS StartDate, FechaFin AS EndDate
+                              FROM Contrato
+                              WHERE IdEmpresa = @companyId 
+                              AND CAST(StartDate AS date) <= @DateFrom
+                              AND (EndDate IS NULL OR CAST(EndDate AS date) >= @DateTo";
+        var contracts = await connection.QueryAsync<ContractModel>(query, new { companyId });
+        return contracts;
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, "GetContracts failed. companyId: {CompanyId}", companyId);
+        throw;
+      }
     }
 
     public Task<IEnumerable<ElementModel>> GetElementsForEmployee(int companyId, int employeeId, DateOnly dateFrom, DateOnly dateTo)
