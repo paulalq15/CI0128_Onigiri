@@ -17,9 +17,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       _logger = logger;
     }
 
-    // =======================
-    //  TODO: READ METHODS
-    // =======================
+    // READ METHODS
 
     public async Task<CompanyModel> GetCompany(int companyId)
     {
@@ -57,7 +55,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       }
     }
 
-    public async Task<IEnumerable<ContractModel>> GetContracts(int companyId, DateOnly DateFrom, DateOnly DateTo)
+    public async Task<IEnumerable<ContractModel>> GetContracts(int companyId, DateOnly dateFrom, DateOnly dateTo)
     {
       try
       {
@@ -65,8 +63,8 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         const string query = @"SELECT IdContrato AS Id, IdPersona AS EmployeeId, Tipo AS ContractType, FechaInicio AS StartDate, FechaFin AS EndDate
                               FROM Contrato
                               WHERE IdEmpresa = @companyId 
-                              AND CAST(StartDate AS date) <= @DateFrom
-                              AND (EndDate IS NULL OR CAST(EndDate AS date) >= @DateTo";
+                              AND CAST(StartDate AS date) <= @dateFrom
+                              AND (EndDate IS NULL OR CAST(EndDate AS date) >= @dateTo";
         var contracts = await connection.QueryAsync<ContractModel>(query, new { companyId });
         return contracts;
       }
@@ -82,19 +80,48 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       return Task.FromResult<IEnumerable<ElementModel>>(new List<ElementModel>());
     }
 
-    public Task<IEnumerable<TaxModel>> GetTaxes(int companyId, DateOnly dateFrom, DateOnly dateTo)
+    public async Task<IEnumerable<TaxModel>> GetTaxes(DateOnly dateFrom, DateOnly dateTo)
     {
-      return Task.FromResult<IEnumerable<TaxModel>>(new List<TaxModel>());
+      try
+      {
+        using var connection = new SqlConnection(_connectionString);
+        const string query = @"SELECT IdImpuestoRenta AS Id, MontoMinimo AS Min, MontoMaximo AS Max, Porcentaje AS Rate, 'Tax' AS ItemType
+                              FROM ImpuestoRenta
+                              WHERE AND CAST(FechaInicio AS date) <= @dateFrom
+                              AND (FechaFin IS NULL OR CAST(FechaFin AS date) >= @dateTo)";
+        var taxBrackets = await connection.QueryAsync<TaxModel>(query);
+        return taxBrackets;
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, "GetTaxes failed.");
+        throw;
+      }
     }
 
-    public Task<IEnumerable<CCSSModel>> GetCCSS(int companyId, DateOnly dateFrom, DateOnly dateTo)
+    public async Task<IEnumerable<CCSSModel>> GetCCSS(DateOnly dateFrom, DateOnly dateTo)
     {
-      return Task.FromResult<IEnumerable<CCSSModel>>(new List<CCSSModel>());
+      try
+      {
+        using var connection = new SqlConnection(_connectionString);
+        const string query = @"SELECT IdCCSS AS Id, Categoria AS Category, Concepto AS Concept, Porcentaje AS Rate, 
+                              CASE WHEN PagadoPor = 'Empleado' THEN 'EmployeeDeduction'
+                                   WHEN PagadoPor = 'Empleador' THEN 'EmployerContribution'
+                              END AS ItemType
+                              FROM ImpuestoRenta
+                              WHERE AND CAST(FechaInicio AS date) <= @dateFrom
+                              AND (FechaFin IS NULL OR CAST(FechaFin AS date) >= @dateTo)";
+        var ccssLines = await connection.QueryAsync<CCSSModel>(query);
+        return ccssLines;
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, "GetCCSS failed.");
+        throw;
+      }
     }
 
-    // =======================
-    //  TODO: WRITE METHODS
-    // =======================
+    // WRITE METHODS
 
     public Task<int> SaveCompanyPayroll(CompanyPayrollModel header)
     {

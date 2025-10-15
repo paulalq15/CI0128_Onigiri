@@ -6,5 +6,6 @@
     public decimal Min { get; set; }
     public decimal? Max { get; set; }
     public decimal Rate { get; set; }
+    public PayrollItemType ItemType { get; set; }
   }
 }
