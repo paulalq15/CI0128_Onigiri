@@ -4,19 +4,19 @@
   public interface IPayrollRepository
   {
     // Queries
-    CompanyModel GetCompany(int companyId);
-    IEnumerable<EmployeeModel> GetEmployees(int companyId);
-    IEnumerable<ContractModel> GetContracts(int companyId, DateOnly DateFrom, DateOnly DateTo);
-    IEnumerable<ElementModel> GetElementsForEmployee(int companyId, int employeeId, DateOnly dateFrom, DateOnly dateTo);
-    IEnumerable<TaxModel> GetTaxes(int companyId, DateOnly dateFrom, DateOnly dateTo);
-    IEnumerable<CCSSModel> GetCCSS(int companyId, DateOnly dateFrom, DateOnly dateTo);
+    Task<CompanyModel> GetCompany(int companyId);
+    Task<IEnumerable<EmployeeModel>> GetEmployees(int companyId);
+    Task<IEnumerable<ContractModel>> GetContracts(int companyId, DateOnly DateFrom, DateOnly DateTo);
+    Task<IEnumerable<ElementModel>> GetElementsForEmployee(int companyId, int employeeId, DateOnly dateFrom, DateOnly dateTo);
+    Task<IEnumerable<TaxModel>> GetTaxes(int companyId, DateOnly dateFrom, DateOnly dateTo);
+    Task<IEnumerable<CCSSModel>> GetCCSS(int companyId, DateOnly dateFrom, DateOnly dateTo);
 
     // Commands
-    int SaveCompanyPayroll(CompanyPayrollModel header);
-    int SaveEmployeePayroll(EmployeePayrollModel employeePayroll);
-    void SavePayrollDetails(int employeePayrollId, IEnumerable<PayrollDetailModel> details);
-    void UpdateEmployeePayrollTotals(int employeePayrollId, EmployeePayrollModel totalsAndStatus);
-    void UpdateCompanyPayrollTotals(int companyPayrollId, CompanyPayrollModel totalsAndStatus);
-    void SavePayment(int employeePayrollId, PaymentModel payment);
+    Task<int> SaveCompanyPayroll(CompanyPayrollModel header);
+    Task<int> SaveEmployeePayroll(EmployeePayrollModel employeePayroll);
+    Task SavePayrollDetails(int employeePayrollId, IEnumerable<PayrollDetailModel> details);
+    Task UpdateEmployeePayrollTotals(int employeePayrollId, EmployeePayrollModel totalsAndStatus);
+    Task UpdateCompanyPayrollTotals(int companyPayrollId, CompanyPayrollModel totalsAndStatus);
+    Task SavePayment(int employeePayrollId, PaymentModel payment);
   }
 }

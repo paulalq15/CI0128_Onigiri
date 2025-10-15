@@ -5,68 +5,73 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
 {
   public class PayrollRepository : IPayrollRepository
   {
-    public PayrollRepository()
+    private readonly string _connectionString;
+    public PayrollRepository(IConfiguration config)
     {
-      //Inject dependencies
+      _connectionString = config.GetConnectionString("OnigiriContext");
     }
 
     // =======================
     //  TODO: READ METHODS
     // =======================
 
-    public CompanyModel GetCompany(int companyId)
+    public Task<CompanyModel> GetCompany(int companyId)
     {
-      return new CompanyModel();
+      return Task.FromResult(new CompanyModel());
     }
 
-    public IEnumerable<EmployeeModel> GetEmployees(int companyId)
+    public Task<IEnumerable<EmployeeModel>> GetEmployees(int companyId)
     {
-      return new List<EmployeeModel>();
+      return Task.FromResult<IEnumerable<EmployeeModel>>(new List<EmployeeModel>());
     }
 
-    public IEnumerable<ContractModel> GetContracts(int companyId, DateOnly DateFrom, DateOnly DateTo)
+    public Task<IEnumerable<ContractModel>> GetContracts(int companyId, DateOnly DateFrom, DateOnly DateTo)
     {
-      return new List<ContractModel>();
+      return Task.FromResult<IEnumerable<ContractModel>>(new List<ContractModel>());
     }
 
-    public IEnumerable<ElementModel> GetElementsForEmployee(int companyId, int employeeId, DateOnly dateFrom, DateOnly dateTo)
+    public Task<IEnumerable<ElementModel>> GetElementsForEmployee(int companyId, int employeeId, DateOnly dateFrom, DateOnly dateTo)
     {
-      return new List<ElementModel>();
+      return Task.FromResult<IEnumerable<ElementModel>>(new List<ElementModel>());
     }
 
-    public IEnumerable<TaxModel> GetTaxes(int companyId, DateOnly dateFrom, DateOnly dateTo)
+    public Task<IEnumerable<TaxModel>> GetTaxes(int companyId, DateOnly dateFrom, DateOnly dateTo)
     {
-      return new List<TaxModel>();
+      return Task.FromResult<IEnumerable<TaxModel>>(new List<TaxModel>());
     }
 
-    public IEnumerable<CCSSModel> GetCCSS(int companyId, DateOnly dateFrom, DateOnly dateTo)
+    public Task<IEnumerable<CCSSModel>> GetCCSS(int companyId, DateOnly dateFrom, DateOnly dateTo)
     {
-      return new List<CCSSModel>();
+      return Task.FromResult<IEnumerable<CCSSModel>>(new List<CCSSModel>());
     }
 
     // =======================
     //  TODO: WRITE METHODS
     // =======================
 
-    public int SaveCompanyPayroll(CompanyPayrollModel header)
+    public Task<int> SaveCompanyPayroll(CompanyPayrollModel header)
     {
-      return 0;
+      return Task.FromResult(0);
     }
-    public int SaveEmployeePayroll(EmployeePayrollModel employeePayroll)
+    public Task<int> SaveEmployeePayroll(EmployeePayrollModel employeePayroll)
     {
-      return 0;
+      return Task.FromResult(0);
     }
-    public void SavePayrollDetails(int employeePayrollId, IEnumerable<PayrollDetailModel> details)
+    public Task SavePayrollDetails(int employeePayrollId, IEnumerable<PayrollDetailModel> details)
     {
+      return Task.CompletedTask;
     }
-    public void UpdateEmployeePayrollTotals(int employeePayrollId, EmployeePayrollModel totalsAndStatus)
+    public Task UpdateEmployeePayrollTotals(int employeePayrollId, EmployeePayrollModel totalsAndStatus)
     {
+      return Task.CompletedTask;
     }
-    public void UpdateCompanyPayrollTotals(int companyPayrollId, CompanyPayrollModel totalsAndStatus)
+    public Task UpdateCompanyPayrollTotals(int companyPayrollId, CompanyPayrollModel totalsAndStatus)
     {
+      return Task.CompletedTask;
     }
-    public void SavePayment(int employeePayrollId, PaymentModel payment)
+    public Task SavePayment(int employeePayrollId, PaymentModel payment)
     {
+      return Task.CompletedTask;
     }
 
   }
