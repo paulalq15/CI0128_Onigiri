@@ -124,7 +124,8 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
             JOIN ElementoPlanilla AS e ON ea.IdElemento = e.IdElemento
             JOIN Usuario AS u ON ea.IdUsuario = u.IdUsuario
             JOIN Persona AS p ON u.IdPersona = p.IdPersona
-            WHERE e.IdEmpresa = @companyId 
+            WHERE e.IdEmpresa = @companyId
+            AND p.IdPersona = @employeeId
             AND CAST(ea.FechaInicio AS date) <= @dateFrom
             AND (ea.FechaFin IS NULL OR CAST(ea.FechaFin AS date) >= @dateTo);";
 
