@@ -60,7 +60,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       try
       {
         using var connection = new SqlConnection(_connectionString);
-        const string query = @"SELECT c.IdContrato AS Id, c.IdPersona AS EmployeeId, c.Tipo AS ContractType, c.FechaInicio AS StartDate, c.FechaFin AS EndDate
+        const string query = @"SELECT c.IdContrato AS Id, c.IdPersona AS EmployeeId, c.Tipo AS ContractType, c.FechaInicio AS StartDate, c.FechaFin AS EndDate, c.Salario AS Salary, c.CuentaPago AS PaymentAccount
                               FROM Contrato AS c
                               JOIN Personas AS p ON c.IdPersona = p.IdPersona
                               JOIN Usuario AS u ON p.IdPersona = u.IdPersona
