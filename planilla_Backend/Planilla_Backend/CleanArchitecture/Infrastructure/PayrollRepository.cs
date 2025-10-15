@@ -39,9 +39,21 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       }      
     }
 
-    public Task<IEnumerable<EmployeeModel>> GetEmployees(int companyId)
+    public async Task<IEnumerable<EmployeeModel>> GetEmployees(int companyId)
     {
-      return Task.FromResult<IEnumerable<EmployeeModel>>(new List<EmployeeModel>());
+      try {
+        using var connection = new SqlConnection(_connectionString);
+        const string query = @"SELECT IdPersonas AS Id, TipoPersona AS PersonType
+                              FROM Personas
+                              WHERE IdEmpresa = @companyId AND TipoPersona IN ('Empleado', 'Aprobador')";
+        var employees = await connection.QueryAsync<EmployeeModel>(query, new { companyId });
+        return employees;
+      }
+      catch(Exception ex)
+      {
+        _logger.LogError(ex, "GetEmployees failed. companyId: {CompanyId}", companyId);
+        throw;
+      }
     }
 
     public Task<IEnumerable<ContractModel>> GetContracts(int companyId, DateOnly DateFrom, DateOnly DateTo)
