@@ -224,7 +224,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       {
         using var connection = new SqlConnection(_connectionString);
         const string sql =
-          @"INSERT INTO CompanyPayroll(FechaInicio, FechaFin, FechaCreacion, MontoBruto, MontoNeto, DeduccionesEmpleado, DeduccionesEmpleador, Beneficios, CreadoPor, IdEmpresa)
+          @"INSERT INTO NominaEmpresa(FechaInicio, FechaFin, FechaCreacion, MontoBruto, MontoNeto, DeduccionesEmpleado, DeduccionesEmpleador, Beneficios, CreadoPor, IdEmpresa)
             VALUES (@DateFrom, @DateTo, SYSUTCDATETIME(), @Gross, @Net, @EmployeeDeductions, @EmployerDeductions, @Benefits, @CreatedBy, @CompanyId);
             SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
@@ -255,7 +255,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       {
         using var connection = new SqlConnection(_connectionString);
         const string sql =
-          @"INSERT INTO CompanyPayroll(IdNominaEmpresa, IdEmpleado, MontoBruto, MontoNeto, DeduccionesEmpleado, DeduccionesEmpleador, Beneficios)
+          @"INSERT INTO NominaEmpleado(IdNominaEmpresa, IdEmpleado, MontoBruto, MontoNeto, DeduccionesEmpleado, DeduccionesEmpleador, Beneficios)
             VALUES (@CompanyPayrollId, @EmployeeId, @Gross, @Net, @EmployeeDeductions, @EmployerDeductions, @Benefits);
             SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
