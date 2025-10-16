@@ -1,13 +1,13 @@
-using Planilla_Backend.LayeredArchitecture.Services;
-using Planilla_Backend.LayeredArchitecture.Repositories;
-using Planilla_Backend.LayeredArchitecture.Services.EmailService;
-using Planilla_Backend.LayeredArchitecture.Services.Utils;
-using Planilla_Backend.LayeredArchitecture.Models;
-
 using Planilla_Backend.CleanArchitecture.Application.Ports;
+using Planilla_Backend.CleanArchitecture.Application.Services;
 using Planilla_Backend.CleanArchitecture.Application.UseCases;
 using Planilla_Backend.CleanArchitecture.Domain.Calculation;
 using Planilla_Backend.CleanArchitecture.Infrastructure;
+using Planilla_Backend.LayeredArchitecture.Models;
+using Planilla_Backend.LayeredArchitecture.Repositories;
+using Planilla_Backend.LayeredArchitecture.Services;
+using Planilla_Backend.LayeredArchitecture.Services.EmailService;
+using Planilla_Backend.LayeredArchitecture.Services.Utils;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
@@ -47,6 +47,9 @@ builder.Services.AddScoped<CalculationFactory>();
 
 builder.Services.AddScoped<ISalaryBaseStrategy, Salary_FixedStrategy>();
 builder.Services.AddScoped<ISalaryBaseStrategy, Salary_HourlyStrategy>();
+
+builder.Services.AddScoped<ITimesheetRepository, TimesheetRepository>();   // Infrastructure
+builder.Services.AddScoped<ITimesheetService, TimesheetService>();         // Application
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
