@@ -48,7 +48,7 @@
             <option selected disabled value="">Seleccione un API</option>
             <option value="1">Asociación Solidarista</option>
             <option value="2">Seguro Privado</option>
-            <option value="3">Pensiones voluntarias</option>
+            <option value="3">Pensión Voluntaria</option>
           </select>
           <div class="invalid-feedback">Seleccione un API</div>
         </div>
@@ -170,30 +170,37 @@ export default {
       toastTimeout: 3000,
     };
   },
+
   methods: {
     initBootstrapValidation() {
       const form = this.$refs.elementForm;
+
       if (!form) return;
 
       form.addEventListener('submit', (event) => {
         if (!form.checkValidity()) {
           event.preventDefault();
           event.stopPropagation();
+
         } else {
           event.preventDefault();
         }
         form.classList.add('was-validated');
       });
     },
+
     addElementType() {
       this.elementType = this.paidBy === 'Empleado' ? 'Deducción' : 'Beneficio';
     },
+
     cleanValue() {
       this.calculationValue = '';
     },
+
     saveElement() {
       var self = this;
       var form = this.$refs.elementForm;
+
       if (!form.checkValidity()) {
         return;
       }
@@ -202,7 +209,8 @@ export default {
         elementName: this.name,
         paidBy: this.calculationType === 'API' ? 'Empleador' : this.paidBy,
         calculationType: this.calculationType,
-        calculationValue: Number(this.calculationValue || 0),
+        // calculationValue: Number(this.calculationValue || 0),
+        calculationValue: this.calculationType === 'API' ? Number(this.calculationValue) : Number(this.calculationValue || 0),
         companyId: Number(this.$session.user?.companyUniqueId),
         userId: Number(this.$session.user?.userId),
         status: 'Active',
@@ -231,11 +239,36 @@ export default {
         });
     },
   },
+
   mounted() {
     if (this.$session.user?.typeUser !== 'Empleador') return;
     this.initBootstrapValidation();
   },
+
+  watch: {
+    calculationValue(newVal) {
+      if (this.calculationType === 'API') {
+        switch(newVal) {
+          case '1':
+            this.name = 'Asociación Solidarista';
+            break;
+
+          case '2':
+            this.name = 'Seguro Privado';
+            break;
+
+          case '3':
+            this.name = 'Pensión Voluntaria';
+            break;
+
+          default:
+            this.name = '';
+        }
+      }
+    }
+  }
 };
+
 </script>
 
 <style lang="scss" scoped>
@@ -258,4 +291,5 @@ export default {
   background-color: #1b3d2a;
   color: #fff;
 }
+
 </style>
