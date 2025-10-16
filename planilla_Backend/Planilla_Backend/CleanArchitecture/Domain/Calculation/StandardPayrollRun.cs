@@ -6,6 +6,12 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
   //Template Method Design Pattern - Concrete Implementation
   public class StandardPayrollRun : PayrollTemplate
   {
+    private readonly CalculationFactory _factory;
+    public StandardPayrollRun(CalculationFactory factory)
+    {
+      _factory = factory ?? throw new ArgumentNullException(nameof(factory));
+    }
+
     // TODO: Implement the abstract methods with specific logic for standard payroll calculation
     protected override List<EmployeeModel> SelectEmployees(int companyId, DateOnly dateFrom, DateOnly dateTo, PayrollContext ctx)
     {

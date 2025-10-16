@@ -13,12 +13,44 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
     {
       if (employeePayroll == null) throw new ArgumentNullException(nameof(employeePayroll));
       if (contract == null) throw new ArgumentNullException(nameof(contract));
+      if (ctx == null) throw new ArgumentNullException(nameof(ctx));
+
+      var daysOfMonth = 30;
+      var calculateDays = false;
+      var payrollDays = 0;
+      var salaryAmount = 0m;
+
+      var periodStart = ctx.DateFrom.ToDateTime(TimeOnly.MinValue);
+      var periodEnd = ctx.DateTo.ToDateTime(TimeOnly.MinValue);
+      var contractStart = contract.StartDate.ToDateTime(TimeOnly.MinValue);
+      var contractEnd = contract.EndDate.HasValue ? contract.EndDate.Value.ToDateTime(TimeOnly.MinValue) : periodEnd;
+
+      if (contractStart > periodStart)
+      {
+        periodStart = contractStart;
+        calculateDays = true;
+      }
+        
+      if (contractEnd < periodEnd) {
+        periodEnd = contractEnd;
+        calculateDays = true;
+      }
+
+      if (periodStart <= periodEnd && calculateDays)
+      {
+        payrollDays = (periodEnd - periodStart).Days + 1;
+        salaryAmount = Math.Round(contract.Salary / daysOfMonth * payrollDays, 2);
+      }
+      else
+      {
+        salaryAmount = contract.Salary;
+      }
 
       var line = new PayrollDetailModel();
       line.EmployeePayrollId = employeePayroll.Id;
       line.Description = "Salario bruto";
       line.Type = PayrollItemType.Base;
-      line.Amount = contract.Salary;
+      line.Amount = salaryAmount;
       line.IdCCSS = null;
       line.IdTax = null;
       line.IdElement = null;

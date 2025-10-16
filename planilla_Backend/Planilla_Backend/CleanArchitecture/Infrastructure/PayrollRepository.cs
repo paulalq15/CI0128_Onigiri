@@ -50,19 +50,18 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
             JOIN UsuariosPorEmpresa AS ue ON u.IdUsuario = ue.IdUsuario
             JOIN Empresa AS e ON ue.IdEmpresa = e.IdEmpresa
             WHERE e.IdEmpresa = @companyId
-            AND p.IdPersona = @employeeId
             AND p.TipoPersona IN ('Empleado', 'Aprobador')
             AND p.IdPersona IN (
 	            SELECT h.IdEmpleado
 	            FROM HojaHoras AS h
-	            WHERE CAST(h.Fecha AS date) >= @dateFrom AND CAST(h.Fecha AS date) <= @dateTo
+	            WHERE h.Fecha >= @dateFrom AND h.Fecha <= @dateTo
 	            GROUP BY h.IdEmpleado
 	            HAVING SUM(CAST(h.Horas AS decimal(10,2))) > 0)
             AND p.IdPersona IN (
 	            SELECT c.IdPersona
 	            FROM Contrato AS c
-	            WHERE CAST(c.FechaInicio AS date) <= @dateFrom
-	            AND (c.FechaFin IS NULL OR CAST(c.FechaFin AS date) >= @dateTo));";
+	            WHERE c.FechaInicio <= @dateTo
+	            AND (c.FechaFin IS NULL OR c.FechaFin >= @dateFrom));";
 
         var employees = await connection.QueryAsync<EmployeeModel>(query, new { companyId, dateFrom, dateTo });
         return employees;
@@ -87,12 +86,12 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
             JOIN UsuariosPorEmpresa AS ue ON u.IdUsuario = ue.IdUsuario
             JOIN Empresa AS e ON ue.IdEmpresa = e.IdEmpresa
             WHERE e.IdEmpresa = @companyId
-            AND CAST(c.FechaInicio AS date) <= @dateFrom
-            AND (c.FechaFin IS NULL OR CAST(c.FechaFin AS date) >= @dateTo)
+            AND c.FechaInicio <= @dateTo
+            AND (c.FechaFin IS NULL OR c.FechaFin >= @dateFrom)
             AND p.IdPersona IN (
 	            SELECT h.IdEmpleado
 	            FROM HojaHoras AS h
-	            WHERE CAST(h.Fecha AS date) >= @dateFrom AND CAST(h.Fecha AS date) <= @dateTo
+	            WHERE h.Fecha >= @dateFrom AND h.Fecha <= @dateTo
 	            GROUP BY h.IdEmpleado
 	            HAVING SUM(CAST(h.Horas AS decimal(10,2))) > 0);";
 
@@ -126,8 +125,8 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
             JOIN Persona AS p ON u.IdPersona = p.IdPersona
             WHERE e.IdEmpresa = @companyId
             AND p.IdPersona = @employeeId
-            AND CAST(ea.FechaInicio AS date) <= @dateFrom
-            AND (ea.FechaFin IS NULL OR CAST(ea.FechaFin AS date) >= @dateTo);";
+            AND ea.FechaInicio <= @dateTo
+            AND (ea.FechaFin IS NULL OR ea.FechaFin >= @dateFrom);";
 
         var elements = await connection.QueryAsync<ElementModel>(query, new { companyId, employeeId, dateFrom, dateTo });
         return elements;
@@ -152,7 +151,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
             JOIN Usuario AS u ON u.IdPersona = p.IdPersona
             JOIN UsuariosPorEmpresa AS ue ON ue.IdUsuario = u.IdUsuario
             JOIN Empresa AS e ON ue.IdEmpresa = e.IdEmpresa
-            WHERE e.IdEmpresa = @companyId AND CAST(h.Fecha AS date) >= @dateFrom AND CAST(h.Fecha AS date) <= @dateTo
+            WHERE e.IdEmpresa = @companyId AND h.Fecha >= @dateFrom AND h.Fecha <= @dateTo
             GROUP BY h.IdEmpleado;";
 
         var rows = await connection.QueryAsync<(int EmployeeId, decimal TotalHours)>(
@@ -179,8 +178,8 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         const string query = 
           @"SELECT IdImpuestoRenta AS Id, MontoMinimo AS Min, MontoMaximo AS Max, Porcentaje AS Rate, 'Tax' AS ItemType
             FROM ImpuestoRenta
-            WHERE CAST(FechaInicio AS date) <= @dateFrom
-            AND (FechaFin IS NULL OR CAST(FechaFin AS date) >= @dateTo)";
+            WHERE FechaInicio <= @dateFrom
+            AND (FechaFin IS NULL OR FechaFin >= @dateTo)";
 
         var taxBrackets = await connection.QueryAsync<TaxModel>(query, new {dateFrom, dateTo });
         return taxBrackets;
@@ -203,8 +202,8 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
                     WHEN PagadoPor = 'Empleador' THEN 'EmployerContribution'
               END AS ItemType
               FROM CCSS
-              WHERE CAST(FechaInicio AS date) <= @dateFrom
-              AND (FechaFin IS NULL OR CAST(FechaFin AS date) >= @dateTo)";
+              WHERE FechaInicio <= @dateFrom
+              AND (FechaFin IS NULL OR FechaFin >= @dateTo)";
 
         var ccssLines = await connection.QueryAsync<CCSSModel>(query, new { dateFrom, dateTo });
         return ccssLines;
