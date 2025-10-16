@@ -217,9 +217,36 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
 
     // WRITE METHODS
 
-    public Task<int> SaveCompanyPayroll(CompanyPayrollModel header)
+    public async Task<int> SaveCompanyPayroll(CompanyPayrollModel header, int personId)
     {
-      return Task.FromResult(0);
+      try
+      {
+        using var connection = new SqlConnection(_connectionString);
+        const string sql =
+          @"INSERT INTO CompanyPayroll(FechaInicio, FechaFin, FechaCreacion, MontoBruto, MontoNeto, DeduccionesEmpleado, DeduccionesEmpleador, Beneficios, CreadoPor, IdEmpresa)
+            VALUES (@DateFrom, @DateTo, SYSUTCDATETIME(), @Gross, @Net, @EmployeeDeductions, @EmployerDeductions, @Benefits, @personId, @CompanyId);
+            SELECT CAST(SCOPE_IDENTITY() AS INT);";
+
+        var id = await connection.ExecuteScalarAsync<int>(sql, new
+        {
+          header.CompanyId,
+          header.DateFrom,
+          header.DateTo,
+          header.Gross,
+          header.EmployeeDeductions,
+          header.EmployerDeductions,
+          header.Benefits,
+          header.Net,
+          header.CreatedBy,
+        });
+
+        return id;
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, "SaveCompanyPayroll failed");
+        throw;
+      }
     }
     public Task<int> SaveEmployeePayroll(EmployeePayrollModel employeePayroll)
     {
@@ -237,7 +264,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
     {
       return Task.CompletedTask;
     }
-    public Task SavePayment(int employeePayrollId, PaymentModel payment)
+    public Task SavePayment(int employeePayrollId, PaymentModel payment, int personId)
     {
       return Task.CompletedTask;
     }

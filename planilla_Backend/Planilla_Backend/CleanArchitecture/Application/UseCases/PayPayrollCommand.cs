@@ -11,7 +11,7 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
       _repo = repo;
     }
 
-    public Task Execute(int payrollId)
+    public Task Execute(int payrollId, int personId)
     {
       // TODO: implement payroll payment
 

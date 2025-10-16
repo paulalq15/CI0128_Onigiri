@@ -15,5 +15,6 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Entities
     public decimal Benefits { get; set; }
     public decimal Net { get; set; }
     public decimal Cost { get; set; }
+    public int CreatedBy { get; set; }
   }
 }

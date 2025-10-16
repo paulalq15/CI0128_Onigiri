@@ -13,11 +13,11 @@
     Task<IEnumerable<CCSSModel>> GetCCSS(DateOnly dateFrom, DateOnly dateTo);
 
     // Commands
-    Task<int> SaveCompanyPayroll(CompanyPayrollModel header);
+    Task<int> SaveCompanyPayroll(CompanyPayrollModel header, int personId);
     Task<int> SaveEmployeePayroll(EmployeePayrollModel employeePayroll);
     Task SavePayrollDetails(int employeePayrollId, IEnumerable<PayrollDetailModel> details);
     Task UpdateEmployeePayrollTotals(int employeePayrollId, EmployeePayrollModel totalsAndStatus);
     Task UpdateCompanyPayrollTotals(int companyPayrollId, CompanyPayrollModel totalsAndStatus);
-    Task SavePayment(int employeePayrollId, PaymentModel payment);
+    Task SavePayment(int employeePayrollId, PaymentModel payment, int personId);
   }
 }

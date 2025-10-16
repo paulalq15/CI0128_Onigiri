@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Planilla_Backend.CleanArchitecture.Application.UseCases;
 using Planilla_Backend.CleanArchitecture.Domain.Entities;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Planilla_Backend.CleanArchitecture.API
 {

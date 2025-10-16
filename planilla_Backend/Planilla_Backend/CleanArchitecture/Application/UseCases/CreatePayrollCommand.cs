@@ -15,10 +15,11 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
       _template = template;
     }
 
-    public async Task<PayrollSummary> Execute(int companyId, DateOnly dateFrom, DateOnly dateTo)
+    public async Task<PayrollSummary> Execute(int companyId, int personId, DateOnly dateFrom, DateOnly dateTo)
     {
 
       if (companyId <= 0) throw new ArgumentException("companyId must be positive");
+      if (personId <= 0) throw new ArgumentException("personId must be positive");
       if (dateFrom > dateTo) throw new ArgumentException("dateFrom must be <= dateTo");
 
       // Kick off all repository calls in parallel

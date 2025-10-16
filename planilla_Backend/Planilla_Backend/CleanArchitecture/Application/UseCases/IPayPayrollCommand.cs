@@ -2,6 +2,6 @@
 {
   public interface IPayPayrollCommand
   {
-    Task Execute(int payrollId);
+    Task Execute(int payrollId, int personId);
   }
 }
