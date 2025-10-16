@@ -83,5 +83,25 @@ namespace Planilla_Backend.Controllers
 
       return Ok(companySummaryModelsList);
     }
+
+    // GetCompanyByCompanyUniqueId
+    [HttpGet("GCBCUI")]
+    public async Task<ActionResult<CompanyModel>> GetCompanyByCompanyUniqueId(int companyUniqueId)
+    {
+      CompanyModel? company = await this.createCompanyService.GetCompanyByUniqueId(companyUniqueId);
+
+      if (company == null) return NotFound(new { message = "No se encontró la empresa" });
+
+      return Ok(company);
+    }
+
+    // GetCompanyByCompanyUniqueId
+    [HttpGet("GMaxAmBenTak")]
+    public async Task<ActionResult<int>> GetMaxAmountBenefitsTakenByCompanyUniqueId(int companyUniqueId)
+    {
+      int company = 0;
+
+      return Ok(company);
+    }
   }
 }

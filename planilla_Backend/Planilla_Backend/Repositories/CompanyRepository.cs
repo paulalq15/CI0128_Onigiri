@@ -207,5 +207,37 @@ namespace Planilla_Backend.Repositories
         return new List<CompanySummaryModel>();
       }
     }
+
+    public async Task<CompanyModel?> GetCompanyByUniqueId(int companyUniqueId)
+    {
+      try
+      {
+        using var connection = new SqlConnection(this._connectionString);
+
+        var sqlCompanyByUniqueId = @"
+            Select
+              IdEmpresa As CompanyUniqueId,
+              Estado As State,
+              CedulaJuridica As CompanyId,
+              Nombre As CompanyName,
+              Telefono As Telephone,
+              FechaCreacion As CreationDate,
+              CantidadBeneficios As MaxBenefits,
+              FrecuenciaPago As PaymentFrequency,
+              DiaPago1 As PayDay1,
+              DiaPago2 As PayDay2,
+              IdCreadoPor As CreatedBy
+            From Empresa
+            Where IdEmpresa = @companyUniqueId";
+
+        var company = await connection.QueryFirstOrDefaultAsync<CompanyModel>(sqlCompanyByUniqueId, new { companyUniqueId = companyUniqueId });
+        return company;
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine("Error al obtener la compañia por su UniqueId. Detalle: \n" + ex.Message);
+        return null;
+      }
+    }
   }
 }

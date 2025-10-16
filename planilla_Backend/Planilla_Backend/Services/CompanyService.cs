@@ -7,14 +7,17 @@ namespace Planilla_Backend.Services
   public class CompanyService
   {
     private readonly CompanyRepository createCompanyRepository;
+    private readonly DirectionsRepository directionsRepository;
     private const int maxBenefitNumber = 255;
     private const int maxPaymentDay = 31;
     private const int maxNameLength = 150;
     private const int maxAddressLength = 250;
 
-    public CompanyService(CompanyRepository createCompanyRepo)
+    public CompanyService(CompanyRepository createCompanyRepo, DirectionsRepository directionsRepository)
     {
-      createCompanyRepository = createCompanyRepo;
+      this.createCompanyRepository = createCompanyRepo;
+      this.directionsRepository = directionsRepository;
+
     }
     public string CreateCompany(CompanyModel company, out int companyId)
     {
@@ -127,6 +130,17 @@ namespace Planilla_Backend.Services
     public async Task<List<CompanySummaryModel>> GetAllCompaniesSummary()
     {
       return await this.createCompanyRepository.GetAllCompaniesSummary();
+    }
+
+    public async Task<CompanyModel?> GetCompanyByUniqueId(int companyUniqueId)
+    {
+      CompanyModel? company = await this.createCompanyRepository.GetCompanyByUniqueId(companyUniqueId);
+
+      if (company == null) return null;
+
+      company.Directions = await this.directionsRepository.GetCompanyDirectionsByCompanyUniqueId(companyUniqueId);
+
+      return company;
     }
   }
 }

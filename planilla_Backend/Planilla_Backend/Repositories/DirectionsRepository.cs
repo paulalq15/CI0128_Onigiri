@@ -57,5 +57,35 @@ namespace Planilla_Backend.Repositories
         throw new Exception("Error al guardar la dirección: " + ex.Message);
       }
     }
+
+    public async Task<DirectionsModel?> GetCompanyDirectionsByCompanyUniqueId(int companyId)
+    {
+      try
+      {
+        using var connection = new SqlConnection(this._connectionString);
+
+        var sqlCompanyDirections = @"
+            Select
+              d.IdDireccion As IdDirection,
+              d.IdDivision As IdDivision,
+              d.OtrasSenas As OtherSigns,
+              d.IdEmpresa As IdCompany,
+              dt.Provincia As Province,
+              dt.Canton As Canton,
+              dt.Distrito As District,
+              dt.CodigoPostal As ZipCode
+            From Direccion d
+            Inner Join DivisionTerritorialCR dt On dt.IdDivision = d.IdDivision
+            Where d.IdEmpresa = @companyId";
+
+        var directions = await connection.QueryFirstOrDefaultAsync<DirectionsModel>(sqlCompanyDirections, new { companyId });
+        return directions;
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine("Error al devolver la dirección de la empresa. Detalle: \n" + ex.Message);
+        return null;
+      }
+    }
   }
 }
