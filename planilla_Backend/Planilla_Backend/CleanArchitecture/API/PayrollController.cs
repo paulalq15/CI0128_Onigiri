@@ -21,8 +21,8 @@ namespace Planilla_Backend.CleanArchitecture.API
       _get = get;
     }
 
-    [HttpPost("payroll")]
-    public async Task<ActionResult<PayrollSummary>> Create([FromQuery] int companyId, [FromQuery] int personId, [FromQuery] DateOnly DateFrom, [FromQuery] DateOnly DateTo)
+    [HttpPost]
+    public async Task<ActionResult<PayrollSummary>> Create([FromQuery] int companyId, [FromQuery] int personId, [FromQuery] DateTime DateFrom, [FromQuery] DateTime DateTo)
     {
       var result = await _create.Execute(companyId, personId, DateFrom, DateTo);
       return Ok(result);

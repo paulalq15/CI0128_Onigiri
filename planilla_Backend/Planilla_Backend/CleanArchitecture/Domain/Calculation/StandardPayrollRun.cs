@@ -12,7 +12,7 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
       _factory = factory ?? throw new ArgumentNullException(nameof(factory));
     }
 
-    protected override List<EmployeeModel> SelectEmployees(int companyId, DateOnly dateFrom, DateOnly dateTo, PayrollContext ctx)
+    protected override List<EmployeeModel> SelectEmployees(int companyId, DateTime dateFrom, DateTime dateTo, PayrollContext ctx)
     {
       if (ctx == null) throw new ArgumentNullException(nameof(ctx));
       if (ctx.Employees == null) return new List<EmployeeModel>();

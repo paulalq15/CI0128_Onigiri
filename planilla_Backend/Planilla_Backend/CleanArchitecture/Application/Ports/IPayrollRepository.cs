@@ -5,12 +5,12 @@
   {
     // Queries
     Task<CompanyModel> GetCompany(int companyId);
-    Task<IEnumerable<EmployeeModel>> GetEmployees(int companyId, DateOnly dateFrom, DateOnly dateTo);
-    Task<IEnumerable<ContractModel>> GetContracts(int companyId, DateOnly dateFrom, DateOnly dateTo);
-    Task<IEnumerable<ElementModel>> GetElementsForEmployee(int companyId, int employeeId, DateOnly dateFrom, DateOnly dateTo);
-    Task<IDictionary<int, decimal>> GetEmployeeTimesheets(int companyId, DateOnly dateFrom, DateOnly dateTo);
-    Task<IEnumerable<TaxModel>> GetTaxes(DateOnly dateFrom, DateOnly dateTo);
-    Task<IEnumerable<CCSSModel>> GetCCSS(DateOnly dateFrom, DateOnly dateTo);
+    Task<IEnumerable<EmployeeModel>> GetEmployees(int companyId, DateTime dateFrom, DateTime dateTo);
+    Task<IEnumerable<ContractModel>> GetContracts(int companyId, DateTime dateFrom, DateTime dateTo);
+    Task<IEnumerable<ElementModel>> GetElementsForEmployee(int companyId, int employeeId, DateTime dateFrom, DateTime dateTo);
+    Task<IDictionary<int, decimal>> GetEmployeeTimesheets(int companyId, DateTime dateFrom, DateTime dateTo);
+    Task<IEnumerable<TaxModel>> GetTaxes(DateTime dateFrom, DateTime dateTo);
+    Task<IEnumerable<CCSSModel>> GetCCSS(DateTime dateFrom, DateTime dateTo);
     Task<CompanyPayrollModel?> GetLatestOpenCompanyPayroll(int companyId);
     Task<CompanyPayrollModel?> GetCompanyPayrollById(int companyPayrollId);
     Task<IEnumerable<EmployeePayrollModel>> GetEmployeePayrolls(int companyPayrollId);

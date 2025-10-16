@@ -20,10 +20,10 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
       var payrollDays = 0;
       var salaryAmount = 0m;
 
-      var periodStart = ctx.DateFrom.ToDateTime(TimeOnly.MinValue);
-      var periodEnd = ctx.DateTo.ToDateTime(TimeOnly.MinValue);
-      var contractStart = contract.StartDate.ToDateTime(TimeOnly.MinValue);
-      var contractEnd = contract.EndDate.HasValue ? contract.EndDate.Value.ToDateTime(TimeOnly.MinValue) : periodEnd;
+      var periodStart = ctx.DateFrom;
+      var periodEnd = ctx.DateTo;
+      var contractStart = contract.StartDate;
+      var contractEnd = contract.EndDate.HasValue ? contract.EndDate.Value : periodEnd;
 
       if (contractStart > periodStart)
       {

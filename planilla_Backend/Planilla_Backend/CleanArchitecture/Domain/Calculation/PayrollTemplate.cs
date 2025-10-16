@@ -5,7 +5,7 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
   //Template Method Design Pattern
   public abstract class PayrollTemplate
   {
-    public List<PayrollDetailModel> RunCalculation(int companyId, DateOnly dateFrom, DateOnly dateTo, PayrollContext ctx)
+    public List<PayrollDetailModel> RunCalculation(int companyId, DateTime dateFrom, DateTime dateTo, PayrollContext ctx)
     {
       var payrollDetails = new List<PayrollDetailModel>();
 
@@ -40,7 +40,7 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
       return payrollDetails;
     }
 
-    protected abstract List<EmployeeModel> SelectEmployees(int companyId, DateOnly dateFrom, DateOnly dateTo, PayrollContext ctx);
+    protected abstract List<EmployeeModel> SelectEmployees(int companyId, DateTime dateFrom, DateTime dateTo, PayrollContext ctx);
     protected abstract ContractModel SelectContract(EmployeeModel emp, PayrollContext ctx);
     protected abstract PayrollDetailModel CreateEmployeeBaseLine(EmployeeModel employee, ContractModel contract, PayrollContext ctx);
     protected abstract List<PayrollDetailModel> ApplyConcepts(EmployeeModel employee, PayrollDetailModel baseLine, List<ElementModel> elements, PayrollContext ctx);

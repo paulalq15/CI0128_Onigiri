@@ -7,7 +7,7 @@
     public decimal Salary { get; set; }
     public string? PaymentAccount { get; set; }
     public ContractType ContractType { get; set; }
-    public DateOnly StartDate { get; set; }
-    public DateOnly? EndDate { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
   }
 }

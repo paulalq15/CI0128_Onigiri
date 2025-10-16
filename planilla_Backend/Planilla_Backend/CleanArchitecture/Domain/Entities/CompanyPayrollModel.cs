@@ -6,8 +6,8 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Entities
   {
     public int Id { get; set; }
     public int CompanyId { get; set; }
-    public DateOnly DateFrom { get; set; }
-    public DateOnly DateTo { get; set; }
+    public DateTime DateFrom { get; set; }
+    public DateTime DateTo { get; set; }
     public string? PayrollStatus { get; set; }
     public decimal Gross { get; set; }
     public decimal EmployeeDeductions { get; set; }

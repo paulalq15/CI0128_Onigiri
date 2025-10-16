@@ -5,8 +5,8 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
   public class PayrollContext
   {
     public CompanyModel Company { get; set; }
-    public DateOnly DateFrom { get; set; }
-    public DateOnly DateTo { get; set; }
+    public DateTime DateFrom { get; set; }
+    public DateTime DateTo { get; set; }
     public IList<ContractModel> Contracts { get; set; }
     public IList<CCSSModel> CCSSRates { get; set; }
     public IList<TaxModel> TaxBrackets { get; set; }

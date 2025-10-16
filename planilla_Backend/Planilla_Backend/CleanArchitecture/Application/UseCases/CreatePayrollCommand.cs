@@ -15,7 +15,7 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
       _template = template;
     }
 
-    public async Task<PayrollSummary> Execute(int companyId, int personId, DateOnly dateFrom, DateOnly dateTo)
+    public async Task<PayrollSummary> Execute(int companyId, int personId, DateTime dateFrom, DateTime dateTo)
     {
 
       if (companyId <= 0) throw new ArgumentException("companyId must be positive");
@@ -152,7 +152,7 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
       return summary;
     }
 
-    private async Task<IDictionary<int, IList<ElementModel>>> BuildElementsMapAsync(int companyId, IList<EmployeeModel> employees, DateOnly dateFrom, DateOnly dateTo)
+    private async Task<IDictionary<int, IList<ElementModel>>> BuildElementsMapAsync(int companyId, IList<EmployeeModel> employees, DateTime dateFrom, DateTime dateTo)
     {
       var tasks = employees.Select(async e =>
       {

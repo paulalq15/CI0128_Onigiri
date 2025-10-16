@@ -38,7 +38,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       }      
     }
 
-    public async Task<IEnumerable<EmployeeModel>> GetEmployees(int companyId, DateOnly dateFrom, DateOnly dateTo)
+    public async Task<IEnumerable<EmployeeModel>> GetEmployees(int companyId, DateTime dateFrom, DateTime dateTo)
     {
       try {
         using var connection = new SqlConnection(_connectionString);
@@ -72,7 +72,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       }
     }
 
-    public async Task<IEnumerable<ContractModel>> GetContracts(int companyId, DateOnly dateFrom, DateOnly dateTo)
+    public async Task<IEnumerable<ContractModel>> GetContracts(int companyId, DateTime dateFrom, DateTime dateTo)
     {
       try
       {
@@ -104,7 +104,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       }
     }
 
-    public async Task<IEnumerable<ElementModel>> GetElementsForEmployee(int companyId, int employeeId, DateOnly dateFrom, DateOnly dateTo)
+    public async Task<IEnumerable<ElementModel>> GetElementsForEmployee(int companyId, int employeeId, DateTime dateFrom, DateTime dateTo)
     {
       try
       {
@@ -137,7 +137,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       }
     }
 
-    public async Task<IDictionary<int, decimal>> GetEmployeeTimesheets(int companyId, DateOnly dateFrom, DateOnly dateTo)
+    public async Task<IDictionary<int, decimal>> GetEmployeeTimesheets(int companyId, DateTime dateFrom, DateTime dateTo)
     {
       try
       {
@@ -169,7 +169,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       }
     }
 
-    public async Task<IEnumerable<TaxModel>> GetTaxes(DateOnly dateFrom, DateOnly dateTo)
+    public async Task<IEnumerable<TaxModel>> GetTaxes(DateTime dateFrom, DateTime dateTo)
     {
       try
       {
@@ -190,7 +190,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       }
     }
 
-    public async Task<IEnumerable<CCSSModel>> GetCCSS(DateOnly dateFrom, DateOnly dateTo)
+    public async Task<IEnumerable<CCSSModel>> GetCCSS(DateTime dateFrom, DateTime dateTo)
     {
       try
       {
@@ -291,8 +291,8 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       {
         using var connection = new SqlConnection(_connectionString);
         const string sql =
-          @"INSERT INTO NominaEmpresa(FechaInicio, FechaFin, FechaCreacion, MontoBruto, MontoNeto, DeduccionesEmpleado, DeduccionesEmpleador, Beneficios, CreadoPor, IdEmpresa, Costo)
-            VALUES (@DateFrom, @DateTo, SYSUTCDATETIME(), @Gross, @Net, @EmployeeDeductions, @EmployerDeductions, @Benefits, @CreatedBy, @CompanyId, @Cost);
+          @"INSERT INTO NominaEmpresa(FechaInicio, FechaFin, MontoBruto, MontoNeto, DeduccionesEmpleado, DeduccionesEmpleador, Beneficios, CreadoPor, IdEmpresa, Costo)
+            VALUES (@DateFrom, @DateTo, @Gross, @Net, @EmployeeDeductions, @EmployerDeductions, @Benefits, @CreatedBy, @CompanyId, @Cost);
             SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
         var id = await connection.ExecuteScalarAsync<int>(sql, new
