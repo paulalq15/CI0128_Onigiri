@@ -224,8 +224,8 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       {
         using var connection = new SqlConnection(_connectionString);
         const string sql =
-          @"INSERT INTO NominaEmpresa(FechaInicio, FechaFin, FechaCreacion, MontoBruto, MontoNeto, DeduccionesEmpleado, DeduccionesEmpleador, Beneficios, CreadoPor, IdEmpresa)
-            VALUES (@DateFrom, @DateTo, SYSUTCDATETIME(), @Gross, @Net, @EmployeeDeductions, @EmployerDeductions, @Benefits, @CreatedBy, @CompanyId);
+          @"INSERT INTO NominaEmpresa(FechaInicio, FechaFin, FechaCreacion, MontoBruto, MontoNeto, DeduccionesEmpleado, DeduccionesEmpleador, Beneficios, CreadoPor, IdEmpresa, Costo)
+            VALUES (@DateFrom, @DateTo, SYSUTCDATETIME(), @Gross, @Net, @EmployeeDeductions, @EmployerDeductions, @Benefits, @CreatedBy, @CompanyId, @Cost);
             SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
         var id = await connection.ExecuteScalarAsync<int>(sql, new
@@ -238,6 +238,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
           header.EmployerDeductions,
           header.Benefits,
           header.Net,
+          header.Cost,
           header.CreatedBy,
         });
 
@@ -255,8 +256,8 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       {
         using var connection = new SqlConnection(_connectionString);
         const string sql =
-          @"INSERT INTO NominaEmpleado(IdNominaEmpresa, IdEmpleado, MontoBruto, MontoNeto, DeduccionesEmpleado, DeduccionesEmpleador, Beneficios)
-            VALUES (@CompanyPayrollId, @EmployeeId, @Gross, @Net, @EmployeeDeductions, @EmployerDeductions, @Benefits);
+          @"INSERT INTO NominaEmpleado(IdNominaEmpresa, IdEmpleado, MontoBruto, MontoNeto, DeduccionesEmpleado, DeduccionesEmpleador, Beneficios, Costo)
+            VALUES (@CompanyPayrollId, @EmployeeId, @Gross, @Net, @EmployeeDeductions, @EmployerDeductions, @Benefits, @Cost);
             SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
         var id = await connection.ExecuteScalarAsync<int>(sql, new
@@ -268,6 +269,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
           employeePayroll.EmployerDeductions,
           employeePayroll.Benefits,
           employeePayroll.Net,
+          employeePayroll.Cost,
         });
 
         return id;
