@@ -148,6 +148,8 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
       summary.TotalBenefits = companyPayroll.Benefits;
       summary.TotalNetEmployee = companyPayroll.Net;
       summary.TotalEmployerCost = companyPayroll.Cost;
+      summary.DateFrom = companyPayroll.DateFrom;
+      summary.DateTo = companyPayroll.DateTo;
 
       return summary;
     }

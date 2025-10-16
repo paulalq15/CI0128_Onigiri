@@ -10,5 +10,7 @@
     public decimal TotalBenefits { get; set; }
     public decimal TotalNetEmployee { get; set; }
     public decimal TotalEmployerCost { get; set; }
+    public DateTime DateFrom { get; set; }
+    public DateTime DateTo { get; set; }
   }
 }
