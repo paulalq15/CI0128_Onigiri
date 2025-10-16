@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Planilla_Backend.CleanArchitecture.Application.Ports;
 using Planilla_Backend.CleanArchitecture.Domain.Entities;
 using System.ComponentModel.Design;
+using System.Reflection.PortableExecutable;
 
 namespace Planilla_Backend.CleanArchitecture.Infrastructure
 {
@@ -217,14 +218,14 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
 
     // WRITE METHODS
 
-    public async Task<int> SaveCompanyPayroll(CompanyPayrollModel header, int personId)
+    public async Task<int> SaveCompanyPayroll(CompanyPayrollModel header)
     {
       try
       {
         using var connection = new SqlConnection(_connectionString);
         const string sql =
           @"INSERT INTO CompanyPayroll(FechaInicio, FechaFin, FechaCreacion, MontoBruto, MontoNeto, DeduccionesEmpleado, DeduccionesEmpleador, Beneficios, CreadoPor, IdEmpresa)
-            VALUES (@DateFrom, @DateTo, SYSUTCDATETIME(), @Gross, @Net, @EmployeeDeductions, @EmployerDeductions, @Benefits, @personId, @CompanyId);
+            VALUES (@DateFrom, @DateTo, SYSUTCDATETIME(), @Gross, @Net, @EmployeeDeductions, @EmployerDeductions, @Benefits, @CreatedBy, @CompanyId);
             SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
         var id = await connection.ExecuteScalarAsync<int>(sql, new
@@ -248,9 +249,34 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         throw;
       }
     }
-    public Task<int> SaveEmployeePayroll(EmployeePayrollModel employeePayroll)
+    public async Task<int> SaveEmployeePayroll(EmployeePayrollModel employeePayroll)
     {
-      return Task.FromResult(0);
+      try
+      {
+        using var connection = new SqlConnection(_connectionString);
+        const string sql =
+          @"INSERT INTO CompanyPayroll(IdNominaEmpresa, IdEmpleado, MontoBruto, MontoNeto, DeduccionesEmpleado, DeduccionesEmpleador, Beneficios)
+            VALUES (@CompanyPayrollId, @EmployeeId, @Gross, @Net, @EmployeeDeductions, @EmployerDeductions, @Benefits);
+            SELECT CAST(SCOPE_IDENTITY() AS INT);";
+
+        var id = await connection.ExecuteScalarAsync<int>(sql, new
+        {
+          employeePayroll.CompanyPayrollId,
+          employeePayroll.EmployeeId,
+          employeePayroll.Gross,
+          employeePayroll.EmployeeDeductions,
+          employeePayroll.EmployerDeductions,
+          employeePayroll.Benefits,
+          employeePayroll.Net,
+        });
+
+        return id;
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, "SaveEmployeePayroll failed");
+        throw;
+      }
     }
     public Task SavePayrollDetails(int employeePayrollId, IEnumerable<PayrollDetailModel> details)
     {
@@ -264,7 +290,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
     {
       return Task.CompletedTask;
     }
-    public Task SavePayment(int employeePayrollId, PaymentModel payment, int personId)
+    public Task SavePayment(int employeePayrollId, PaymentModel payment)
     {
       return Task.CompletedTask;
     }

@@ -3,6 +3,7 @@
   public class EmployeePayrollModel
   {
     public int Id { get; set; }
+    public int CompanyPayrollId { get; set; }
     public int EmployeeId { get; set; }
     public decimal Gross { get; set; }
     public decimal EmployeeDeductions { get; set; }
