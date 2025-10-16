@@ -131,10 +131,25 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
         }
       }
 
+      // TODO: update totals for each employee payroll and company payroll
 
-      // TODO: implement payroll creation logic
+      // Employee Totals using dictionary ctx.EmployeePayrollByEmployeeId
+      //...
 
-      return new PayrollSummary();
+      // Company Totals using companyPayroll
+      //...
+
+      // Payroll summary to return
+      var summary = new PayrollSummary();
+      summary.CompanyPayrollId = companyPayroll.Id;
+      summary.TotalGrossSalaries = companyPayroll.Gross;
+      summary.TotalEmployerDeductions = companyPayroll.EmployerDeductions;
+      summary.TotalEmployeeDeductions = companyPayroll.EmployeeDeductions;
+      summary.TotalBenefits = companyPayroll.Benefits;
+      summary.TotalNetEmployee = companyPayroll.Net;
+      summary.TotalEmployerCost = companyPayroll.Cost;
+
+      return summary;
     }
 
     private async Task<IDictionary<int, IList<ElementModel>>> BuildElementsMapAsync(int companyId, IList<EmployeeModel> employees, DateOnly dateFrom, DateOnly dateTo)

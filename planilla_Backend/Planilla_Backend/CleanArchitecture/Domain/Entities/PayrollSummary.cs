@@ -3,7 +3,7 @@
   public class PayrollSummary
   {
     public int CompanyPayrollId { get; set; }
-    public DateOnly PayDate { get; set; }
+    public DateOnly? PayDate { get; set; }
     public decimal TotalGrossSalaries { get; set; }
     public decimal TotalEmployerDeductions { get; set; }
     public decimal TotalEmployeeDeductions { get; set; }

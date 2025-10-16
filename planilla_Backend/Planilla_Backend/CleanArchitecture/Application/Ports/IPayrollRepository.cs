@@ -11,6 +11,7 @@
     Task<IDictionary<int, decimal>> GetEmployeeTimesheets(int companyId, DateOnly dateFrom, DateOnly dateTo);
     Task<IEnumerable<TaxModel>> GetTaxes(DateOnly dateFrom, DateOnly dateTo);
     Task<IEnumerable<CCSSModel>> GetCCSS(DateOnly dateFrom, DateOnly dateTo);
+    Task<CompanyPayrollModel?> GetLatestOpenCompanyPayroll(int companyId);
 
     // Commands
     Task<int> SaveCompanyPayroll(CompanyPayrollModel header);

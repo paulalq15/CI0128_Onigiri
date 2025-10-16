@@ -21,24 +21,25 @@ namespace Planilla_Backend.CleanArchitecture.API
       _get = get;
     }
 
-    [HttpPost("create")]
+    [HttpPost("payroll")]
     public async Task<ActionResult<PayrollSummary>> Create([FromQuery] int companyId, [FromQuery] int personId, [FromQuery] DateOnly DateFrom, [FromQuery] DateOnly DateTo)
     {
       var result = await _create.Execute(companyId, personId, DateFrom, DateTo);
       return Ok(result);
     }
 
-    [HttpPost("pay")]
+    [HttpPost("payment")]
     public async Task<IActionResult> Pay([FromQuery] int payrollId, [FromQuery] int personId)
     {
       await _pay.Execute(payrollId, personId);
       return Ok();
     }
 
-    [HttpGet("{id}/summary")]
-    public async Task<ActionResult<PayrollSummary>> GetSummary([FromRoute] int id)
+    [HttpGet("summary")]
+    public async Task<ActionResult<PayrollSummary>> GetSummary([FromQuery] int companyId)
     {
-      var result = await _get.Execute(id);
+      var result = await _get.Execute(companyId);
+      if (result == null) return NoContent();
       return Ok(result);
     }
   }

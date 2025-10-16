@@ -6,6 +6,7 @@ using Planilla_Backend.CleanArchitecture.Domain.Entities;
 using System.ComponentModel.Design;
 using System.Linq;
 using System.Reflection.PortableExecutable;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Planilla_Backend.CleanArchitecture.Infrastructure
 {
@@ -203,9 +204,9 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
               CASE WHEN PagadoPor = 'Empleado' THEN 'EmployeeDeduction'
                     WHEN PagadoPor = 'Empleador' THEN 'EmployerContribution'
               END AS ItemType
-              FROM CCSS
-              WHERE FechaInicio <= @dateFrom
-              AND (FechaFin IS NULL OR FechaFin >= @dateTo)";
+            FROM CCSS
+            WHERE FechaInicio <= @dateFrom
+            AND (FechaFin IS NULL OR FechaFin >= @dateTo)";
 
         var ccssLines = await connection.QueryAsync<CCSSModel>(query, new { dateFrom, dateTo });
         return ccssLines;
@@ -213,6 +214,30 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       catch (Exception ex)
       {
         _logger.LogError(ex, "GetCCSS failed.");
+        throw;
+      }
+    }
+
+    public async Task<CompanyPayrollModel?> GetLatestOpenCompanyPayroll(int companyId)
+    {
+      try
+      {
+        using var connection = new SqlConnection(_connectionString);
+        const string query =
+          @"SELECT TOP 1 IdNominaEmpresa AS Id, IdEmpresa AS CompanyId, FechaInicio AS DateFrom, 
+              FechaFin AS DateTo, Estado AS PayrollStatus, MontoBruto AS Gross, 
+              DeduccionesEmpleado AS EmployeeDeductions, DeduccionesEmpleador AS EmployerDeductions, 
+              Beneficios AS Benefits, MontoNeto AS Net, Costo AS Cost, CreadoPor AS CreatedBy     
+            FROM NominaEmpresa
+            WHERE Estado = 'Creado' AND IdEmpresa = @companyId
+            ORDERBY FechaCreacion DESC";
+
+        var companyPayroll = await connection.QuerySingleOrDefaultAsync<CompanyPayrollModel>(query, new { companyId });
+        return companyPayroll;
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, "GetLatestOpenCompanyPayroll failed. companyId: {CompanyId}", companyId);
         throw;
       }
     }
