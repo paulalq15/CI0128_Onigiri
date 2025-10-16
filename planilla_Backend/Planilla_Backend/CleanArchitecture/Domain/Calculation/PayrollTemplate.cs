@@ -19,7 +19,7 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
         ContractModel contract = SelectContract(employee, ctx);
         if (contract != null)
         {
-          PayrollDetailModel baseLine = CreateBaseLine(employee, contract, ctx);
+          PayrollDetailModel baseLine = CreateEmployeeBaseLine(employee, contract, ctx);
           
           var emptyElements = new List<ElementModel>();
           List<PayrollDetailModel> conceptLines = ApplyConcepts(employee, baseLine, emptyElements, ctx);
