@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Planilla_Backend.CleanArchitecture.Application.Ports;
 using Planilla_Backend.CleanArchitecture.Domain.Entities;
 using System.ComponentModel.Design;
+using System.Linq;
 using System.Reflection.PortableExecutable;
 
 namespace Planilla_Backend.CleanArchitecture.Infrastructure
@@ -280,9 +281,40 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         throw;
       }
     }
-    public Task SavePayrollDetails(int employeePayrollId, IEnumerable<PayrollDetailModel> details)
+    public async Task SavePayrollDetails(int employeePayrollId, IEnumerable<PayrollDetailModel> details)
     {
-      return Task.CompletedTask;
+      try
+      {
+        using var connection = new SqlConnection(_connectionString);
+        const string sql =
+          @"INSERT INTO DetalleNomina(IdNominaEmpleado, IdCCSS, IdImpuestoRenta, IdElementoAplicado, Descripcion, Monto, Tipo)
+            VALUES (@EmployeePayrollId, @IdCCSS, @IdTax, @IdElement, @Description, @Amount, @Type);";
+
+        var args = new List<object>();
+        foreach (var line in details)
+        {
+          args.Add(new
+          {
+            EmployeePayrollId = employeePayrollId,
+            line.Description,
+            line.Type,
+            line.Amount,
+            line.IdCCSS,
+            line.IdTax,
+            line.IdElement
+          });
+        }
+
+        if (args.Count > 0)
+        {
+          await connection.ExecuteAsync(sql, args);
+        }
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, "SavePayrollDetails failed for EmployeePayrollId {EmployeePayrollId}", employeePayrollId);
+        throw;
+      }
     }
     public Task UpdateEmployeePayrollTotals(int employeePayrollId, EmployeePayrollModel totalsAndStatus)
     {

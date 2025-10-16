@@ -98,6 +98,40 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
         i++;
       }
 
+      // Payroll Details for each employee payroll
+      var calculatedLines = _template.RunCalculation(companyId, dateFrom, dateTo, ctx);
+      if (calculatedLines != null && calculatedLines.Count > 0)
+      {
+        var detailsByPayroll = new Dictionary<int, List<PayrollDetailModel>>();
+        var lineIndex = 0;
+
+        while (lineIndex < calculatedLines.Count)
+        {
+          var line = calculatedLines[lineIndex];
+
+          if (line != null && line.EmployeePayrollId > 0)
+          {
+            List<PayrollDetailModel> employeeDetails;
+            if (!detailsByPayroll.TryGetValue(line.EmployeePayrollId, out employeeDetails))
+            {
+              employeeDetails = new List<PayrollDetailModel>();
+              detailsByPayroll[line.EmployeePayrollId] = employeeDetails;
+            }
+            employeeDetails.Add(line);
+          }
+
+          lineIndex++;
+        }
+
+        foreach (var group in detailsByPayroll)
+        {
+          var employeePayrollId = group.Key;
+          var employeeDetails = group.Value;
+          await _repo.SavePayrollDetails(employeePayrollId, employeeDetails);
+        }
+      }
+
+
       // TODO: implement payroll creation logic
 
       return new PayrollSummary();
