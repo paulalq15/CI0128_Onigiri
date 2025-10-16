@@ -12,6 +12,8 @@
     Task<IEnumerable<TaxModel>> GetTaxes(DateOnly dateFrom, DateOnly dateTo);
     Task<IEnumerable<CCSSModel>> GetCCSS(DateOnly dateFrom, DateOnly dateTo);
     Task<CompanyPayrollModel?> GetLatestOpenCompanyPayroll(int companyId);
+    Task<CompanyPayrollModel?> GetCompanyPayrollById(int companyPayrollId);
+    Task<IEnumerable<EmployeePayrollModel>> GetEmployeePayrolls(int companyPayrollId);
 
     // Commands
     Task<int> SaveCompanyPayroll(CompanyPayrollModel header);
@@ -20,5 +22,6 @@
     Task UpdateEmployeePayrollTotals(int employeePayrollId, EmployeePayrollModel totalsAndStatus);
     Task UpdateCompanyPayrollTotals(int companyPayrollId, CompanyPayrollModel totalsAndStatus);
     Task SavePayment(int employeePayrollId, PaymentModel payment);
+    Task UpdatePaidCompanyPayroll(int companyPayrollId, int personId, DateTime paymentDate);
   }
 }

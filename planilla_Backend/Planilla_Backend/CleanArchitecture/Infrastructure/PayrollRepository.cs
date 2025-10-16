@@ -3,10 +3,6 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 using Planilla_Backend.CleanArchitecture.Application.Ports;
 using Planilla_Backend.CleanArchitecture.Domain.Entities;
-using System.ComponentModel.Design;
-using System.Linq;
-using System.Reflection.PortableExecutable;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Planilla_Backend.CleanArchitecture.Infrastructure
 {
@@ -200,7 +196,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       {
         using var connection = new SqlConnection(_connectionString);
         const string query = 
-          @"SELECT IdCCSS AS Id, Categoria AS Category, Concepto AS Concept, Porcentaje AS Rate, 
+          @"SELECT IdCCSS AS Id, Categoria AS Category, Concepto AS Concept, Porcentaje AS Rate,
               CASE WHEN PagadoPor = 'Empleado' THEN 'EmployeeDeduction'
                     WHEN PagadoPor = 'Empleador' THEN 'EmployerContribution'
               END AS ItemType
@@ -224,13 +220,13 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       {
         using var connection = new SqlConnection(_connectionString);
         const string query =
-          @"SELECT TOP 1 IdNominaEmpresa AS Id, IdEmpresa AS CompanyId, FechaInicio AS DateFrom, 
-              FechaFin AS DateTo, Estado AS PayrollStatus, MontoBruto AS Gross, 
-              DeduccionesEmpleado AS EmployeeDeductions, DeduccionesEmpleador AS EmployerDeductions, 
-              Beneficios AS Benefits, MontoNeto AS Net, Costo AS Cost, CreadoPor AS CreatedBy     
+          @"SELECT TOP 1 IdNominaEmpresa AS Id, IdEmpresa AS CompanyId, FechaInicio AS DateFrom,
+              FechaFin AS DateTo, Estado AS PayrollStatus, MontoBruto AS Gross,
+              DeduccionesEmpleado AS EmployeeDeductions, DeduccionesEmpleador AS EmployerDeductions,
+              Beneficios AS Benefits, MontoNeto AS Net, Costo AS Cost, CreadoPor AS CreatedBy
             FROM NominaEmpresa
             WHERE Estado = 'Creado' AND IdEmpresa = @companyId
-            ORDERBY FechaCreacion DESC";
+            ORDER BY FechaCreacion DESC";
 
         var companyPayroll = await connection.QuerySingleOrDefaultAsync<CompanyPayrollModel>(query, new { companyId });
         return companyPayroll;
@@ -238,6 +234,51 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       catch (Exception ex)
       {
         _logger.LogError(ex, "GetLatestOpenCompanyPayroll failed. companyId: {CompanyId}", companyId);
+        throw;
+      }
+    }
+
+    public async Task<CompanyPayrollModel?> GetCompanyPayrollById(int companyPayrollId)
+    {
+      try
+      {
+        using var connection = new SqlConnection(_connectionString);
+        const string query =
+          @"SELECT IdNominaEmpresa AS Id, IdEmpresa AS CompanyId, FechaInicio AS DateFrom,
+              FechaFin AS DateTo, Estado AS PayrollStatus, MontoBruto AS Gross,
+              DeduccionesEmpleado AS EmployeeDeductions, DeduccionesEmpleador AS EmployerDeductions,
+              Beneficios AS Benefits, MontoNeto AS Net, Costo AS Cost, CreadoPor AS CreatedBy
+            FROM NominaEmpresa
+            WHERE IdNominaEmpresa = @companyPayrollId";
+
+        var companyPayroll = await connection.QuerySingleOrDefaultAsync<CompanyPayrollModel>(query, new { companyPayrollId });
+        return companyPayroll;
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, "GetCompanyPayrollById failed. companyPayrollId: {CompanyPayrollId}", companyPayrollId);
+        throw;
+      }
+    }
+
+    public async Task<IEnumerable<EmployeePayrollModel>> GetEmployeePayrolls(int companyPayrollId)
+    {
+      try
+      {
+        using var connection = new SqlConnection(_connectionString);
+        const string query =
+          @"SELECT IdNominaEmpleado AS Id, IdNominaEmpresa AS CompanyPayrollId, IdEmpleado AS EmployeeId,
+              MontoBruto AS Gross, DeduccionesEmpleado AS EmployeeDeductions, DeduccionesEmpleador AS EmployerDeductions,
+              Beneficios AS Benefits, MontoNeto AS Net, Costo AS Cost
+            FROM NominaEmpleado
+            WHERE IdNominaEmpresa = @companyPayrollId";
+
+        var employeePayrolls = await connection.QueryAsync<EmployeePayrollModel>(query, new { companyPayrollId });
+        return employeePayrolls;
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, "GetEmployeePayrolls failed. companyPayrollId: {CompanyPayrollId}", companyPayrollId);
         throw;
       }
     }
@@ -313,7 +354,15 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         using var connection = new SqlConnection(_connectionString);
         const string sql =
           @"INSERT INTO DetalleNomina(IdNominaEmpleado, IdCCSS, IdImpuestoRenta, IdElementoAplicado, Descripcion, Monto, Tipo)
-            VALUES (@EmployeePayrollId, @IdCCSS, @IdTax, @IdElement, @Description, @Amount, @Type);";
+            VALUES (@EmployeePayrollId, @IdCCSS, @IdTax, @IdElement, @Description, @Amount,
+              CASE @Type
+                WHEN 'Base' THEN 'Salario'
+                WHEN 'Benefit' THEN 'Beneficio Empleado'
+                WHEN 'EmployeeDeduction' THEN 'Deduccion Empleado'
+                WHEN 'EmployerContribution' THEN 'Deduccion Empleador'
+                WHEN 'Tax' THEN 'Deduccion Empleado'
+              END
+            );";
 
         var args = new List<object>();
         foreach (var line in details)
@@ -350,6 +399,11 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       return Task.CompletedTask;
     }
     public Task SavePayment(int employeePayrollId, PaymentModel payment)
+    {
+      return Task.CompletedTask;
+    }
+
+    public Task UpdatePaidCompanyPayroll(int companyPayrollId, int personId, DateTime paymentDate)
     {
       return Task.CompletedTask;
     }
