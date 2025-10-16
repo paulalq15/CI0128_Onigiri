@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Planilla_Backend.CleanArchitecture.Application.UseCases;
 using Planilla_Backend.CleanArchitecture.Domain.Entities;
+using Planilla_Backend.LayeredArchitecture.Models;
 
 namespace Planilla_Backend.CleanArchitecture.API
 {
@@ -21,16 +22,16 @@ namespace Planilla_Backend.CleanArchitecture.API
     }
 
     [HttpPost("create")]
-    public async Task<ActionResult<PayrollSummary>> Create([FromQuery] int companyId, [FromQuery] DateOnly DateFrom, [FromQuery] DateOnly DateTo)
+    public async Task<ActionResult<PayrollSummary>> Create([FromQuery] int companyId, [FromQuery] int personId, [FromQuery] DateOnly DateFrom, [FromQuery] DateOnly DateTo)
     {
-      var result = await _create.Execute(companyId, DateFrom, DateTo);
+      var result = await _create.Execute(companyId, personId, DateFrom, DateTo);
       return Ok(result);
     }
 
     [HttpPost("pay")]
-    public async Task<IActionResult> Pay([FromQuery] int payrollId)
+    public async Task<IActionResult> Pay([FromQuery] int payrollId, [FromQuery] int personId)
     {
-      await _pay.Execute(payrollId);
+      await _pay.Execute(payrollId, personId);
       return Ok();
     }
 
