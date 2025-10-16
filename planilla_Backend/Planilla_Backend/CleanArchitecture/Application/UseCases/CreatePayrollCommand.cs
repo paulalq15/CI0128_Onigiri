@@ -46,6 +46,7 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
         Company = company,
         DateFrom = dateFrom,
         DateTo = dateTo,
+        Employees = employees,
         Contracts = contracts,
         CCSSRates = ccss,
         TaxBrackets = taxes,

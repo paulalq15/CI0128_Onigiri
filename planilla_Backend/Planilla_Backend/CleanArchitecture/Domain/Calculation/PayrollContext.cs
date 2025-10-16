@@ -17,6 +17,9 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
     // Only for hourly contracts. Key: EmployeeId, Value: hours in the period
     public IDictionary<int, decimal> HoursByEmployee { get; set; }
 
+    public IList<EmployeeModel> Employees { get; set; }
+    public IDictionary<int, EmployeePayrollModel> EmployeePayrollByEmployeeId { get; set; }
+
     public PayrollContext()
     {
       Contracts = new List<ContractModel>();
@@ -24,6 +27,8 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
       CCSSRates = new List<CCSSModel>();
       TaxBrackets = new List<TaxModel>();
       HoursByEmployee = new Dictionary<int, decimal>();
+      Employees = new List<EmployeeModel>();
+      EmployeePayrollByEmployeeId = new Dictionary<int, EmployeePayrollModel>();
     }
 
   }

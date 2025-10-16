@@ -42,7 +42,7 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
 
     protected abstract List<EmployeeModel> SelectEmployees(int companyId, DateOnly dateFrom, DateOnly dateTo, PayrollContext ctx);
     protected abstract ContractModel SelectContract(EmployeeModel emp, PayrollContext ctx);
-    protected abstract PayrollDetailModel CreateBaseLine(EmployeeModel employee, ContractModel contract, PayrollContext ctx);
+    protected abstract PayrollDetailModel CreateEmployeeBaseLine(EmployeeModel employee, ContractModel contract, PayrollContext ctx);
     protected abstract List<PayrollDetailModel> ApplyConcepts(EmployeeModel employee, PayrollDetailModel baseLine, List<ElementModel> elements, PayrollContext ctx);
   }
 }
