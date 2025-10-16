@@ -24,7 +24,11 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       {
         using var connection = new SqlConnection(_connectionString);
         const string query =
-          @"SELECT IdEmpresa AS Id, FrecuenciaPago AS PaymentFrequency, DiaPago1 AS PayDay1, DiaPago2 AS PayDay2
+          @"SELECT IdEmpresa AS Id, DiaPago1 AS PayDay1, DiaPago2 AS PayDay2,
+              CASE FrecuenciaPago
+                WHEN 'Quincenal' THEN 'Biweekly'
+                WHEN 'Mensual' THEN 'Monthly'
+              END AS PaymentFrequency
             FROM Empresa
             WHERE IdEmpresa = @companyId;";
 
@@ -45,22 +49,22 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         const string query =
           @"SELECT p.IdPersona AS Id, p.TipoPersona AS PersonType
             FROM Persona AS p
-            JOIN Usuario AS u ON p.IdPersona = u.IdPersona
-            JOIN UsuariosPorEmpresa AS ue ON u.IdUsuario = ue.IdUsuario
-            JOIN Empresa AS e ON ue.IdEmpresa = e.IdEmpresa
+              JOIN Usuario AS u ON p.IdPersona = u.IdPersona
+              JOIN UsuariosPorEmpresa AS ue ON u.IdUsuario = ue.IdUsuario
+              JOIN Empresa AS e ON ue.IdEmpresa = e.IdEmpresa
             WHERE e.IdEmpresa = @companyId
-            AND p.TipoPersona IN ('Empleado', 'Aprobador')
-            AND p.IdPersona IN (
-	            SELECT h.IdEmpleado
-	            FROM HojaHoras AS h
-	            WHERE h.Fecha >= @dateFrom AND h.Fecha <= @dateTo
-	            GROUP BY h.IdEmpleado
-	            HAVING SUM(CAST(h.Horas AS decimal(10,2))) > 0)
-            AND p.IdPersona IN (
-	            SELECT c.IdPersona
-	            FROM Contrato AS c
-	            WHERE c.FechaInicio <= @dateTo
-	            AND (c.FechaFin IS NULL OR c.FechaFin >= @dateFrom));";
+              AND p.TipoPersona IN ('Empleado', 'Aprobador')
+              AND p.IdPersona IN (
+	              SELECT h.IdEmpleado
+	              FROM HojaHoras AS h
+	              WHERE h.Fecha >= @dateFrom AND h.Fecha <= @dateTo
+	              GROUP BY h.IdEmpleado
+	              HAVING SUM(CAST(h.Horas AS decimal(10,2))) > 0)
+              AND p.IdPersona IN (
+	              SELECT c.IdPersona
+	              FROM Contrato AS c
+	              WHERE c.FechaInicio <= @dateTo
+	              AND (c.FechaFin IS NULL OR c.FechaFin >= @dateFrom));";
 
         var employees = await connection.QueryAsync<EmployeeModel>(query, new { companyId, dateFrom, dateTo });
         return employees;
@@ -78,7 +82,12 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       {
         using var connection = new SqlConnection(_connectionString);
         const string query =
-          @"SELECT c.IdContrato AS Id, c.IdPersona AS EmployeeId, c.Tipo AS ContractType, c.FechaInicio AS StartDate, c.FechaFin AS EndDate, c.Salario AS Salary, c.CuentaPago AS PaymentAccount
+          @"SELECT c.IdContrato AS Id, c.IdPersona AS EmployeeId, c.FechaInicio AS StartDate, c.FechaFin AS EndDate, c.Salario AS Salary, c.CuentaPago AS PaymentAccount,
+              CASE c.Tipo
+                WHEN 'Tiempo Completo' THEN 'FixedSalary'
+                WHEN 'Medio Tiempo' THEN 'FixedSalary'
+                WHEN 'Servicios Profesionales' THEN 'ProfessionalServices'
+              END AS ContractType
             FROM Contrato AS c
             JOIN Persona AS p ON c.IdPersona = p.IdPersona
             JOIN Usuario AS u ON p.IdPersona = u.IdPersona
@@ -111,21 +120,23 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         using var connection = new SqlConnection(_connectionString);
         const string query =
           @"SELECT ea.IdElementoAplicado AS Id, e.Nombre AS Name, e.Valor AS Value, p.IdPersona AS EmployeeId,
-            CASE WHEN e.Tipo = 'Monto' THEN 'FixedAmount'
-            WHEN e.Tipo = 'Porcentaje' THEN 'Percentage'
-            WHEN e.Tipo = 'API' THEN 'ExternalAPI'
-            END AS CalculationType,
-            CASE WHEN e.PagadoPor = 'Empleador' THEN 'Benefit'
-            WHEN e.PagadoPor = 'Empleado' THEN 'EmployeeDeduction'
-            END AS ItemType
+              CASE 
+                WHEN e.Tipo = 'Monto' THEN 'FixedAmount'
+                WHEN e.Tipo = 'Porcentaje' THEN 'Percentage'
+                WHEN e.Tipo = 'API' THEN 'ExternalAPI'
+              END AS CalculationType,
+              CASE 
+                WHEN e.PagadoPor = 'Empleador' THEN 'Benefit'
+                WHEN e.PagadoPor = 'Empleado' THEN 'EmployeeDeduction'
+              END AS ItemType
             FROM ElementoAplicado AS ea
-            JOIN ElementoPlanilla AS e ON ea.IdElemento = e.IdElemento
-            JOIN Usuario AS u ON ea.IdUsuario = u.IdUsuario
-            JOIN Persona AS p ON u.IdPersona = p.IdPersona
+              JOIN ElementoPlanilla AS e ON ea.IdElemento = e.IdElemento
+              JOIN Usuario AS u ON ea.IdUsuario = u.IdUsuario
+              JOIN Persona AS p ON u.IdPersona = p.IdPersona
             WHERE e.IdEmpresa = @companyId
-            AND p.IdPersona = @employeeId
-            AND ea.FechaInicio <= @dateTo
-            AND (ea.FechaFin IS NULL OR ea.FechaFin >= @dateFrom);";
+              AND p.IdPersona = @employeeId
+              AND ea.FechaInicio <= @dateTo
+              AND (ea.FechaFin IS NULL OR ea.FechaFin >= @dateFrom);";
 
         var elements = await connection.QueryAsync<ElementModel>(query, new { companyId, employeeId, dateFrom, dateTo });
         return elements;
@@ -146,10 +157,10 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         const string query = 
           @"SELECT h.IdEmpleado AS EmployeeId, SUM(CAST(h.Horas AS decimal(10,2))) AS TotalHours
             FROM HojaHoras AS h
-            JOIN Persona AS p ON p.IdPersona = h.IdEmpleado
-            JOIN Usuario AS u ON u.IdPersona = p.IdPersona
-            JOIN UsuariosPorEmpresa AS ue ON ue.IdUsuario = u.IdUsuario
-            JOIN Empresa AS e ON ue.IdEmpresa = e.IdEmpresa
+              JOIN Persona AS p ON p.IdPersona = h.IdEmpleado
+              JOIN Usuario AS u ON u.IdPersona = p.IdPersona
+              JOIN UsuariosPorEmpresa AS ue ON ue.IdUsuario = u.IdUsuario
+              JOIN Empresa AS e ON ue.IdEmpresa = e.IdEmpresa
             WHERE e.IdEmpresa = @companyId AND h.Fecha >= @dateFrom AND h.Fecha <= @dateTo
             GROUP BY h.IdEmpleado;";
 
@@ -178,7 +189,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
           @"SELECT IdImpuestoRenta AS Id, MontoMinimo AS Min, MontoMaximo AS Max, Porcentaje AS Rate, 'Tax' AS ItemType
             FROM ImpuestoRenta
             WHERE FechaInicio <= @dateFrom
-            AND (FechaFin IS NULL OR FechaFin >= @dateTo)";
+              AND (FechaFin IS NULL OR FechaFin >= @dateTo)";
 
         var taxBrackets = await connection.QueryAsync<TaxModel>(query, new {dateFrom, dateTo });
         return taxBrackets;
@@ -197,12 +208,13 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         using var connection = new SqlConnection(_connectionString);
         const string query = 
           @"SELECT IdCCSS AS Id, Categoria AS Category, Concepto AS Concept, Porcentaje AS Rate,
-              CASE WHEN PagadoPor = 'Empleado' THEN 'EmployeeDeduction'
-                    WHEN PagadoPor = 'Empleador' THEN 'EmployerContribution'
+              CASE 
+                WHEN PagadoPor = 'Empleado' THEN 'EmployeeDeduction'
+                WHEN PagadoPor = 'Empleador' THEN 'EmployerContribution'
               END AS ItemType
             FROM CCSS
             WHERE FechaInicio <= @dateFrom
-            AND (FechaFin IS NULL OR FechaFin >= @dateTo)";
+              AND (FechaFin IS NULL OR FechaFin >= @dateTo)";
 
         var ccssLines = await connection.QueryAsync<CCSSModel>(query, new { dateFrom, dateTo });
         return ccssLines;
@@ -361,7 +373,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
                 WHEN 'EmployeeDeduction' THEN 'Deduccion Empleado'
                 WHEN 'EmployerContribution' THEN 'Deduccion Empleador'
                 WHEN 'Tax' THEN 'Deduccion Empleado'
-              END
+              END 
             );";
 
         var args = new List<object>();
@@ -371,7 +383,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
           {
             EmployeePayrollId = employeePayrollId,
             line.Description,
-            line.Type,
+            Type = line.Type.ToString(),
             line.Amount,
             line.IdCCSS,
             line.IdTax,
