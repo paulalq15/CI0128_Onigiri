@@ -2,11 +2,16 @@
   <div class="d-flex flex-column">
     <div class="container mt-5">
       <h1 class="display-4 text-center">Creación de planilla</h1>
-
+      
       <div class="row justify-content-end">
         <div class="col-2"></div>
       </div>
-
+      
+      <div class="my-3">
+        <button v-if="!payroll" type="button" class="btn btn-secondary btn-lg">Crear</button>
+        <button v-else type="button" class="btn btn-secondary btn-lg">Pagar</button>
+      </div>
+      
       <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
         <thead>
           <tr>
@@ -19,16 +24,16 @@
             <th>Total costo planilla</th>
           </tr>
         </thead>
-
+        
         <tbody>
-          <tr v-for="(employee, index) of employees" :key="index">
-            <td>{{ employee.idCard }}</td>
-            <td>{{ employee.name1 }}</td>
-            <td>{{ employee.name2 }}</td>
-            <td>{{ employee.surname1 }}</td>
-            <td>{{ employee.surname2 }}</td>
-            <td>{{ this.formatDate(employee.birthdayDate) }}</td>
-            <td>{{ employee.surname2 }}</td>
+          <tr v-if="payroll">
+            <td>{{ formatDate(payroll.payDate) }}</td>
+            <td>{{ payroll.totalGrossSalaries }}</td>
+            <td>{{ payroll.totalEmployerDeductions }}</td>
+            <td>{{ payroll.totalEmployeeDeductions }}</td>
+            <td>{{ payroll.totalBenefits }}</td>
+            <td>{{ payroll.totalNetEmployee }}</td>
+            <td>{{ payroll.totalEmployerCost }}</td>
           </tr>
         </tbody>
       </table>
@@ -37,44 +42,34 @@
 </template>
 
 <script>
-import axios from "axios";
-import { getUser } from '../session.js';
+import URLBaseAPI from '../axiosAPIInstances.js';
 
 export default {
-  name: "EmployeesList",
-
+  name: "PayrollList",
+  
   data() {
     return {
-      employees: [],
-      user: null,
+      payroll: null,
     };
   },
-
+  
   methods: {
-    getEmployees() {
-      const user = getUser();
-
-      if (!user) {
-        return;
-      }
-
-      this.user = user;
-      const companyId = user.companyUniqueId;
-      const url = `https://localhost:7071/api/PersonUser/getEmployeesByCompanyId?companyId=${companyId}`;
-
-      axios.get(url).then((response) => {
-        this.employees = response.data;
+    getPayroll() {
+      const companyId = this.$session.user?.companyId;
+      URLBaseAPI.get(`/api/Payroll/summary?companyId=${companyId}`).then((response) => {
+        this.payroll = response.data;
       });
     },
-
+    
     formatDate(dateString) {
+      if (!dateString)  return '';
       const date = new Date(dateString);
-      return date.toLocaleDateString();
+      return isNaN(date) ? '' : date.toLocaleDateString();
     }
   },
-
-  created: function () {
-    this.getEmployees();
+  mounted() {
+    if (this.$session.user?.typeUser !== 'Empleador') return;
+    this.getPayroll();
   },
 };
 
