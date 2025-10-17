@@ -47,7 +47,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       try {
         using var connection = new SqlConnection(_connectionString);
         const string query =
-          @"SELECT p.IdPersona AS Id, p.TipoPersona AS PersonType
+          @"SELECT p.IdPersona AS Id, e.IdEmpresa AS CompanyId, p.TipoPersona AS PersonType
             FROM Persona AS p
               JOIN Usuario AS u ON p.IdPersona = u.IdPersona
               JOIN UsuariosPorEmpresa AS ue ON u.IdUsuario = ue.IdUsuario
