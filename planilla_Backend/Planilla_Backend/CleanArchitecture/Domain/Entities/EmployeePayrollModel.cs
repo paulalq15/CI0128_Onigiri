@@ -11,5 +11,6 @@
     public decimal Benefits { get; set; }
     public decimal Net { get; set; }
     public decimal Cost { get; set; }
+    public decimal BaseSalaryForPeriod { get; set; }
   }
 }

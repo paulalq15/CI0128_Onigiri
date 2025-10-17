@@ -89,6 +89,7 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
         employeePayroll.Benefits = 0m;
         employeePayroll.Net = 0m;
         employeePayroll.Cost = 0m;
+        employeePayroll.BaseSalaryForPeriod = 0m;
 
         var employeePayrollId = await _repo.SaveEmployeePayroll(employeePayroll);
         employeePayroll.Id = employeePayrollId;
