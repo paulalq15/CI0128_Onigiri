@@ -142,5 +142,19 @@ namespace Planilla_Backend.Services
 
       return company;
     }
+
+    public async Task<int> GetMaxBenefitsTakenInCompany(int companyUniqueId)
+    {
+      int maxBenefitsAmount = await this.createCompanyRepository.GetMaxBenefitsTakenInCompany(companyUniqueId);
+
+      return maxBenefitsAmount;
+    }
+
+    public async Task<int> updateCompanyData(CompanyModel company)
+    {
+      int rowsAffected = await this.createCompanyRepository.UpdateCompanyData(company);
+
+      return rowsAffected;
+    }
   }
 }

@@ -1,6 +1,8 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
 using Planilla_Backend.Models;
+using System.ComponentModel.Design;
+using System.Data;
 using System.Data.SqlClient;
 
 namespace Planilla_Backend.Repositories
@@ -238,6 +240,51 @@ namespace Planilla_Backend.Repositories
         Console.WriteLine("Error al obtener la compañia por su UniqueId. Detalle: \n" + ex.Message);
         return null;
       }
+    }
+
+    public async Task<int> GetMaxBenefitsTakenInCompany(int companyUniqueId)
+    {
+      int maxBenefitsTaken = 0;
+      try
+      {
+        using var connection = new SqlConnection(this._connectionString);
+
+        maxBenefitsTaken = await connection.QueryFirstOrDefaultAsync<int>("GetMaxAmountBenefitsTakenInCompany",
+            new { companyId = companyUniqueId }, commandType: CommandType.StoredProcedure);
+
+      } 
+      catch (Exception ex)
+      {
+        Console.WriteLine("Error al obtener la mayor cantidad de beneficios tomados en una empresa. Detalle: \n" + ex.Message);
+      }
+
+      return maxBenefitsTaken;
+    }
+
+    public async Task<int> UpdateCompanyData(CompanyModel company)
+    {
+      int rowsAffected = 0;
+      try
+      {
+        using var connection = new SqlConnection(this._connectionString);
+
+        rowsAffected = await connection.ExecuteAsync("UpdateCompanyData",
+            new
+            {
+              CompanyUniqueId = company.CompanyUniqueId,
+              Name = company.CompanyName,
+              Telephone = company.Telephone,
+              MaxBenefits = company.MaxBenefits,
+              ZipCode = company.Directions.ZipCode,
+              OtherSigns = company.Directions.OtherSigns
+            },
+            commandType: CommandType.StoredProcedure);
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine("Error al actualizar la información de una empresa. Detalle: \n" + ex.Message);
+      }
+      return rowsAffected;
     }
   }
 }

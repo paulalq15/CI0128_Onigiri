@@ -96,12 +96,21 @@ namespace Planilla_Backend.Controllers
     }
 
     // GetCompanyByCompanyUniqueId
-    [HttpGet("GMaxAmBenTak")]
+    [HttpGet("MaxBenTak")]
     public async Task<ActionResult<int>> GetMaxAmountBenefitsTakenByCompanyUniqueId(int companyUniqueId)
     {
-      int company = 0;
+      int maxBenefitsAmount = await this.createCompanyService.GetMaxBenefitsTakenInCompany(companyUniqueId);
 
-      return Ok(company);
+      return Ok(maxBenefitsAmount);
+    }
+
+    // Update company data
+    [HttpPost("UpdComp")]
+    public async Task<ActionResult<int>> UpdateCompanyData([FromBody] CompanyModel company)
+    {
+      int rowsAffected = await this.createCompanyService.updateCompanyData(company);
+
+      return Ok(rowsAffected);
     }
   }
 }
