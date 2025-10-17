@@ -1,6 +1,6 @@
 <template>
   <div class="d-flex flex-column">
-    <h1 class="text-center">Editar Empresa - {{ companyName }}</h1>
+    <h1 class="text-center">Editar Empresa - {{ companyNameTitle }}</h1>
 
     <div class="container py-4 flex-fill d-flex justify-content-center">
       <form
@@ -176,8 +176,8 @@
         </div>
 
         <div class="mb-3 pair-btn">
-          <LinkButton @click="saveRegisterData" text="Cancelar" />
-          <LinkButton @click="saveRegisterData" text="Guardar" type="submit" />
+          <LinkButton @click="goBack" text="Cancelar" />
+          <LinkButton text="Guardar" type="submit" />
         </div>
 
       </form>
@@ -188,7 +188,7 @@
 <script>
   import URLBaseAPI from '../axiosAPIInstances.js';
   import { useSession } from '@/utils/useSession';
-  //import { useGlobalAlert } from '@/utils/alerts.js';
+  import { useGlobalAlert } from '@/utils/alerts.js';
   import LinkButton from './LinkButton.vue';
 
   export default {
@@ -198,6 +198,7 @@
 
     data() {
       return {
+        companyUniqueId: 0,
         user: null,
         provinces: [],
         selectedProvince: '',
@@ -211,6 +212,7 @@
         payDay2: '',
         companyId: '',
         companyName: '',
+        companyNameTitle: '',
         addressDetails: '',
         telephone: '',
         maxBenefits: '',
@@ -241,6 +243,7 @@
 
           this.companyId = company.companyId;
           this.companyName = company.companyName;
+          this.companyNameTitle = this.companyName;
           this.telephone = company.telephone || '';
           this.maxBenefits = company.maxBenefits;
           this.paymentFrequency = company.paymentFrequency;
@@ -263,8 +266,9 @@
 
       async setMinBenefits(companyId) {
         try {
-          const response = await URLBaseAPI.get('/api/Company/GMinBen', { params: { companyUniqueId: companyId } });
+          const response = await URLBaseAPI.get('/api/Company/MaxBenTak', { params: { companyUniqueId: companyId } });
           this.minBenefits = response.data;
+          console.log(this.minBenefits + " y " + response.data);
         } catch (error) {
           console.error('Error al cargar los datos de la empresa:', error);
         }
@@ -317,7 +321,39 @@
       },
 
       UpdateCompanyData() {
+        const alert = useGlobalAlert();
 
+        let company = {
+          companyUniqueId: this.companyUniqueId,
+          companyId: this.companyId,
+          companyName: this.companyName,
+          Telephone: this.telephone,
+          MaxBenefits: this.maxBenefits,
+          paymentFrequency: this.paymentFrequency,
+          directions: {
+            province: this.selectedProvince,
+            canton: this.selectedCounty,
+            district: this.selectedDistrict,
+            zipCode: this.zipCode,
+            otherSigns: this.addressDetails
+          }
+        }
+
+        URLBaseAPI.post('/api/Company/UpdComp', company)
+            .then((response) => {
+              if (response.data > 0) {
+                alert.show('¡Datos de la empresa actualizados correctamente!', 'success');
+                // Recargar la página completa
+                window.location.reload();
+              } else {
+                alert.show('No se pudo actualizar los datos de la empresa, intente más tarde. \nSi el problema persiste, comuníquese con soporte', 'warning');
+              }
+            })
+
+      },
+
+      goBack() {
+        window.history.back();
       }
     },
 
@@ -327,10 +363,10 @@
 
       if (!this.user || this.user.typeUser !== 'Empleador') return;
 
-      const companyId = user.companyUniqueId;
-      await this.InitFormData(companyId);
+      this.companyUniqueId = user.companyUniqueId;
+      await this.InitFormData(this.companyUniqueId);
 
-      await this.setMinBenefits(companyId);
+      await this.setMinBenefits(this.companyUniqueId);
 
       this.initBootstrapValidation();
       this.getProvince();
