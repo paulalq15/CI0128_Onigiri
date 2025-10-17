@@ -273,24 +273,23 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       }
     }
 
-    public async Task<IEnumerable<EmployeePayrollModel>> GetEmployeePayrolls(int companyPayrollId)
+    public async Task<IEnumerable<EmployeePayrollModel>> GetUnpaidEmployeePayrolls(int companyPayrollId)
     {
       try
       {
         using var connection = new SqlConnection(_connectionString);
         const string query =
-          @"SELECT IdNominaEmpleado AS Id, IdNominaEmpresa AS CompanyPayrollId, IdEmpleado AS EmployeeId,
-              MontoBruto AS Gross, DeduccionesEmpleado AS EmployeeDeductions, DeduccionesEmpleador AS EmployerDeductions,
-              Beneficios AS Benefits, MontoNeto AS Net, Costo AS Cost
-            FROM NominaEmpleado
-            WHERE IdNominaEmpresa = @companyPayrollId";
+          @"SELECT ne.IdNominaEmpleado AS Id, ne.MontoNeto AS Net
+            FROM NominaEmpleado AS ne
+            LEFT JOIN ComprobantePago AS cp ON cp.IdNominaEmpleado = ne.IdNominaEmpleado
+            WHERE ne.IdNominaEmpresa = @companyPayrollId AND cp.IdPago IS NULL";
 
         var employeePayrolls = await connection.QueryAsync<EmployeePayrollModel>(query, new { companyPayrollId });
         return employeePayrolls;
       }
       catch (Exception ex)
       {
-        _logger.LogError(ex, "GetEmployeePayrolls failed. companyPayrollId: {CompanyPayrollId}", companyPayrollId);
+        _logger.LogError(ex, "GetUnpaidEmployeePayrolls failed. companyPayrollId: {CompanyPayrollId}", companyPayrollId);
         throw;
       }
     }

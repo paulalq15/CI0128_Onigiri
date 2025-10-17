@@ -13,10 +13,20 @@
           <div>
             <label class="form-label mb-1 d-block">Periodo</label>
             <div class="btn-group" role="group">
-              <button type="button" class="btn" :class="half === '01' ? 'btn-secondary' : 'btn-outline-secondary'" @click="half = '01'">
+              <button
+                type="button"
+                class="btn"
+                :class="half === '01' ? 'btn-secondary' : 'btn-outline-secondary'"
+                @click="half = '01'"
+              >
                 1 al 15
               </button>
-              <button type="button" class="btn" :class="half === '16' ? 'btn-secondary' : 'btn-outline-secondary'" @click="half = '16'">
+              <button
+                type="button"
+                class="btn"
+                :class="half === '16' ? 'btn-secondary' : 'btn-outline-secondary'"
+                @click="half = '16'"
+              >
                 16 al 30
               </button>
             </div>
@@ -24,7 +34,12 @@
         </div>
 
         <div class="col ms-auto text-end">
-          <button type="button" class="btn btn-secondary btn-lg" :disabled="!selectedMonth" @click="createPayroll">
+          <button
+            type="button"
+            class="btn btn-secondary btn-lg"
+            :disabled="!selectedMonth"
+            @click="createPayroll"
+          >
             Crear
           </button>
         </div>
@@ -37,7 +52,7 @@
           <div class="fs-5">Fecha final: {{ formatDate(payroll.dateTo) }}</div>
         </div>
         <div class="col-auto text-end">
-          <button type="button" class="btn btn-secondary btn-lg">Pagar</button>
+          <button type="button" class="btn btn-secondary btn-lg" @click="payPayroll">Pagar</button>
         </div>
       </div>
 
@@ -129,6 +144,41 @@ export default {
             error && error.response && error.response.data
               ? error.response.data
               : 'Error inesperado al crear la planilla';
+          self.toastMessage = msg;
+          self.toastType = 'bg-danger';
+          self.showToast = true;
+
+          setTimeout(function () {
+            self.showToast = false;
+          }, self.toastTimeout);
+        });
+    },
+    payPayroll() {
+      this.dateFrom = this.getDateFrom();
+      this.dateTo = this.getDateTo();
+      var self = this;
+
+      const params = {
+        payrollId: this.payroll.companyPayrollId,
+        personId: Number(this.$session.user?.personId),
+      };
+
+      URLBaseAPI.post('/api/Payroll/payment', null, { params })
+        .then((response) => {
+          this.payroll = response.data;
+
+          self.toastMessage = 'Planilla pagada correctamente';
+          self.toastType = 'bg-success';
+          self.showToast = true;
+          setTimeout(function () {
+            self.showToast = false;
+          }, self.toastTimeout);
+        })
+        .catch(function (error) {
+          var msg =
+            error && error.response && error.response.data
+              ? error.response.data
+              : 'Error inesperado al pagar la planilla';
           self.toastMessage = msg;
           self.toastType = 'bg-danger';
           self.showToast = true;

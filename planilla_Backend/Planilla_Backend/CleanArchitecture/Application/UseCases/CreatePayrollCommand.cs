@@ -1,6 +1,8 @@
-﻿using Planilla_Backend.CleanArchitecture.Application.Ports;
+﻿using Microsoft.Extensions.Hosting;
+using Planilla_Backend.CleanArchitecture.Application.Ports;
 using Planilla_Backend.CleanArchitecture.Domain.Calculation;
 using Planilla_Backend.CleanArchitecture.Domain.Entities;
+using System.Text.RegularExpressions;
 
 namespace Planilla_Backend.CleanArchitecture.Application.UseCases
 {
@@ -107,6 +109,7 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
       var calculatedLines = _template.RunCalculation(companyId, dateFrom, dateTo, ctx);
       if (calculatedLines != null && calculatedLines.Count > 0)
       {
+        // Group lines by EmployeePayrollId
         var detailsByPayroll = new Dictionary<int, List<PayrollDetailModel>>();
         var lineIndex = 0;
 
@@ -128,6 +131,7 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
           lineIndex++;
         }
 
+        // Save details per employee payroll to database
         foreach (var group in detailsByPayroll)
         {
           var employeePayrollId = group.Key;
@@ -143,6 +147,14 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
 
       // Company Totals using companyPayroll
       //...
+
+      //Dummy data for testing
+      companyPayroll.Gross = 15000000.50m;
+      companyPayroll.EmployeeDeductions = 2690000.59m;
+      companyPayroll.EmployerDeductions = 7980000.59m;
+      companyPayroll.Benefits = 5600000.00m;
+      companyPayroll.Net = 11890600.00m;
+      companyPayroll.Cost = 26589000.59m;
 
       // Payroll summary to return
       return new PayrollSummary

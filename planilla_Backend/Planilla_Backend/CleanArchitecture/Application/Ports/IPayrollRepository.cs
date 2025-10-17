@@ -13,7 +13,7 @@
     Task<IEnumerable<CCSSModel>> GetCCSS(DateTime dateFrom, DateTime dateTo);
     Task<CompanyPayrollModel?> GetLatestOpenCompanyPayroll(int companyId);
     Task<CompanyPayrollModel?> GetCompanyPayrollById(int companyPayrollId);
-    Task<IEnumerable<EmployeePayrollModel>> GetEmployeePayrolls(int companyPayrollId);
+    Task<IEnumerable<EmployeePayrollModel>> GetUnpaidEmployeePayrolls(int companyPayrollId);
 
     // Commands
     Task<int> SaveCompanyPayroll(CompanyPayrollModel header);
