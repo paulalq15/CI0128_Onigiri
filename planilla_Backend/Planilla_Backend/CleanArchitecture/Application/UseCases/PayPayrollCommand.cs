@@ -14,12 +14,12 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
 
     public async Task<PayrollSummary> Execute(int payrollId, int personId)
     {
-      if (payrollId <= 0) throw new ArgumentException("payrollId must be positive");
-      if (personId <= 0) throw new ArgumentException("personId must be positive");
+      if (payrollId <= 0) throw new ArgumentException("El parámetro payrollId debe ser mayor que cero");
+      if (personId <= 0) throw new ArgumentException("El parámetro payrollId debe ser mayor que cero");
 
       var now = DateTime.Now;
       var companyPayroll = await _repo.GetCompanyPayrollById(payrollId);
-      if (companyPayroll == null) return null;
+      if (companyPayroll == null) throw new KeyNotFoundException("La planilla no existe");
 
       var summary = new PayrollSummary
       {

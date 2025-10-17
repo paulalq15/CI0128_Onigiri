@@ -14,7 +14,7 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
 
     public async Task<PayrollSummary?> Execute(int companyId)
     {
-      if (companyId <= 0) throw new ArgumentException("companyId must be positive");
+      if (companyId <= 0) throw new ArgumentException("El parámetro companyId debe ser mayor que cero");
 
       var companyPayroll = await _repo.GetLatestOpenCompanyPayroll(companyId);
       if (companyPayroll == null) return null;

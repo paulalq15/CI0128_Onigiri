@@ -9,12 +9,12 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
     private readonly CalculationFactory _factory;
     public StandardPayrollRun(CalculationFactory factory)
     {
-      _factory = factory ?? throw new ArgumentNullException(nameof(factory));
+      _factory = factory ?? throw new ArgumentNullException("La fábrica de cálculo es requerida");
     }
 
     protected override List<EmployeeModel> SelectEmployees(int companyId, PayrollContext ctx)
     {
-      if (ctx == null) throw new ArgumentNullException(nameof(ctx));
+      if (ctx == null) throw new ArgumentNullException("El contexto de planilla es requerido");
       if (ctx.Employees == null) return new List<EmployeeModel>();
 
       var employeeList = new List<EmployeeModel>();
@@ -30,8 +30,8 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
 
     protected override ContractModel SelectContract(EmployeeModel employee, DateTime dateFrom, DateTime dateTo, PayrollContext ctx)
     {
-      if (employee == null) throw new ArgumentNullException(nameof(employee));
-      if (ctx == null) throw new ArgumentNullException(nameof(ctx));
+      if (employee == null) throw new ArgumentNullException("El empleado es requerido");
+      if (ctx == null) throw new ArgumentNullException("El contexto de planilla es requerido");
       if (ctx.Contracts == null || ctx.Contracts.Count == 0) return null;
 
       ContractModel activeContract = null;
@@ -60,10 +60,10 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
 
     protected override PayrollDetailModel CreateEmployeeBaseLine(EmployeeModel employee, ContractModel contract, PayrollContext ctx)
     {
-      if (employee == null) throw new ArgumentNullException(nameof(employee));
-      if (contract == null) throw new ArgumentNullException(nameof(contract));
-      if (ctx == null) throw new ArgumentNullException(nameof(ctx));
-      if (!ctx.EmployeePayrollByEmployeeId.TryGetValue(employee.Id, out var employeePayroll)) throw new ArgumentNullException("Missing employee payroll");
+      if (employee == null) throw new ArgumentNullException("El empleado es requerido");
+      if (contract == null) throw new ArgumentNullException("El contrato es requerido");
+      if (ctx == null) throw new ArgumentNullException("El contexto de planilla es requerido");
+      if (!ctx.EmployeePayrollByEmployeeId.TryGetValue(employee.Id, out var employeePayroll)) throw new ArgumentNullException("No se encontró la planilla del empleado");
 
       var strategy = _factory.CreateBaseStrategy(contract);
       var line = strategy.CreateBaseLine(employeePayroll, contract, ctx);
@@ -72,9 +72,9 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
 
     protected override List<PayrollDetailModel> ApplyLegalConcepts(EmployeeModel employee, ContractModel contract, PayrollContext ctx)
     {
-      if (employee == null) throw new ArgumentNullException(nameof(employee));
-      if (ctx == null) throw new ArgumentNullException(nameof(ctx));
-      if (!ctx.EmployeePayrollByEmployeeId.TryGetValue(employee.Id, out var employeePayroll)) throw new ArgumentNullException("Missing employee payroll");
+      if (employee == null) throw new ArgumentNullException("El empleado es requerido");
+      if (ctx == null) throw new ArgumentNullException("El contexto de planilla es requerido");
+      if (!ctx.EmployeePayrollByEmployeeId.TryGetValue(employee.Id, out var employeePayroll)) throw new ArgumentNullException("No se encontró la planilla del empleado");
 
       var payrollDetailLines = new List<PayrollDetailModel>();
 
@@ -97,9 +97,9 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
 
     protected override List<PayrollDetailModel> ApplyConcepts(EmployeeModel employee, PayrollContext ctx)
     {
-      if (employee == null) throw new ArgumentNullException(nameof(employee));
-      if (ctx == null) throw new ArgumentNullException(nameof(ctx));
-      if (!ctx.EmployeePayrollByEmployeeId.TryGetValue(employee.Id, out var employeePayroll)) throw new ArgumentNullException("Missing employee payroll");
+      if (employee == null) throw new ArgumentNullException("El empleado es requerido");
+      if (ctx == null) throw new ArgumentNullException("El contexto de planilla es requerido");
+      if (!ctx.EmployeePayrollByEmployeeId.TryGetValue(employee.Id, out var employeePayroll)) throw new ArgumentNullException("No se encontró la planilla del empleado");
 
       var payrollDetailLines = new List<PayrollDetailModel>();
 

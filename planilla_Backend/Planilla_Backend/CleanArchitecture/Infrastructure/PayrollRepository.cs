@@ -1,6 +1,5 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Logging;
 using Planilla_Backend.CleanArchitecture.Application.Ports;
 using Planilla_Backend.CleanArchitecture.Domain.Entities;
 
@@ -33,7 +32,9 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
             WHERE IdEmpresa = @companyId;";
 
         var company = await connection.QuerySingleOrDefaultAsync<CompanyModel>(query, new { companyId });
-        return company ?? new CompanyModel();
+        if (company == null) throw new KeyNotFoundException("La empresa no existe.");
+
+        return company;
       }
       catch (Exception ex)
       {

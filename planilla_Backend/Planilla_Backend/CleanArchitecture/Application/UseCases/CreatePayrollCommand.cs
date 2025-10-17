@@ -1,8 +1,6 @@
-﻿using Microsoft.Extensions.Hosting;
-using Planilla_Backend.CleanArchitecture.Application.Ports;
+﻿using Planilla_Backend.CleanArchitecture.Application.Ports;
 using Planilla_Backend.CleanArchitecture.Domain.Calculation;
 using Planilla_Backend.CleanArchitecture.Domain.Entities;
-using System.Text.RegularExpressions;
 
 namespace Planilla_Backend.CleanArchitecture.Application.UseCases
 {
@@ -20,9 +18,9 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
     public async Task<PayrollSummary> Execute(int companyId, int personId, DateTime dateFrom, DateTime dateTo)
     {
 
-      if (companyId <= 0) throw new ArgumentException("companyId must be positive");
-      if (personId <= 0) throw new ArgumentException("personId must be positive");
-      if (dateFrom > dateTo) throw new ArgumentException("dateFrom must be <= dateTo");
+      if (companyId <= 0) throw new ArgumentException("El parámetro companyId debe ser mayor que cero");
+      if (personId <= 0) throw new ArgumentException("El parámetro personId debe ser mayor que cero");
+      if (dateFrom > dateTo) throw new ArgumentException("Rango de fechas inválido");
 
       // Kick off all repository calls in parallel
       var companyTask = _repo.GetCompany(companyId);
@@ -35,11 +33,15 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
       await Task.WhenAll(companyTask, employeesTask, contractsTask, taxesTask, ccssTask, hoursTask);
 
       var company = await companyTask;
+      if (company == null || company.Id <= 0) throw new KeyNotFoundException("La empresa no existe");
+
       var employees = (await employeesTask).ToList();
       var contracts = (await contractsTask).ToList();
       var taxes = (await taxesTask).ToList();
       var ccss = (await ccssTask).ToList();
       var hoursByEmployee = await hoursTask;
+
+      if (employees == null || employees.Count == 0) throw new InvalidOperationException("No hay empleados con contrato vigente en el periodo seleccionado");
 
       var elementsByEmployee = await BuildElementsMapAsync(companyId, employees, dateFrom, dateTo);
 

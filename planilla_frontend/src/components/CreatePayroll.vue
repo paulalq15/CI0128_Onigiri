@@ -82,6 +82,29 @@
         </tbody>
       </table>
     </div>
+
+    <!--Toast messages-->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+      <div
+        v-if="showToast"
+        class="toast show align-items-center text-white border-0"
+        :class="toastType"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+      >
+        <div class="d-flex">
+          <div class="toast-body">
+            {{ toastMessage }}
+          </div>
+          <button
+            type="button"
+            class="btn-close btn-close-white me-2 m-auto"
+            @click="showToast = false"
+          ></button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 

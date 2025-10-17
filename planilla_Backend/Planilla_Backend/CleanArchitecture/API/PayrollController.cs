@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Planilla_Backend.CleanArchitecture.Application.UseCases;
 using Planilla_Backend.CleanArchitecture.Domain.Entities;
-using Planilla_Backend.LayeredArchitecture.Models;
+using Planilla_Backend.CleanArchitecture.API.Http;
 
 namespace Planilla_Backend.CleanArchitecture.API
 {
@@ -24,23 +23,44 @@ namespace Planilla_Backend.CleanArchitecture.API
     [HttpPost]
     public async Task<ActionResult<PayrollSummary>> Create([FromQuery] int companyId, [FromQuery] int personId, [FromQuery] DateTime dateFrom, [FromQuery] DateTime dateTo)
     {
-      var result = await _create.Execute(companyId, personId, dateFrom, dateTo);
-      return Ok(result);
+      try
+      {
+        var summary = await _create.Execute(companyId, personId, dateFrom, dateTo);
+        return Created("/api/Payroll", summary);
+      }
+      catch (Exception ex)
+      {
+        return Error.FromException(this, ex, "/api/Payroll");
+      }
     }
 
     [HttpPost("payment")]
-    public async Task<IActionResult> Pay([FromQuery] int payrollId, [FromQuery] int personId)
+    public async Task<ActionResult<PayrollSummary>> Pay([FromQuery] int payrollId, [FromQuery] int personId)
     {
-      await _pay.Execute(payrollId, personId);
-      return Ok();
+      try
+      {
+        var summary = await _pay.Execute(payrollId, personId);
+        return Ok(summary);
+      }
+      catch (Exception ex)
+      {
+        return Error.FromException(this, ex, "/api/Payroll/payment");
+      }
     }
 
     [HttpGet("summary")]
     public async Task<ActionResult<PayrollSummary>> GetSummary([FromQuery] int companyId)
     {
-      var result = await _get.Execute(companyId);
-      if (result == null) return NoContent();
-      return Ok(result);
+      try
+      {
+        var result = await _get.Execute(companyId);
+        if (result == null) return NoContent();
+        return Ok(result);
+      }
+      catch (Exception ex)
+      {
+        return Error.FromException(this, ex, "/api/Payroll/summary");
+      }
     }
   }
 }

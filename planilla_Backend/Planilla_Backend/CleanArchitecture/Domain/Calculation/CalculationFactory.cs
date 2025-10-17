@@ -11,7 +11,7 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
 
     public CalculationFactory(IEnumerable<ISalaryBaseStrategy> baseStrategies, IEnumerable<IConceptStrategy> conceptStrategies, IEnumerable<ILegalConceptStrategy> legalConceptStrategies)
     {
-      _baseStrategies = baseStrategies ?? throw new ArgumentNullException(nameof(baseStrategies));
+      _baseStrategies = baseStrategies ?? throw new ArgumentNullException("Las estrategias base son requeridas");
       _conceptStrategies = conceptStrategies ?? Array.Empty<IConceptStrategy>();
       _legalConceptStrategies = legalConceptStrategies ?? Array.Empty<ILegalConceptStrategy>();
 
@@ -26,30 +26,30 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
 
     public ISalaryBaseStrategy CreateBaseStrategy(ContractModel contract)
     {
-      if (contract == null) throw new ArgumentNullException(nameof(contract));
+      if (contract == null) throw new ArgumentNullException("El contrato es requerido");
 
       foreach (var strategy in _baseStrategies)
       {
         if (strategy != null && strategy.Applicable(contract)) return strategy;
       }
 
-      throw new InvalidOperationException("No base salary strategy found for the contract type.");
+      throw new InvalidOperationException("No hay estrategia base para el tipo de contrato");
 
     }
 
     public IConceptStrategy CreateConceptStrategies(ElementModel element)
     {
-      if (element == null) throw new ArgumentNullException(nameof(element));
+      if (element == null) throw new ArgumentNullException("El elemento es requerido");
       IConceptStrategy strategy;
 
       if (_conceptMap.TryGetValue(element.CalculationType, out strategy)) return strategy;
 
-      return null;
+      throw new InvalidOperationException("No existe una estrategia para el tipo de cálculo del elemento");
     }
 
     public IList<ILegalConceptStrategy> CreateLegalConceptStrategies(ContractModel contract)
     {
-      if (contract == null) throw new ArgumentNullException(nameof(contract));
+      if (contract == null) throw new ArgumentNullException("El contrato es requerido");
       var result = new List<ILegalConceptStrategy>();
 
       foreach (var strategy in _legalConceptStrategies)

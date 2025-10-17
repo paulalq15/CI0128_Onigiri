@@ -6,9 +6,9 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
   {
     public PayrollDetailModel CreateBaseLine(EmployeePayrollModel employeePayroll, ContractModel contract, PayrollContext ctx)
     {
-      if (employeePayroll == null) throw new ArgumentNullException(nameof(employeePayroll));
-      if (contract == null) throw new ArgumentNullException(nameof(contract));
-      if (ctx == null) throw new ArgumentNullException(nameof(ctx));
+      if (employeePayroll == null) throw new ArgumentNullException("La planilla del empleado es requerida");
+      if (contract == null) throw new ArgumentNullException("El contrato es requerido");
+      if (ctx == null) throw new ArgumentNullException("El contexto de planilla es requerido");
 
       var firstDayMonth = 1;
       var halfDayMonth = 15;
