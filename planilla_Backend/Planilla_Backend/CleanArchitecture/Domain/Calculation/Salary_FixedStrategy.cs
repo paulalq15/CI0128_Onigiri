@@ -85,4 +85,3 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
     }
   }
 }
-}

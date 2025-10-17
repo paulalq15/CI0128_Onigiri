@@ -2,7 +2,7 @@
 
 namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
 {
-  public class Concept_FixedAmountStrategy : IConceptStrategy
+  public class Concept_ccssStrategy : IConceptStrategy
   {
     public bool Applicable(ContractModel contract)
     {

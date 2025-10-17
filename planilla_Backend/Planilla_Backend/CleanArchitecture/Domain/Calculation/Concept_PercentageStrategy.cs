@@ -4,9 +4,9 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
 {
   public class Concept_PercentageStrategy : IConceptStrategy
   {
-    public bool Applicable(ElementModel concept)
+    public bool Applicable(ContractModel contract)
     {
-      return false;
+      return contract != null && contract.ContractType == ContractType.FixedSalary;
     }
     public PayrollDetailModel Apply(EmployeePayrollModel employeePayroll, ElementModel concept, PayrollContext ctx)
     {
