@@ -410,14 +410,51 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
     {
       return Task.CompletedTask;
     }
-    public Task SavePayment(int employeePayrollId, PaymentModel payment)
+    public async Task SavePayment(int employeePayrollId, PaymentModel payment)
     {
-      return Task.CompletedTask;
+      try
+      {
+        using var connection = new SqlConnection(_connectionString);
+        const string sql =
+          @"INSERT INTO ComprobantePago(Referencia, FechaPago, Monto, IdNominaEmpleado, IdCreadoPor)
+            VALUES (@PaymentRef, @PaymentDate, @Amount, @EmployeePayrollId, @CreatedBy);";
+
+        await connection.ExecuteAsync(sql, new
+        {
+          EmployeePayrollId = employeePayrollId,
+          payment.PaymentRef,
+          payment.PaymentDate,
+          payment.Amount,
+          payment.CreatedBy,
+        });
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, "SavePayment failed");
+        throw;
+      }
     }
 
-    public Task UpdatePaidCompanyPayroll(int companyPayrollId, int personId, DateTime paymentDate)
+    public async Task UpdatePaidCompanyPayroll(int companyPayrollId)
     {
-      return Task.CompletedTask;
+      try
+      {
+        using var connection = new SqlConnection(_connectionString);
+        const string sql =
+          @"UPDATE NominaEmpresa
+            SET Estado = 'Pagado'
+            WHERE IdNominaEmpresa = @CompanyPayrollId;";
+
+        await connection.ExecuteAsync(sql, new
+        {
+          CompanyPayrollId = companyPayrollId,
+        });
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, "UpdatePaidCompanyPayroll failed");
+        throw;
+      }
     }
 
   }

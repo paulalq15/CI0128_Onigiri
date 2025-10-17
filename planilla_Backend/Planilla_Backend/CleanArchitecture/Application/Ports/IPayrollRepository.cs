@@ -22,6 +22,6 @@
     Task UpdateEmployeePayrollTotals(int employeePayrollId, EmployeePayrollModel totalsAndStatus);
     Task UpdateCompanyPayrollTotals(int companyPayrollId, CompanyPayrollModel totalsAndStatus);
     Task SavePayment(int employeePayrollId, PaymentModel payment);
-    Task UpdatePaidCompanyPayroll(int companyPayrollId, int personId, DateTime paymentDate);
+    Task UpdatePaidCompanyPayroll(int companyPayrollId);
   }
 }
