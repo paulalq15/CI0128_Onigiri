@@ -2,13 +2,12 @@
 
 namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
 {
-  public class Concept_ApiStrategy : IConceptStrategy
+  public class LegalConcept_TaxStrategy : ILegalConceptStrategy
   {
-    public IEnumerable<PayrollDetailModel> Apply(EmployeePayrollModel employeePayroll, ElementModel concept, PayrollContext ctx)
+    public IEnumerable<PayrollDetailModel> Apply(EmployeePayrollModel employeePayroll, PayrollContext ctx)
     {
       // TODO: implement the logic
       throw new NotImplementedException();
     }
   }
 }
-

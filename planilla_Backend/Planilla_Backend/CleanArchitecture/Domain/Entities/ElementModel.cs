@@ -5,7 +5,7 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Entities
   public class ElementModel
   {
     public int Id { get; set; }
-    public string? Name { get; set; }
+    required public string Name { get; set; }
     public ElementCalculationType CalculationType { get; set; }
     public decimal Value { get; set; }
     public int EmployeeId { get; set; }

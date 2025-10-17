@@ -4,11 +4,6 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
 {
   public class Salary_FixedStrategy : ISalaryBaseStrategy
   {
-    public bool Applicable(ContractModel contract)
-    {
-      return contract != null && contract.ContractType == ContractType.FixedSalary;
-    }
-
     public PayrollDetailModel CreateBaseLine(EmployeePayrollModel employeePayroll, ContractModel contract, PayrollContext ctx)
     {
       if (employeePayroll == null) throw new ArgumentNullException(nameof(employeePayroll));

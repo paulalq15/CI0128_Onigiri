@@ -4,7 +4,11 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
 {
   public interface ISalaryBaseStrategy
   {
-    bool Applicable(ContractModel contract);
+    public bool Applicable(ContractModel contract)
+    {
+      return contract != null && contract.ContractType == ContractType.FixedSalary;
+    }
+
     PayrollDetailModel CreateBaseLine(EmployeePayrollModel employeePayroll, ContractModel contract, PayrollContext ctx);
   }
 }

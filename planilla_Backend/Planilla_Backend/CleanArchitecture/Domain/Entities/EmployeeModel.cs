@@ -3,6 +3,6 @@
   public class EmployeeModel
   {
     public int Id { get; set; }
-    public string? PersonType { get; set; }
+    required public string PersonType { get; set; }
   }
 }

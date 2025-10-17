@@ -56,18 +56,20 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
       };
 
       // Company payroll with zero totals
-      var companyPayroll = new CompanyPayrollModel();
-      companyPayroll.CompanyId = company.Id;
-      companyPayroll.DateFrom = dateFrom;
-      companyPayroll.DateTo = dateTo;
-      companyPayroll.PayrollStatus = "Creado";
-      companyPayroll.Gross = 0m;
-      companyPayroll.EmployeeDeductions = 0m;
-      companyPayroll.EmployerDeductions = 0m;
-      companyPayroll.Benefits = 0m;
-      companyPayroll.Net = 0m;
-      companyPayroll.Cost = 0m;
-      companyPayroll.CreatedBy = personId;
+      var companyPayroll = new CompanyPayrollModel
+      {
+        CompanyId = company.Id,
+        DateFrom = dateFrom,
+        DateTo = dateTo,
+        PayrollStatus = "Creado",
+        Gross = 0m,
+        EmployeeDeductions = 0m,
+        EmployerDeductions = 0m,
+        Benefits = 0m,
+        Net = 0m,
+        Cost = 0m,
+        CreatedBy = personId,
+      };
 
       var companyPayrollId = await _repo.SaveCompanyPayroll(companyPayroll);
       companyPayroll.Id = companyPayrollId;
@@ -79,17 +81,19 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
       while (i < employees.Count)
       {
         var employee = employees[i];
-
-        var employeePayroll = new EmployeePayrollModel();
-        employeePayroll.CompanyPayrollId = companyPayrollId;
-        employeePayroll.EmployeeId = employee.Id;
-        employeePayroll.Gross = 0m;
-        employeePayroll.EmployeeDeductions = 0m;
-        employeePayroll.EmployerDeductions = 0m;
-        employeePayroll.Benefits = 0m;
-        employeePayroll.Net = 0m;
-        employeePayroll.Cost = 0m;
-        employeePayroll.BaseSalaryForPeriod = 0m;
+        
+        var employeePayroll = new EmployeePayrollModel
+        {
+          CompanyPayrollId = companyPayrollId,
+          EmployeeId = employee.Id,
+          Gross = 0m,
+          EmployeeDeductions = 0m,
+          EmployerDeductions = 0m,
+          Benefits = 0m,
+          Net = 0m,
+          Cost = 0m,
+          BaseSalaryForPeriod = 0m,
+        };
 
         var employeePayrollId = await _repo.SaveEmployeePayroll(employeePayroll);
         employeePayroll.Id = employeePayrollId;
@@ -141,18 +145,18 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
       //...
 
       // Payroll summary to return
-      var summary = new PayrollSummary();
-      summary.CompanyPayrollId = companyPayroll.Id;
-      summary.TotalGrossSalaries = companyPayroll.Gross;
-      summary.TotalEmployerDeductions = companyPayroll.EmployerDeductions;
-      summary.TotalEmployeeDeductions = companyPayroll.EmployeeDeductions;
-      summary.TotalBenefits = companyPayroll.Benefits;
-      summary.TotalNetEmployee = companyPayroll.Net;
-      summary.TotalEmployerCost = companyPayroll.Cost;
-      summary.DateFrom = companyPayroll.DateFrom;
-      summary.DateTo = companyPayroll.DateTo;
-
-      return summary;
+      return new PayrollSummary
+      {
+        CompanyPayrollId = companyPayroll.Id,
+        TotalGrossSalaries = companyPayroll.Gross,
+        TotalEmployerDeductions = companyPayroll.EmployerDeductions,
+        TotalEmployeeDeductions = companyPayroll.EmployeeDeductions,
+        TotalBenefits = companyPayroll.Benefits,
+        TotalNetEmployee = companyPayroll.Net,
+        TotalEmployerCost = companyPayroll.Cost,
+        DateFrom = companyPayroll.DateFrom,
+        DateTo = companyPayroll.DateTo,
+      };
     }
 
     private async Task<IDictionary<int, IList<ElementModel>>> BuildElementsMapAsync(int companyId, IList<EmployeeModel> employees, DateTime dateFrom, DateTime dateTo)
