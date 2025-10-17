@@ -1,8 +1,7 @@
-using Planilla_Backend.Services;
-using Planilla_Backend.Repositories;
-using Planilla_Backend.Services.EmailService;
-using Planilla_Backend.Services.Utils;
-using Planilla_Backend.Models;
+using Planilla_Backend.LayeredArchitecture.Services;
+using Planilla_Backend.LayeredArchitecture.Repositories;
+using Planilla_Backend.LayeredArchitecture.Services.EmailService;
+using Planilla_Backend.LayeredArchitecture.Services.Utils;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
