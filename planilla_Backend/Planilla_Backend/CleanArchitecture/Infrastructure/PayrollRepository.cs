@@ -40,12 +40,13 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       {
         _logger.LogError(ex, "GetCompany failed. companyId: {CompanyId}", companyId);
         throw;
-      }      
+      }
     }
 
     public async Task<IEnumerable<EmployeeModel>> GetEmployees(int companyId, DateTime dateFrom, DateTime dateTo)
     {
-      try {
+      try
+      {
         using var connection = new SqlConnection(_connectionString);
         const string query =
           @"SELECT p.IdPersona AS Id, e.IdEmpresa AS CompanyId, p.TipoPersona AS PersonType
@@ -70,7 +71,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         var employees = await connection.QueryAsync<EmployeeModel>(query, new { companyId, dateFrom, dateTo });
         return employees;
       }
-      catch(Exception ex)
+      catch (Exception ex)
       {
         _logger.LogError(ex, "GetEmployees failed. companyId: {CompanyId}", companyId);
         throw;
@@ -155,7 +156,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       {
         using var connection = new SqlConnection(_connectionString);
 
-        const string query = 
+        const string query =
           @"SELECT h.IdEmpleado AS EmployeeId, SUM(CAST(h.Horas AS decimal(10,2))) AS TotalHours
             FROM HojaHoras AS h
               JOIN Persona AS p ON p.IdPersona = h.IdEmpleado
@@ -186,13 +187,13 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       try
       {
         using var connection = new SqlConnection(_connectionString);
-        const string query = 
+        const string query =
           @"SELECT IdImpuestoRenta AS Id, MontoMinimo AS Min, MontoMaximo AS Max, Porcentaje AS Rate, 'Tax' AS ItemType
             FROM ImpuestoRenta
             WHERE FechaInicio <= @dateFrom
               AND (FechaFin IS NULL OR FechaFin >= @dateTo)";
 
-        var taxBrackets = await connection.QueryAsync<TaxModel>(query, new {dateFrom, dateTo });
+        var taxBrackets = await connection.QueryAsync<TaxModel>(query, new { dateFrom, dateTo });
         return taxBrackets;
       }
       catch (Exception ex)
@@ -207,7 +208,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       try
       {
         using var connection = new SqlConnection(_connectionString);
-        const string query = 
+        const string query =
           @"SELECT IdCCSS AS Id, Categoria AS Category, Concepto AS Concept, Porcentaje AS Rate,
               CASE 
                 WHEN PagadoPor = 'Empleado' THEN 'EmployeeDeduction'
@@ -293,6 +294,17 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         _logger.LogError(ex, "GetUnpaidEmployeePayrolls failed. companyPayrollId: {CompanyPayrollId}", companyPayrollId);
         throw;
       }
+    }
+
+    public async Task<bool> ExistsPayrollForPeriod(int companyId, DateTime dateFrom, DateTime dateTo)
+    {
+      using var connection = new SqlConnection(_connectionString);
+      const string sql =
+        @"SELECT COUNT(1)
+          FROM NominaEmpresa
+          WHERE IdEmpresa = @companyId AND FechaInicio = @dateFrom AND FechaFin = @dateTo";
+      var count = await connection.ExecuteScalarAsync<int>(sql, new { companyId, dateFrom, dateTo });
+      return count > 0;
     }
 
     // WRITE METHODS

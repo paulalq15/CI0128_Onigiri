@@ -14,6 +14,7 @@
     Task<CompanyPayrollModel?> GetLatestOpenCompanyPayroll(int companyId);
     Task<CompanyPayrollModel?> GetCompanyPayrollById(int companyPayrollId);
     Task<IEnumerable<EmployeePayrollModel>> GetUnpaidEmployeePayrolls(int companyPayrollId);
+    Task<bool> ExistsPayrollForPeriod(int companyId, DateTime dateFrom, DateTime dateTo);
 
     // Commands
     Task<int> SaveCompanyPayroll(CompanyPayrollModel header);

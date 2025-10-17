@@ -22,6 +22,9 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
       if (personId <= 0) throw new ArgumentException("El parámetro personId debe ser mayor que cero");
       if (dateFrom > dateTo) throw new ArgumentException("Rango de fechas inválido");
 
+      var payrollExists = await _repo.ExistsPayrollForPeriod(companyId, dateFrom, dateTo);
+      if (payrollExists) throw new InvalidOperationException("Ya existe una planilla para el periodo seleccionado");
+
       // Kick off all repository calls in parallel
       var companyTask = _repo.GetCompany(companyId);
       var employeesTask = _repo.GetEmployees(companyId, dateFrom, dateTo);

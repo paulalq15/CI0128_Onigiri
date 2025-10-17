@@ -128,6 +128,12 @@ export default {
     };
   },
   methods: {
+    getCurrentMonth() {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      return `${y}-${m}`;
+    },
     getDateFrom() {
       if (!this.selectedMonth) return '';
       return `${this.selectedMonth}-${this.half}`;
@@ -163,10 +169,12 @@ export default {
           }, self.toastTimeout);
         })
         .catch(function (error) {
-          var msg =
-            error && error.response && error.response.data
-              ? error.response.data
-              : 'Error inesperado al crear la planilla';
+          const data = error && error.response && error.response.data ? error.response.data : null;
+          const msg =
+            typeof data === 'string'
+              ? data
+              : (data && (data.message || data.detail)) || 'Error inesperado al crear la planilla';
+
           self.toastMessage = msg;
           self.toastType = 'bg-danger';
           self.showToast = true;
@@ -198,10 +206,11 @@ export default {
           }, self.toastTimeout);
         })
         .catch(function (error) {
-          var msg =
-            error && error.response && error.response.data
-              ? error.response.data
-              : 'Error inesperado al pagar la planilla';
+          const data = error && error.response && error.response.data ? error.response.data : null;
+          const msg =
+            typeof data === 'string'
+              ? data
+              : (data && (data.message || data.detail)) || 'Error inesperado al pagar la planilla';
           self.toastMessage = msg;
           self.toastType = 'bg-danger';
           self.showToast = true;
@@ -234,6 +243,7 @@ export default {
   },
   mounted() {
     if (this.$session.user?.typeUser !== 'Empleador') return;
+    if (!this.selectedMonth) this.selectedMonth = this.getCurrentMonth();
     this.getPayroll();
   },
 };
