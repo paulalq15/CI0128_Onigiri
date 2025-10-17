@@ -123,7 +123,7 @@ namespace Planilla_Backend.Services
 
     public int getCompanyTotalBenefitsByCompanyId(int companyId)
     {
-        return this.createCompanyRepository.getCompanyTotalUsersByCompanyId(companyId);
+        return this.createCompanyRepository.getCompanyTotalBenefitsByCompanyId(companyId);
     }
   }
 }

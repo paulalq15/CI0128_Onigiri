@@ -18,6 +18,8 @@
         <thead>
           <tr>
             <th>Nombre</th>
+            <th>Tipo de Cálculo</th>
+            <th>Valor</th>
             <th>Acción</th>
           </tr>
         </thead>
@@ -26,13 +28,19 @@
           <!-- Filas de beneficios -->
           <tr v-for="(benefit, index) of filteredBenefits" :key="index">
             <td>{{ benefit.elementName }}</td>
+            <td>{{ benefit.calculationType }}</td>
+            <td>{{ benefit.calculationValue }}</td>
             <td><button class="btn btn-secondary btn-sm" @click="addAppliedElement(index)">Seleccionar</button></td>
           </tr>
 
           <!-- Fila con contador total -->
           <tr>
             <td style="text-align: center; width: 50px; height: 50px; border: 1px solid #000; font-weight: bold; vertical-align: middle;">
-              Total Benefits: {{ filteredBenefits.length }}
+              Total de Beneficios: {{ filteredBenefits.length }}
+            </td>
+
+            <td style="text-align: center; width: 50px; height: 50px; border: 1px solid #000; font-weight: bold; vertical-align: middle;">
+              Máx. beneficios ofrecidos por la empresa: {{ this.maxCompanyBenefits }}
             </td>
           </tr>
         </tbody>
@@ -70,7 +78,10 @@
           <!-- Fila con contador total -->
           <tr>
             <td style="text-align: center; width: 50px; height: 50px; border: 1px solid #000; font-weight: bold; vertical-align: middle;">
-              Total Applied Elements: {{ appliedElements.length }}
+              Beneficios seleccionados: {{ appliedElements.length }}
+            </td>
+            <td style="text-align: center; width: 50px; height: 50px; border: 1px solid #000; font-weight: bold; vertical-align: middle;">
+              Beneficios restantes: {{ this.maxCompanyBenefits - appliedElements.length }}
             </td>
           </tr>
         </tbody>
@@ -99,6 +110,7 @@
         benefits: [],
         appliedElements: [],
         totalCompanyBenefits: 0,
+        maxCompanyBenefits: 0,
         totalSelectedEmployeeBenefits: 0,
         companyId: null,
         user: null,
@@ -117,6 +129,7 @@
           const response = await axios.get(`https://localhost:7071/api/Company/getCompanyIdByUserId?userId=${this.user.userId}`);
           this.companyId = response.data;
           this.getBenefits();
+          this.maxCompanyBenefits = this.getCompanyTotalBenefitsElements();
         } catch (error) {
           console.error("Error getting companyId:", error);
         }
@@ -142,9 +155,9 @@
       },
 
       getCompanyTotalBenefitsElements() {
-        axios.get(`https://localhost:7071/api/getCompanyTotalBenefitsByCompanyId?CompanyId=${this.companyId}`)
+        axios.get(`https://localhost:7071/api/Company/getCompanyTotalBenefitsByCompanyId?CompanyId=${this.companyId}`)
           .then((response) => {
-            this.appliedElements = response.data;
+            this.maxCompanyBenefits = response.data;
           })
           .catch(error => {
             console.error("Error getting applied elements:", error);
@@ -192,8 +205,8 @@
 
     created() {
       this.user = getUser();
-      this.getCompanyIdByUserId(); // Fetch companyId, then getBenefits will be called internally
-      this.getAppliedElements(); // Can be called immediately as it depends only on userId
+      this.getCompanyIdByUserId();
+      this.getAppliedElements();
     },
   };
 </script>

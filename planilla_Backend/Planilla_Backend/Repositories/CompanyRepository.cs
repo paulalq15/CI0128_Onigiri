@@ -163,7 +163,7 @@ namespace Planilla_Backend.Repositories
       return connection.QuerySingle<int>(query, new { userId });
     }
 
-    public int getCompanyTotalUsersByCompanyId(int companyId)
+    public int getCompanyTotalBenefitsByCompanyId(int companyId)
     {
       using var connection = new SqlConnection(_connectionString);
 
