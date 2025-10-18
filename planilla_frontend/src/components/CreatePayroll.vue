@@ -2,7 +2,6 @@
   <div class="d-flex flex-column">
     <div class="container mt-5">
       <h1 class="display-4 text-center">Creación de planilla</h1>
-
       <div v-if="!payroll" class="row align-items-end my-4">
         <div class="col-auto d-flex align-items-end gap-4">
           <div>
@@ -10,7 +9,7 @@
             <input type="month" class="form-control" v-model="selectedMonth" />
           </div>
 
-          <div>
+          <div v-if="paymentFrequency === 'Quincenal'">
             <label class="form-label mb-1 d-block">Periodo</label>
             <div class="btn-group" role="group">
               <button
@@ -117,6 +116,7 @@ export default {
   data() {
     return {
       payroll: null,
+      paymentFrequency: null,
       selectedMonth: '',
       half: '01',
       dateFrom: null,
@@ -136,13 +136,20 @@ export default {
     },
     getDateFrom() {
       if (!this.selectedMonth) return '';
+      if (this.paymentFrequency === 'Mensual') {
+        return `${this.selectedMonth}-01`;
+      }
       return `${this.selectedMonth}-${this.half}`;
     },
     getDateTo() {
       if (!this.selectedMonth) return '';
       const [y, m] = this.selectedMonth.split('-').map(Number);
-      if (this.half === '01') return `${this.selectedMonth}-15`;
       const lastDay = new Date(y, m, 0).getDate();
+
+      if (this.paymentFrequency === 'Mensual') {
+        return `${this.selectedMonth}-${String(lastDay).padStart(2, '0')}`;
+      }
+      if (this.half === '01') return `${this.selectedMonth}-15`;
       return `${this.selectedMonth}-${String(lastDay).padStart(2, '0')}`;
     },
     createPayroll() {
@@ -220,6 +227,16 @@ export default {
           }, self.toastTimeout);
         });
     },
+    getCompanyInfo() {
+      const companyId = this.$session.user?.companyUniqueId;
+      URLBaseAPI.get('/api/Company/getCompanyByID', {
+        params: {
+          companyId: companyId,
+        },
+      }).then((response) => {
+        this.paymentFrequency = response.data?.paymentFrequency || null;
+      });
+    },
     getPayroll() {
       const companyId = this.$session.user?.companyUniqueId;
       URLBaseAPI.get(`/api/Payroll/summary?companyId=${companyId}`).then((response) => {
@@ -244,6 +261,7 @@ export default {
   mounted() {
     if (this.$session.user?.typeUser !== 'Empleador') return;
     if (!this.selectedMonth) this.selectedMonth = this.getCurrentMonth();
+    this.getCompanyInfo();
     this.getPayroll();
   },
 };

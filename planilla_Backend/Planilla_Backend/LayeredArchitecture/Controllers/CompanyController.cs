@@ -83,5 +83,14 @@ namespace Planilla_Backend.LayeredArchitecture.Controllers
 
       return Ok(companySummaryModelsList);
     }
+
+    [HttpGet("getCompanyByID")]
+    public async Task<ActionResult<CompanyModel>> getCompanyByID([FromQuery] int companyId)
+    {
+      if (companyId <= 0) return BadRequest("Invalid company ID.");
+      var company = await this.createCompanyService.GetCompanyByID(companyId);
+      if (company == null) return NotFound("Company not found.");
+      return Ok(company);
+    }
   }
 }
