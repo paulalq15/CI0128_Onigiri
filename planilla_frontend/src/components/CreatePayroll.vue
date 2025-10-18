@@ -50,7 +50,7 @@
           <div class="fs-5 mb-1">Fecha inicial: {{ formatDate(payroll.dateFrom) }}</div>
           <div class="fs-5">Fecha final: {{ formatDate(payroll.dateTo) }}</div>
         </div>
-        <div class="col-auto text-end">
+        <div v-if="!isPaid" class="col-auto text-end">
           <button type="button" class="btn btn-secondary btn-lg" @click="payPayroll">Pagar</button>
         </div>
       </div>
@@ -71,12 +71,12 @@
         <tbody>
           <tr v-if="payroll">
             <td>{{ formatDate(payroll.payDate) }}</td>
-            <td>{{ payroll.totalGrossSalaries }}</td>
-            <td>{{ payroll.totalEmployerDeductions }}</td>
-            <td>{{ payroll.totalEmployeeDeductions }}</td>
-            <td>{{ payroll.totalBenefits }}</td>
-            <td>{{ payroll.totalNetEmployee }}</td>
-            <td>{{ payroll.totalEmployerCost }}</td>
+            <td>{{ fmtCRC(payroll.totalGrossSalaries) }}</td>
+            <td>{{ fmtCRC(payroll.totalEmployerDeductions) }}</td>
+            <td>{{ fmtCRC(payroll.totalEmployeeDeductions) }}</td>
+            <td>{{ fmtCRC(payroll.totalBenefits) }}</td>
+            <td>{{ fmtCRC(payroll.totalNetEmployee) }}</td>
+            <td>{{ fmtCRC(payroll.totalEmployerCost) }}</td>
           </tr>
         </tbody>
       </table>
@@ -127,6 +127,11 @@ export default {
       toastTimeout: 3000,
     };
   },
+  computed: {
+    isPaid() {
+      return !!(this.payroll && this.payroll.payDate);
+    },
+  },
   methods: {
     getCurrentMonth() {
       const d = new Date();
@@ -151,6 +156,15 @@ export default {
       }
       if (this.half === '01') return `${this.selectedMonth}-15`;
       return `${this.selectedMonth}-${String(lastDay).padStart(2, '0')}`;
+    },
+    fmtCRC(v) {
+      return new Intl.NumberFormat('es-CR', {
+        style: 'currency',
+        currency: 'CRC',
+        currencyDisplay: 'symbol',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(Number(v ?? 0));
     },
     createPayroll() {
       this.dateFrom = this.getDateFrom();
@@ -245,7 +259,6 @@ export default {
         this.dateTo = response.data?.dateTo || null;
       });
     },
-
     formatDate(dateString) {
       if (!dateString) return '';
       const date = new Date(dateString);
