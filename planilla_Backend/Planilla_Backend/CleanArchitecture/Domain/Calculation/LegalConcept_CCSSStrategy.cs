@@ -16,7 +16,7 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
         EmployeePayrollId = employeePayroll.Id,
         Description = "CCSS - Concepto XX",
         Type = PayrollItemType.EmployeeDeduction,
-        Amount = employeePayroll.BaseSalaryForPeriod * 0.05m,
+        Amount = employeePayroll.Gross * 0.05m,
         IdCCSS = 2,
         IdTax = null,
         IdElement = null,

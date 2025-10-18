@@ -45,6 +45,7 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
         amountForPeriod = ComputePeriodAmount(baseMonthly, workedDaysInMonth, workedDaysInHalf);
       }
 
+      employeePayroll.Gross = amountForPeriod;
       // Salary line for the period
       return new PayrollDetailModel
       {

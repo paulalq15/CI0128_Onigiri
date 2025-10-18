@@ -16,7 +16,7 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
         EmployeePayrollId = employeePayroll.Id,
         Description = "Elemento de planilla",
         Type = PayrollItemType.Benefit,
-        Amount = employeePayroll.BaseSalaryForPeriod * 0.025m,
+        Amount = employeePayroll.Gross * 0.025m,
         IdCCSS = null,
         IdTax = null,
         IdElement = 2,
