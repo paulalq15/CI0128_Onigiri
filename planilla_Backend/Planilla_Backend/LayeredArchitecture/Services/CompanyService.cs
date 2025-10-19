@@ -128,5 +128,10 @@ namespace Planilla_Backend.LayeredArchitecture.Services
     {
       return await this.createCompanyRepository.GetAllCompaniesSummary();
     }
+
+    public async Task<CompanyModel> GetCompanyByID(int companyId)
+    {
+      return await this.createCompanyRepository.getCompanyByID(companyId);
+    }
   }
 }

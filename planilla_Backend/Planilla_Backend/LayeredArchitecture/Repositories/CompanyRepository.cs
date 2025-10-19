@@ -207,5 +207,35 @@ namespace Planilla_Backend.LayeredArchitecture.Repositories
         return new List<CompanySummaryModel>();
       }
     }
+
+    public async Task<CompanyModel> getCompanyByID(int companyId)
+    {
+      try
+      {
+        using var connection = new SqlConnection(_connectionString);
+
+        var query =
+          @"SELECT IdEmpresa AS CompanyUniqueId,
+              CedulaJuridica AS CompanyId,
+              Nombre AS CompanyName,
+              Telefono AS Telephone,
+              CantidadBeneficios AS MaxBenefits,
+              FrecuenciaPago AS PaymentFrequency,
+              DiaPago1 AS PayDay1,
+              DiaPago2 AS PayDay2,
+              IdCreadoPor AS CreatedBy
+            FROM Empresa
+            WHERE IdEmpresa = @companyId";
+
+        var company = await connection.QuerySingleOrDefaultAsync<CompanyModel>(query, new { companyId });
+        if (company == null) throw new KeyNotFoundException("La empresa no existe.");
+
+        return company;
+      }
+      catch (Exception)
+      {
+        throw;
+      }
+    }
   }
 }
