@@ -15,41 +15,42 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
       if (ctx == null) throw new ArgumentNullException("El contexto de planilla es requerido");
 
       var firstDayMonth = 1;
-      var halfDayMonth = 15;
+      var fixedMonthDays = 30;
 
       // payroll period, month range, contract range
       var periodStartDate = DateOnly.FromDateTime(ctx.DateFrom);
       var periodEndDate = DateOnly.FromDateTime(ctx.DateTo);
-      var monthStart = new DateOnly(periodStartDate.Year, periodStartDate.Month, firstDayMonth);
-      var monthEnd = new DateOnly(periodStartDate.Year, periodStartDate.Month,DateTime.DaysInMonth(periodStartDate.Year, periodStartDate.Month));
-      var totalDaysInMonth = monthEnd.Day;
       var contractStart = DateOnly.FromDateTime(contract.StartDate);
-      var contractEnd = contract.EndDate.HasValue ? DateOnly.FromDateTime(contract.EndDate.Value) : monthEnd;
+      var contractEnd = contract.EndDate.HasValue ? DateOnly.FromDateTime(contract.EndDate.Value) : DateOnly.MaxValue;
+      var workedDaysInPeriod = OverlapInclusiveDays(periodStartDate, periodEndDate, contractStart, contractEnd);
 
-      // monthly base to calculate payroll elements
+      var monthStart = new DateOnly(periodStartDate.Year, periodStartDate.Month, firstDayMonth);
+      var monthEnd = new DateOnly(periodStartDate.Year, periodStartDate.Month, DateTime.DaysInMonth(periodStartDate.Year, periodStartDate.Month));
       var workedDaysInMonth = OverlapInclusiveDays(monthStart, monthEnd, contractStart, contractEnd);
-      var baseMonthly = ComputeMonthlyBase(contract.Salary, workedDaysInMonth, totalDaysInMonth);
-      employeePayroll.BaseSalaryForPeriod = baseMonthly;
+      var totalDaysInMonth = monthEnd.Day;
 
-      // salary for the current payroll period
-      var paymentFrequency = ctx.Company?.PaymentFrequency ?? PaymentFrequency.Monthly;
-      var amountForPeriod = baseMonthly;
-
-      if (paymentFrequency == PaymentFrequency.Biweekly)
+      var totalPayrollDays = 0;
+      var amountForPeriod = 0m;
+      if (ctx.Company.PaymentFrequency == PaymentFrequency.Biweekly)
       {
-        var isFirstHalf = periodStartDate.Day == firstDayMonth && periodEndDate.Day == halfDayMonth;
-        var halfStart = isFirstHalf
-          ? new DateOnly(periodStartDate.Year, periodStartDate.Month, firstDayMonth)
-          : new DateOnly(periodStartDate.Year, periodStartDate.Month, halfDayMonth + 1);
-        var halfEnd = isFirstHalf
-          ? new DateOnly(periodStartDate.Year, periodStartDate.Month, halfDayMonth)
-          : monthEnd;
-
-        var workedDaysInHalf = OverlapInclusiveDays(halfStart, halfEnd, contractStart, contractEnd);
-        amountForPeriod = ComputePeriodAmount(baseMonthly, workedDaysInMonth, workedDaysInHalf);
+        totalPayrollDays = (periodEndDate.DayNumber - periodStartDate.DayNumber) + 1;
+        amountForPeriod = Math.Round(contract.Salary / 2, 2);
+      }
+      else
+      {
+        totalPayrollDays = periodEndDate.Day;
+        amountForPeriod = contract.Salary;
       }
 
+      // adjust period salary based on worked days
+      if (workedDaysInPeriod != totalPayrollDays) amountForPeriod = ComputeBase(contract.Salary, workedDaysInPeriod, fixedMonthDays);
       employeePayroll.Gross = amountForPeriod;
+
+      //adjust monthly base based on expected worked days
+      var expectedMonthlySalary = contract.Salary;
+      if (workedDaysInMonth != totalDaysInMonth) expectedMonthlySalary = ComputeBase(contract.Salary, workedDaysInMonth, fixedMonthDays);
+      employeePayroll.BaseSalaryForPeriod = expectedMonthlySalary;
+      
       // Salary line for the period
       return new PayrollDetailModel
       {
@@ -71,17 +72,10 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
       return (to.DayNumber - from.DayNumber) + 1;
     }
 
-    private static decimal ComputeMonthlyBase(decimal contractMonthlySalary, int workedDaysInMonth, int totalDaysInMonth)
+    private static decimal ComputeBase(decimal contractMonthlySalary, int workedDaysInMonth, int totalDaysInMonth)
     {
       if (workedDaysInMonth <= 0) return 0m;
       return Math.Round(contractMonthlySalary * workedDaysInMonth / totalDaysInMonth, 2);
-    }
-
-    private static decimal ComputePeriodAmount(decimal baseMonthly, int workedDaysInMonth, int workedDaysInHalf)
-    {
-      if (workedDaysInMonth <= 0) return 0m;
-      if (workedDaysInHalf == workedDaysInMonth) return Math.Round(baseMonthly / 2m, 2);
-      return Math.Round(baseMonthly * workedDaysInHalf / workedDaysInMonth, 2);
     }
   }
 }
