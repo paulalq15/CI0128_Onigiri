@@ -40,6 +40,7 @@
       <ReactiveObjectTable
         :tableHeader="header"
         :tableElements="filteredElements"
+        @action="editPayrollElement"
       />     
     </div>
   </div>
@@ -47,13 +48,16 @@
 
 <script setup>
   import { ref, onMounted, computed } from 'vue';
-
+  
   // Base URL de la API
   import URLBaseAPI from '../axiosAPIInstances.js';
   import { useSession } from '@/utils/useSession';
-
+  
   import ReactiveObjectTable from './ReactiveArrayTable.vue';
-
+  
+  import { useRouter } from 'vue-router';
+  const router = useRouter();
+  
   const  {user} = useSession();
   var isAdmin = ref(false);
   var companies = ref([]);
@@ -71,7 +75,8 @@
     { label: "Valor", key: "calculationValue" },
     { label: "Tipo", key: "type"},
     { label: "Pagado por", key: "paidBy" },
-    { label: "Estado", key: "status"}
+    { label: "Estado", key: "status"},
+    { label: "Acción", key: "action"},
   ];
   var elements = ref([]);
 
@@ -107,14 +112,20 @@
           console.log(response.data);
           elements.value = response.data.map(e => ({
             ...e,
-            type: e.paidBy === 'Empleador' ? 'Beneficio' : 'Deducción'
+            type: e.paidBy === 'Empleador' ? 'Beneficio' : 'Deducción',
+            action: `<button class="btn btn-sm btn-success" data-id="${e.idElement}">Editar</button>`
           }));
+
           elements.value.paidBy == elements.value.calculationType === 'API' ? 'Empleador' : elements.value.paidBy;
         })
         .catch((error) => {
           if (error.response) console.log('Error del backend:', error.response.data);
           else console.log('Error de red:', error.message);
         });
+  }
+
+  function editPayrollElement(PayrollElementId) {
+    router.push({ name: 'EditarBeneficioODeduccion', params: { PEId: PayrollElementId}});
   }
 </script>
 

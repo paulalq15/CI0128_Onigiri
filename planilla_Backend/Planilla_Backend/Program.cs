@@ -1,5 +1,7 @@
-using Planilla_Backend.LayeredArchitecture.Services;
+using Planilla_Backend.CleanArchitecture.Application;
+using Planilla_Backend.CleanArchitecture.Infrastructure;
 using Planilla_Backend.LayeredArchitecture.Repositories;
+using Planilla_Backend.LayeredArchitecture.Services;
 using Planilla_Backend.LayeredArchitecture.Services.EmailService;
 using Planilla_Backend.LayeredArchitecture.Services.Utils;
 
@@ -31,6 +33,9 @@ builder.Services.AddScoped <PayrollElementRepository>();
 builder.Services.AddScoped <PayrollElementService>();
 builder.Services.AddScoped <PersonUserRepository>();
 builder.Services.AddScoped <PersonUserService>();
+
+builder.Services.AddScoped<IPayrollElementRepository, PayrollElementRepositoryCA>();
+builder.Services.AddScoped<IPayrollElementUseCase, PayrollElementUseCase>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -14,7 +14,8 @@
           <tr>
             <td>{{ index + 1 }}</td>
             <td v-for="(head, j) in tableHeader" :key="j">
-              {{ element[head.key] }}
+              <span v-if="head.key === 'action'" v-html="element[head.key]" @click="handleActionClick"></span>
+              <span v-else>{{ element[head.key] }}</span>
             </td>
           </tr>
           <tr v-if="index < tableElements.length - 1" class="spacer">
@@ -27,14 +28,22 @@
 </template>
 
 <script>
-export default {
-  name: "ReactiveObjectTable",
-  props: {
-    tableHeader: { type: Array, required: true },
-    tableElements: { type: Array, required: true }
-  },
-};
+  export default {
+    name: "ReactiveObjectTable",
+    props: {
+      tableHeader: { type: Array, required: true },
+      tableElements: { type: Array, required: true }
+    },
+    emits: ['action'],
+    methods: {
+      handleActionClick(event) {
+        const id = event.target.dataset.id;
+        if (id) this.$emit('action', id);
+      }
+    }
+  };
 </script>
+
 
 <style scoped>
   table.table td {
