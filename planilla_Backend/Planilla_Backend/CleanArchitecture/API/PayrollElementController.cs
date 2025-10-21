@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Planilla_Backend.CleanArchitecture.Application;
+using Planilla_Backend.CleanArchitecture.Application.UseCases;
 using Planilla_Backend.CleanArchitecture.Domain.Entities;
+using Planilla_Backend.CleanArchitecture.Infrastructure;
 
 namespace Planilla_Backend.CleanArchitecture.API
 {
@@ -8,38 +9,45 @@ namespace Planilla_Backend.CleanArchitecture.API
   [ApiController]
   public class PayrollElementController : ControllerBase
   {
-    private readonly IPayrollElementUseCase payrollElementUseCase;
+    private readonly IPayrollElementRepository payrollElementRepository;
 
-    public PayrollElementController(IPayrollElementUseCase payrollElementService)
+    public PayrollElementController(IPayrollElementRepository payrollElementRepository)
     {
-      this.payrollElementUseCase = payrollElementService;
+      this.payrollElementRepository = payrollElementRepository;
     }
 
     [HttpGet("{payrollElementId:int}")]
     public async Task<IActionResult> GetAPayrollElement(int payrollElementId)
     {
-      PayrollElementEntity? element = await this.payrollElementUseCase.GetPayrollElementByElementId(payrollElementId);
+      try
+      {
+        IGetPayrollElement getPayrollElementCommand = new GetPayrollElementById(this.payrollElementRepository, payrollElementId);
+        PayrollElementEntity? element = await getPayrollElementCommand.Execute();
 
-      if (element == null) return NotFound(new { message = "Error al obtener el elemento de planilla" });
-
-      return Ok(element);
+        return Ok(element);
+      }
+      catch (ArgumentException ex)
+      {
+        return BadRequest(new { message = ex.Message });
+      }
     }
 
     [HttpPost("updPayrollElement")]
     public async Task<IActionResult> UpdatePayrollElement([FromBody] PayrollElementEntity payrollElement)
     {
-      int rowsAffected = await this.payrollElementUseCase.UpdatePayrollElement(payrollElement);
-      if (rowsAffected > 0)
+      try
       {
+        IUpdatePayrollElement updatePayrollElementCommand = new UpdatePayrollElement(this.payrollElementRepository, payrollElement);
+
+        int affectedRows = await updatePayrollElementCommand.Execute();
+
+        if (affectedRows == 0) return NotFound(new { message = "Error al actualizar el elemento de planilla" });
+
         return Ok(new { message = "Elemento de planilla actualizado correctamente" });
       }
-      else if (rowsAffected == -1)
+      catch (ArgumentException ex)
       {
-        return BadRequest(new { message = "El nombre del elemento es obligatorio" });
-      }
-      else
-      {
-        return NotFound(new { message = "Error al actualizar el elemento de planilla" });
+        return BadRequest(new { message = ex.Message });
       }
     }
   }
