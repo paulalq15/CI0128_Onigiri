@@ -1,4 +1,6 @@
-﻿namespace Planilla_Backend.LayeredArchitecture.Models
+﻿using Planilla_Backend.Models;
+
+namespace Planilla_Backend.LayeredArchitecture.Models
 {
   public class CompanyModel
   {

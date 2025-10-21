@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
 using Planilla_Backend.LayeredArchitecture.Models;
+using Planilla_Backend.Models;
 
 namespace Planilla_Backend.LayeredArchitecture.Repositories
 {

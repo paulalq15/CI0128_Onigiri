@@ -155,6 +155,8 @@ namespace Planilla_Backend.LayeredArchitecture.Services
       int rowsAffected = await this.createCompanyRepository.UpdateCompanyData(company);
 
       return rowsAffected;
+    }
+
     public async Task<CompanyModel> GetCompanyByID(int companyId)
     {
       return await this.createCompanyRepository.getCompanyByID(companyId);
