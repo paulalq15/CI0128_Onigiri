@@ -1,6 +1,3 @@
-Use [Onigiri_PI]
-Go
-
 Create Or Alter Procedure GetMaxAmountBenefitsTakenInCompany(
 	@companyId int)
 As

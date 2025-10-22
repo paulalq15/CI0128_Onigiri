@@ -1,6 +1,3 @@
-Use [Onigiri_PI]
-Go
-
 Create Or Alter Procedure UpdateCompanyData(
     @CompanyUniqueId Int,
     @Name Nvarchar(150),
