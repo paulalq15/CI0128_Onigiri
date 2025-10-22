@@ -67,7 +67,6 @@ import { useSession } from '../utils/useSession.js'
 const session = useSession()
 const personId = computed(() => session.user?.personId ?? null)
 
-// ******** STATE ********
 const selectedDay = ref(todayISO())
 const weekStart = ref(null)
 const weekEnd   = ref(null)
@@ -79,7 +78,6 @@ const ok      = ref(false)
 const hoursModel = reactive({})
 const descModel  = reactive({})
 
-// ******** COMPUTED ********
 const weekDays = computed(() => {
   if (!weekStart.value) return []
   const days = []
@@ -92,7 +90,6 @@ const weekDays = computed(() => {
 
 const weekdaysMonToFri = computed(() => weekDays.value.slice(0, 5))
 
-// ******** LIFECYCLE ********
 onMounted(() => {
   if (!personId.value) {
     error.value = 'No se encontro el ID del Empleado'
@@ -101,7 +98,6 @@ onMounted(() => {
   loadWeekByDay(selectedDay.value)
 })
 
-// ******** METHODS ********
 function todayISO () {
   const d = new Date()
   d.setHours(0,0,0,0)
@@ -166,34 +162,43 @@ function isLocked(dateObj) {
   const today = new Date()
   today.setHours(0,0,0,0)
 
-  // 1) Bloquea fechas futuras
   if (dateObj > today) return true
 
-  // 2) Bloquea si ya existían horas registradas (> 0) desde el backend
   const iso = toISO(dateObj)
   return Number(hoursModel[iso] ?? 0) > 0
 }
 
 async function confirmar () {
   if (!weekStart.value) return
-  error.value = ''; ok.value = false; loading.value = true
+  error.value = ''; ok.value = false; loading.value = true;
+
   try {
-    const weekStartISO = toISO(weekStart.value)
+    const weekStartISO = toISO(weekStart.value);
+    const today = new Date();
+    today.setHours(0,0,0,0);
 
-    const entries = weekdaysMonToFri.value.map(d => ({
-      date: d.key,
-      hours: Number(hoursModel[d.key] ?? 0),
-      description: (descModel[d.key] ?? '').trim() || null
-    }))
+    const entries = weekdaysMonToFri.value
+      .filter(d => d.date <= today)
+      .map(d => ({
+        date: d.key,
+        hours: Number(hoursModel[d.key] ?? 0),
+        description: (descModel[d.key] ?? '').trim() || null
+      }));
 
-    await URLBaseAPI.post(`/api/Timesheet/week/${personId.value}`, { weekStart: weekStartISO, entries })
+    if (entries.length === 0) {
+      error.value = 'No hay días válidos para guardar (no puede registrar días futuros).';
+      loading.value = false;
+      return;
+    }
 
-    ok.value = true
+    await URLBaseAPI.post(`/api/Timesheet/week/${personId.value}`, {weekStart: weekStartISO, entries});
+
+    ok.value = true;
   } catch (ex) {
-    error.value = 'No se pudieron guardar las horas.'
+    error.value = 'No se pudieron guardar las horas.';
   } finally {
-    loading.value = false
-    setTimeout(() => (ok.value = false), 2500)
+    loading.value = false;
+    setTimeout(() => (ok.value = false), 2500);
   }
 }
 </script>
