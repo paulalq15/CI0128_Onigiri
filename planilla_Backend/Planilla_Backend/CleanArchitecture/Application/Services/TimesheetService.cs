@@ -18,14 +18,9 @@ namespace Planilla_Backend.CleanArchitecture.Application.Services
       if (entries is null || entries.Count == 0)
         throw new ArgumentException("Se requieren entradas de días.", nameof(entries));
 
-      // Normaliza: semana inicia en lunes (puedes alinear con tu función SQL)
       var weekStartMonday = WeekStartMonday(weekStart.Date);
       var weekEnd = weekStartMonday.AddDays(6);
 
-      // Validaciones de negocio del caso de uso (insert-only)
-      //  - Horas en 0..9 (tu repo ya valida >9, aquí anticipamos errores)
-      //  - Fechas dentro de la semana objetivo
-      //  - No permitir duplicados en el payload para el mismo día
       var seenDates = new HashSet<DateTime>();
       foreach (var e in entries)
       {
@@ -42,7 +37,6 @@ namespace Planilla_Backend.CleanArchitecture.Application.Services
           throw new ArgumentException($"Fecha duplicada en el payload: {d:yyyy-MM-dd}.");
       }
 
-      // (Opcional) orden estable para trazabilidad
       var normalized = entries
         .Select(e => new DayEntryDto
         {
@@ -54,8 +48,20 @@ namespace Planilla_Backend.CleanArchitecture.Application.Services
         .ToList()
         .AsReadOnly();
 
-      // Delegar a infraestructura (SP: dbo.InsertarHorasXSemana, UDTT: dbo.HorasXSemana)
       await _repo.SaveWeekAsync(employeeId, weekStartMonday, normalized);
+    }
+
+    public async Task<WeekHoursDto> GetWeekHoursAsync(int employeeId, DateTime weekStart, DateTime weekEnd, CancellationToken ct = default)
+    {
+
+      var rows = await _repo.GetWeekHoursAsync(employeeId, weekStart, weekEnd, ct);
+
+      return new WeekHoursDto
+      {
+        WeekStart = weekStart,
+        WeekEnd = weekEnd,
+        Entries = rows.ToList()
+      };
     }
 
     private static DateTime WeekStartMonday(DateTime d)
