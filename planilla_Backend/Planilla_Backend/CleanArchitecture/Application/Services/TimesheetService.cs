@@ -5,11 +5,11 @@ namespace Planilla_Backend.CleanArchitecture.Application.Services
 {
   public class TimesheetService : ITimesheetService
   {
-    private readonly ITimesheetRepository _repo;
+    private readonly ITimesheetRepository _tsRepo;
 
-    public TimesheetService(ITimesheetRepository repo)
+    public TimesheetService(ITimesheetRepository tsRepo)
     {
-      _repo = repo;
+      _tsRepo = tsRepo;
     }
 
     public async Task InsertWeekAsync(int employeeId, DateTime weekStart, IReadOnlyList<DayEntryDto> entries, CancellationToken ct = default)
@@ -21,7 +21,7 @@ namespace Planilla_Backend.CleanArchitecture.Application.Services
       var weekStartMonday = WeekStartMonday(weekStart.Date);
       var weekEnd = weekStartMonday.AddDays(4);
 
-      var existingRows = await _repo.GetWeekHoursAsync(employeeId, weekStartMonday, weekEnd, ct);
+      var existingRows = await _tsRepo.GetWeekHoursAsync(employeeId, weekStartMonday, weekEnd, ct);
       var existingDates = new HashSet<DateTime>(existingRows
         .Where(e => e.Hours > 0)
         .Select(e => e.Date.Date));
@@ -33,7 +33,6 @@ namespace Planilla_Backend.CleanArchitecture.Application.Services
 
         var d = e.Date.Date;
 
-        // ✅ Solo validamos las fechas que el usuario está enviando realmente
         if (d < weekStartMonday || d > weekEnd)
           throw new ArgumentException($"La fecha {d:yyyy-MM-dd} no pertenece a la semana {weekStartMonday:yyyy-MM-dd}..{weekEnd:yyyy-MM-dd}.");
 
@@ -50,8 +49,7 @@ namespace Planilla_Backend.CleanArchitecture.Application.Services
           throw new ArgumentOutOfRangeException(nameof(e.Hours), "Las horas deben estar entre 0 y 9.");
       }
 
-      // Normalizamos y ordenamos
-      var normalized = entries
+      var normalizedEntries = entries
         .Select(e => new DayEntryDto
         {
           Date = e.Date.Date,
@@ -62,13 +60,13 @@ namespace Planilla_Backend.CleanArchitecture.Application.Services
         .ToList()
         .AsReadOnly();
 
-      await _repo.SaveWeekAsync(employeeId, weekStartMonday, normalized);
+      await _tsRepo.SaveWeekAsync(employeeId, weekStartMonday, normalizedEntries);
     }
 
     public async Task<WeekHoursDto> GetWeekHoursAsync(int employeeId, DateTime weekStart, DateTime weekEnd, CancellationToken ct = default)
     {
 
-      var rows = await _repo.GetWeekHoursAsync(employeeId, weekStart, weekEnd, ct);
+      var rows = await _tsRepo.GetWeekHoursAsync(employeeId, weekStart, weekEnd, ct);
 
       return new WeekHoursDto
       {
@@ -80,7 +78,6 @@ namespace Planilla_Backend.CleanArchitecture.Application.Services
 
     private static DateTime WeekStartMonday(DateTime d)
     {
-      // Alinea al lunes anterior (o mismo día si ya es lunes)
       int delta = ((int)d.DayOfWeek - (int)DayOfWeek.Monday + 7) % 7;
       return d.AddDays(-delta).Date;
     }

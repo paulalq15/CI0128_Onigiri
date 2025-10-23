@@ -12,14 +12,14 @@ namespace Planilla_Backend.CleanArchitecture.API
   [ApiController]
   public class TimesheetController : ControllerBase
   {
-    private readonly ITimesheetService _svc;
-    public TimesheetController(ITimesheetService svc) => _svc = svc;
+    private readonly ITimesheetService _tsService;
+    public TimesheetController(ITimesheetService tsService) => _tsService = tsService;
 
     [HttpPost("week/{personId:int}")]
     public async Task<IActionResult> SaveWeek([FromRoute] int personId, [FromBody] WeekHoursCommand req, CancellationToken ct)
     {
       var employeeId = personId;
-      await _svc.InsertWeekAsync(employeeId, req.WeekStart, req.Entries, ct);
+      await _tsService.InsertWeekAsync(employeeId, req.WeekStart, req.Entries, ct);
       return NoContent();
     }
 
@@ -39,9 +39,9 @@ namespace Planilla_Backend.CleanArchitecture.API
       }
       else if (day.HasValue)
       {
-        var d = day.Value.Date;
-        int delta = ((int)d.DayOfWeek - (int)DayOfWeek.Monday + 7) % 7; // alinea a lunes
-        start = d.AddDays(-delta);
+        var date = day.Value.Date;
+        int delta = ((int)date.DayOfWeek - (int)DayOfWeek.Monday + 7) % 7;
+        start = date.AddDays(-delta);
         end = start.AddDays(6);
       }
       else
@@ -52,7 +52,7 @@ namespace Planilla_Backend.CleanArchitecture.API
       if (end < start) return BadRequest("'weekEnd' debe ser >= 'weekStart'.");
       if ((end - start).TotalDays != 6) return BadRequest("El rango debe cubrir exactamente una semana (7 días).");
 
-      var result = await _svc.GetWeekHoursAsync(personId, start, end, ct);
+      var result = await _tsService.GetWeekHoursAsync(personId, start, end, ct);
       return Ok(result);
     }
   }

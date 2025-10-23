@@ -54,7 +54,6 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         cancellationToken: ct
       );
 
-      // El SP devuelve: Fecha, Horas, Descripcion, Estado
       var rows = await connection.QueryAsync<DayEntryDto>(cmd);
 
       return rows.ToList().AsReadOnly();
