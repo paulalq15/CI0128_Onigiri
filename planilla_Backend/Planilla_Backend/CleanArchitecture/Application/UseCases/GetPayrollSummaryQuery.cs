@@ -12,11 +12,25 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
       _repo = repo;
     }
 
-    public Task<PayrollSummary> Execute(int payrollId)
+    public async Task<PayrollSummary?> Execute(int companyId)
     {
-      // TODO: implement payroll summary retrieval
+      if (companyId <= 0) throw new ArgumentException("El parámetro companyId debe ser mayor que cero");
 
-      return Task.FromResult(new PayrollSummary());
+      var companyPayroll = await _repo.GetLatestOpenCompanyPayroll(companyId);
+      if (companyPayroll == null) return null;
+
+      var summary = new PayrollSummary();
+      summary.CompanyPayrollId = companyPayroll.Id;
+      summary.TotalGrossSalaries = companyPayroll.Gross;
+      summary.TotalEmployerDeductions = companyPayroll.EmployerDeductions;
+      summary.TotalEmployeeDeductions = companyPayroll.EmployeeDeductions;
+      summary.TotalBenefits = companyPayroll.Benefits;
+      summary.TotalNetEmployee = companyPayroll.Net;
+      summary.TotalEmployerCost = companyPayroll.Cost;
+      summary.DateFrom = companyPayroll.DateFrom;
+      summary.DateTo = companyPayroll.DateTo;
+
+      return summary;
     }
   }
 }

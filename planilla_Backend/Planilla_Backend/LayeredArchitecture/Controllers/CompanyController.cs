@@ -83,5 +83,42 @@ namespace Planilla_Backend.LayeredArchitecture.Controllers
 
       return Ok(companySummaryModelsList);
     }
+
+    // GetCompanyByCompanyUniqueId
+    [HttpGet("GCBCUI")]
+    public async Task<ActionResult<CompanyModel>> GetCompanyByCompanyUniqueId(int companyUniqueId)
+    {
+      CompanyModel? company = await this.createCompanyService.GetCompanyByUniqueId(companyUniqueId);
+
+      if (company == null) return NotFound(new { message = "No se encontró la empresa" });
+
+      return Ok(company);
+    }
+
+    // GetCompanyByCompanyUniqueId
+    [HttpGet("MaxBenTak")]
+    public async Task<ActionResult<int>> GetMaxAmountBenefitsTakenByCompanyUniqueId(int companyUniqueId)
+    {
+      int maxBenefitsAmount = await this.createCompanyService.GetMaxBenefitsTakenInCompany(companyUniqueId);
+
+      return Ok(maxBenefitsAmount);
+    }
+
+    // Update company data
+    [HttpPost("UpdComp")]
+    public async Task<ActionResult<int>> UpdateCompanyData([FromBody] CompanyModel company)
+    {
+      int rowsAffected = await this.createCompanyService.updateCompanyData(company);
+
+      return Ok(rowsAffected);
+    }
+    [HttpGet("getCompanyByID")]
+    public async Task<ActionResult<CompanyModel>> getCompanyByID([FromQuery] int companyId)
+    {
+      if (companyId <= 0) return BadRequest("Invalid company ID.");
+      var company = await this.createCompanyService.GetCompanyByID(companyId);
+      if (company == null) return NotFound("Company not found.");
+      return Ok(company);
+    }
   }
 }

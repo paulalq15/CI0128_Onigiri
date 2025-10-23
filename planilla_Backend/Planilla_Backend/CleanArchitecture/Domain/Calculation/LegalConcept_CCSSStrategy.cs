@@ -2,9 +2,9 @@
 
 namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
 {
-  public class Concept_FixedAmountStrategy : IConceptStrategy
+  public class LegalConcept_CCSSStrategy : ILegalConceptStrategy
   {
-    public IEnumerable<PayrollDetailModel> Apply(EmployeePayrollModel employeePayroll, ElementModel concept, PayrollContext ctx)
+    public IEnumerable<PayrollDetailModel> Apply(EmployeePayrollModel employeePayroll, PayrollContext ctx)
     {
       // TODO: implement the logic
 
@@ -14,12 +14,12 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
       var line = new PayrollDetailModel
       {
         EmployeePayrollId = employeePayroll.Id,
-        Description = "Elemento de planilla",
+        Description = "CCSS - Concepto XX",
         Type = PayrollItemType.EmployeeDeduction,
-        Amount = 50000m,
-        IdCCSS = null,
+        Amount = employeePayroll.Gross * 0.05m,
+        IdCCSS = 2,
         IdTax = null,
-        IdElement = 4,
+        IdElement = null,
       };
       detailList.Add(line);
 

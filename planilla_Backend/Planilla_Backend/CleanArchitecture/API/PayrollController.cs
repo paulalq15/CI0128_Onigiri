@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Planilla_Backend.CleanArchitecture.Application.UseCases;
 using Planilla_Backend.CleanArchitecture.Domain.Entities;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using Planilla_Backend.CleanArchitecture.API.Http;
 
 namespace Planilla_Backend.CleanArchitecture.API
 {
@@ -21,25 +20,47 @@ namespace Planilla_Backend.CleanArchitecture.API
       _get = get;
     }
 
-    [HttpPost("create")]
-    public async Task<ActionResult<PayrollSummary>> Create([FromQuery] int companyId, [FromQuery] DateOnly DateFrom, [FromQuery] DateOnly DateTo)
+    [HttpPost]
+    public async Task<ActionResult<PayrollSummary>> Create([FromQuery] int companyId, [FromQuery] int personId, [FromQuery] DateTime dateFrom, [FromQuery] DateTime dateTo)
     {
-      var result = await _create.Execute(companyId, DateFrom, DateTo);
-      return Ok(result);
+      try
+      {
+        var summary = await _create.Execute(companyId, personId, dateFrom, dateTo);
+        return Created("/api/Payroll", summary);
+      }
+      catch (Exception ex)
+      {
+        return Error.FromException(this, ex, "/api/Payroll");
+      }
     }
 
-    [HttpPost("pay")]
-    public async Task<IActionResult> Pay([FromQuery] int payrollId)
+    [HttpPost("payment")]
+    public async Task<ActionResult<PayrollSummary>> Pay([FromQuery] int payrollId, [FromQuery] int personId)
     {
-      await _pay.Execute(payrollId);
-      return Ok();
+      try
+      {
+        var summary = await _pay.Execute(payrollId, personId);
+        return Ok(summary);
+      }
+      catch (Exception ex)
+      {
+        return Error.FromException(this, ex, "/api/Payroll/payment");
+      }
     }
 
-    [HttpGet("{id}/summary")]
-    public async Task<ActionResult<PayrollSummary>> GetSummary([FromRoute] int id)
+    [HttpGet("summary")]
+    public async Task<ActionResult<PayrollSummary>> GetSummary([FromQuery] int companyId)
     {
-      var result = await _get.Execute(id);
-      return Ok(result);
+      try
+      {
+        var result = await _get.Execute(companyId);
+        if (result == null) return NoContent();
+        return Ok(result);
+      }
+      catch (Exception ex)
+      {
+        return Error.FromException(this, ex, "/api/Payroll/summary");
+      }
     }
   }
 }

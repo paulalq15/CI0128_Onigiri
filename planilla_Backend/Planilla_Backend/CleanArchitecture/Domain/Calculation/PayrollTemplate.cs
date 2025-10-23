@@ -5,32 +5,43 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
   //Template Method Design Pattern
   public abstract class PayrollTemplate
   {
-    public List<PayrollDetailModel> RunCalculation(int companyId, DateOnly dateFrom, DateOnly dateTo, PayrollContext ctx)
+    public List<PayrollDetailModel> RunCalculation(int companyId, DateTime dateFrom, DateTime dateTo, PayrollContext ctx)
     {
       var payrollDetails = new List<PayrollDetailModel>();
+      var employees = SelectEmployees(companyId, ctx);
+      var i = 0;
 
-      List<EmployeeModel> employees = SelectEmployees(companyId, dateFrom, dateTo, ctx);
-
-      int i = 0;
       while (i < employees.Count)
       {
-        EmployeeModel employee = employees[i];
-
-        ContractModel contract = SelectContract(employee, ctx);
+        var employee = employees[i];
+        var contract = SelectContract(employee, dateFrom, dateTo, ctx);
         if (contract != null)
         {
-          PayrollDetailModel baseLine = CreateBaseLine(employee, contract, ctx);
-          
-          var emptyElements = new List<ElementModel>();
-          List<PayrollDetailModel> conceptLines = ApplyConcepts(employee, baseLine, emptyElements, ctx);
+          var baseLine = CreateEmployeeBaseLine(employee, contract, ctx);
+          if (baseLine != null) payrollDetails.Add(baseLine);
 
-          payrollDetails.Add(baseLine);
-
-          int j = 0;
-          while (j < conceptLines.Count)
+          var legalLines = ApplyLegalConcepts(employee, contract, ctx);
+          if (legalLines != null)
           {
-            payrollDetails.Add(conceptLines[j]);
-            j++;
+            var lineIndex = 0;
+            while (lineIndex < legalLines.Count)
+            {
+              var line = legalLines[lineIndex];
+              if (line != null) payrollDetails.Add(line);
+              lineIndex++;
+            }
+          }
+
+          var conceptLines = ApplyConcepts(employee, ctx);
+          if (conceptLines != null)
+          {
+            var lineIndex = 0;
+            while (lineIndex < conceptLines.Count)
+            {
+              var line = conceptLines[lineIndex];
+              if (line != null) payrollDetails.Add(line);
+              lineIndex++;
+            }
           }
         }
 
@@ -40,9 +51,10 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
       return payrollDetails;
     }
 
-    protected abstract List<EmployeeModel> SelectEmployees(int companyId, DateOnly dateFrom, DateOnly dateTo, PayrollContext ctx);
-    protected abstract ContractModel SelectContract(EmployeeModel emp, PayrollContext ctx);
-    protected abstract PayrollDetailModel CreateBaseLine(EmployeeModel employee, ContractModel contract, PayrollContext ctx);
-    protected abstract List<PayrollDetailModel> ApplyConcepts(EmployeeModel employee, PayrollDetailModel baseLine, List<ElementModel> elements, PayrollContext ctx);
+    protected abstract List<EmployeeModel> SelectEmployees(int companyId, PayrollContext ctx);
+    protected abstract ContractModel SelectContract(EmployeeModel employee, DateTime dateFrom, DateTime dateTo, PayrollContext ctx);
+    protected abstract PayrollDetailModel CreateEmployeeBaseLine(EmployeeModel employee, ContractModel contract, PayrollContext ctx);
+    protected abstract List<PayrollDetailModel> ApplyLegalConcepts(EmployeeModel employee, ContractModel contract, PayrollContext ctx);
+    protected abstract List<PayrollDetailModel> ApplyConcepts(EmployeeModel employee, PayrollContext ctx);
   }
 }

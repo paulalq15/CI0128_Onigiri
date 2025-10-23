@@ -6,36 +6,59 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
   {
     private readonly IEnumerable<ISalaryBaseStrategy> _baseStrategies;
     private readonly IEnumerable<IConceptStrategy> _conceptStrategies;
+    private readonly IEnumerable<ILegalConceptStrategy> _legalConceptStrategies;
+    private readonly Dictionary<ElementCalculationType, IConceptStrategy> _conceptMap = new Dictionary<ElementCalculationType, IConceptStrategy>();
 
-    public CalculationFactory(IEnumerable<ISalaryBaseStrategy> baseStrategies, IEnumerable<IConceptStrategy> conceptStrategies)
+    public CalculationFactory(IEnumerable<ISalaryBaseStrategy> baseStrategies, IEnumerable<IConceptStrategy> conceptStrategies, IEnumerable<ILegalConceptStrategy> legalConceptStrategies)
     {
-      _baseStrategies = baseStrategies ?? throw new ArgumentNullException(nameof(baseStrategies));
+      _baseStrategies = baseStrategies ?? throw new ArgumentNullException("Las estrategias base son requeridas");
       _conceptStrategies = conceptStrategies ?? Array.Empty<IConceptStrategy>();
-    }
-    public ISalaryBaseStrategy CreateBaseStrategy(ContractModel contract, CompanyModel company)
-    {
-      if (contract == null) throw new ArgumentNullException(nameof(contract));
+      _legalConceptStrategies = legalConceptStrategies ?? Array.Empty<ILegalConceptStrategy>();
 
-      ISalaryBaseStrategy selected = null;
-      foreach (var s in _baseStrategies)
+      foreach (var strategy in _conceptStrategies)
       {
-        if (s != null && s.Applicable(contract))
-        {
-          selected = s;
-          break;
-        }
+        if (strategy == null) continue;
+        if (strategy is Concept_FixedAmountStrategy) _conceptMap[ElementCalculationType.FixedAmount] = strategy;
+        else if (strategy is Concept_PercentageStrategy) _conceptMap[ElementCalculationType.Percentage] = strategy;
+        else if (strategy is Concept_ApiStrategy) _conceptMap[ElementCalculationType.ExternalAPI] = strategy;
+      }
+    }
+
+    public ISalaryBaseStrategy CreateBaseStrategy(ContractModel contract)
+    {
+      if (contract == null) throw new ArgumentNullException("El contrato es requerido");
+
+      foreach (var strategy in _baseStrategies)
+      {
+        if (strategy != null && strategy.Applicable(contract)) return strategy;
       }
 
-      if (selected == null) throw new InvalidOperationException("No base salary strategy found for the contract type.");
-
-      return selected;
+      throw new InvalidOperationException("No hay estrategia base para el tipo de contrato");
 
     }
 
-    public IList<IConceptStrategy> CreateConceptStrategies(CompanyModel company, string period)
+    public IConceptStrategy CreateConceptStrategies(ElementModel element)
     {
-      // TODO: create and return the list of concept strategies to apply
-      return new List<IConceptStrategy>();
+      if (element == null) throw new ArgumentNullException("El elemento es requerido");
+      IConceptStrategy strategy;
+
+      if (_conceptMap.TryGetValue(element.CalculationType, out strategy)) return strategy;
+
+      throw new InvalidOperationException("No existe una estrategia para el tipo de cálculo del elemento");
+    }
+
+    public IList<ILegalConceptStrategy> CreateLegalConceptStrategies(ContractModel contract)
+    {
+      if (contract == null) throw new ArgumentNullException("El contrato es requerido");
+      var result = new List<ILegalConceptStrategy>();
+
+      foreach (var strategy in _legalConceptStrategies)
+      {
+        if (strategy == null) continue;
+        if (strategy.Applicable(contract)) result.Add(strategy);
+      }
+
+      return result;
     }
   }
 }

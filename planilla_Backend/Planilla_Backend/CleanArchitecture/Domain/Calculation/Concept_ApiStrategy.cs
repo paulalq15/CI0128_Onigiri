@@ -2,7 +2,7 @@
 
 namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
 {
-  public class Concept_FixedAmountStrategy : IConceptStrategy
+  public class Concept_ApiStrategy : IConceptStrategy
   {
     public IEnumerable<PayrollDetailModel> Apply(EmployeePayrollModel employeePayroll, ElementModel concept, PayrollContext ctx)
     {
@@ -14,12 +14,24 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
       var line = new PayrollDetailModel
       {
         EmployeePayrollId = employeePayroll.Id,
-        Description = "Elemento de planilla",
+        Description = "Elemento de planilla API",
         Type = PayrollItemType.EmployeeDeduction,
+        Amount = 25000m,
+        IdCCSS = null,
+        IdTax = null,
+        IdElement = 7,
+      };
+      detailList.Add(line);
+
+      line = new PayrollDetailModel
+      {
+        EmployeePayrollId = employeePayroll.Id,
+        Description = "Elemento de planilla API",
+        Type = PayrollItemType.Benefit,
         Amount = 50000m,
         IdCCSS = null,
         IdTax = null,
-        IdElement = 4,
+        IdElement = 7,
       };
       detailList.Add(line);
 
@@ -27,3 +39,4 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
     }
   }
 }
+

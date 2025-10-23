@@ -1,5 +1,8 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
+using Planilla_Backend.Models;
+using System.ComponentModel.Design;
+using System.Data;
 using Planilla_Backend.LayeredArchitecture.Models;
 using System.Data.SqlClient;
 
@@ -205,6 +208,112 @@ namespace Planilla_Backend.LayeredArchitecture.Repositories
       {
         Console.WriteLine("Error al obtener el resumen de todas las compañias: \n" + ex.Message);
         return new List<CompanySummaryModel>();
+      }
+    }
+
+    public async Task<CompanyModel?> GetCompanyByUniqueId(int companyUniqueId)
+    {
+      try
+      {
+        using var connection = new SqlConnection(this._connectionString);
+
+        var sqlCompanyByUniqueId = @"
+            Select
+              IdEmpresa As CompanyUniqueId,
+              Estado As State,
+              CedulaJuridica As CompanyId,
+              Nombre As CompanyName,
+              Telefono As Telephone,
+              FechaCreacion As CreationDate,
+              CantidadBeneficios As MaxBenefits,
+              FrecuenciaPago As PaymentFrequency,
+              DiaPago1 As PayDay1,
+              DiaPago2 As PayDay2,
+              IdCreadoPor As CreatedBy
+            From Empresa
+            Where IdEmpresa = @companyUniqueId";
+
+        var company = await connection.QueryFirstOrDefaultAsync<CompanyModel>(sqlCompanyByUniqueId, new { companyUniqueId = companyUniqueId });
+        return company;
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine("Error al obtener la compañia por su UniqueId. Detalle: \n" + ex.Message);
+        return null;
+      }
+    }
+
+    public async Task<int> GetMaxBenefitsTakenInCompany(int companyUniqueId)
+    {
+      int maxBenefitsTaken = 0;
+      try
+      {
+        using var connection = new SqlConnection(this._connectionString);
+
+        maxBenefitsTaken = await connection.QueryFirstOrDefaultAsync<int>("GetMaxAmountBenefitsTakenInCompany",
+            new { companyId = companyUniqueId }, commandType: CommandType.StoredProcedure);
+
+      } 
+      catch (Exception ex)
+      {
+        Console.WriteLine("Error al obtener la mayor cantidad de beneficios tomados en una empresa. Detalle: \n" + ex.Message);
+      }
+
+      return maxBenefitsTaken;
+    }
+
+    public async Task<int> UpdateCompanyData(CompanyModel company)
+    {
+      int rowsAffected = 0;
+      try
+      {
+        using var connection = new SqlConnection(this._connectionString);
+
+        rowsAffected = await connection.ExecuteAsync("UpdateCompanyData",
+            new
+            {
+              CompanyUniqueId = company.CompanyUniqueId,
+              Name = company.CompanyName,
+              Telephone = company.Telephone,
+              MaxBenefits = company.MaxBenefits,
+              ZipCode = company.Directions.ZipCode,
+              OtherSigns = company.Directions.OtherSigns
+            },
+            commandType: CommandType.StoredProcedure);
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine("Error al actualizar la información de una empresa. Detalle: \n" + ex.Message);
+      }
+      return rowsAffected;
+    }
+    public async Task<CompanyModel> getCompanyByID(int companyId)
+    {
+      try
+      {
+        using var connection = new SqlConnection(_connectionString);
+
+        var query =
+          @"SELECT IdEmpresa AS CompanyUniqueId,
+              CedulaJuridica AS CompanyId,
+              Nombre AS CompanyName,
+              Telefono AS Telephone,
+              CantidadBeneficios AS MaxBenefits,
+              FrecuenciaPago AS PaymentFrequency,
+              DiaPago1 AS PayDay1,
+              DiaPago2 AS PayDay2,
+              IdCreadoPor AS CreatedBy
+            FROM Empresa
+            WHERE IdEmpresa = @companyId";
+
+        var company = await connection.QuerySingleOrDefaultAsync<CompanyModel>(query, new { companyId });
+        if (company == null) throw new KeyNotFoundException("La empresa no existe.");
+
+        return company;
+      }
+      catch (Exception)
+      {
+        throw;
       }
     }
   }

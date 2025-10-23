@@ -4,6 +4,6 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
 {
   public interface IGetPayrollSummaryQuery
   {
-    Task<PayrollSummary> Execute(int payrollId);
+    Task<PayrollSummary?> Execute(int companyId);
   }
 }

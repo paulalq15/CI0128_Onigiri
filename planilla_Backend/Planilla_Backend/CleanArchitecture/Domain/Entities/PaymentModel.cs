@@ -8,7 +8,7 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Entities
     public int EmployeePayrollId { get; set; }
     public int CreatedBy { get; set; }
     public decimal Amount { get; set; }
-    public string? PaymentRef { get; set; }
+    required public string PaymentRef { get; set; }
     public DateTime PaymentDate { get; set; }
   }
 }

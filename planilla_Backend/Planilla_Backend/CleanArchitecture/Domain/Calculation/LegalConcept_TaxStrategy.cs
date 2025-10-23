@@ -2,9 +2,9 @@
 
 namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
 {
-  public class Concept_FixedAmountStrategy : IConceptStrategy
+  public class LegalConcept_TaxStrategy : ILegalConceptStrategy
   {
-    public IEnumerable<PayrollDetailModel> Apply(EmployeePayrollModel employeePayroll, ElementModel concept, PayrollContext ctx)
+    public IEnumerable<PayrollDetailModel> Apply(EmployeePayrollModel employeePayroll, PayrollContext ctx)
     {
       // TODO: implement the logic
 
@@ -14,12 +14,12 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
       var line = new PayrollDetailModel
       {
         EmployeePayrollId = employeePayroll.Id,
-        Description = "Elemento de planilla",
+        Description = "Impuesto sobre la renta",
         Type = PayrollItemType.EmployeeDeduction,
-        Amount = 50000m,
+        Amount = employeePayroll.BaseSalaryForPeriod * 0.1m,
         IdCCSS = null,
-        IdTax = null,
-        IdElement = 4,
+        IdTax = 2,
+        IdElement = null,
       };
       detailList.Add(line);
 
