@@ -77,6 +77,7 @@ const ok      = ref(false)
 
 const hoursModel = reactive({})
 const descModel  = reactive({})
+const lockedMap  = reactive({})
 
 const weekDays = computed(() => {
   if (!weekStart.value) return []
@@ -130,12 +131,14 @@ async function loadWeekByDay (yyyyMMdd) {
 
     for (const d of weekDays.value) {
       hoursModel[d.key] = 0
+      lockedMap[d.key]  = false
     }
     if (Array.isArray(data.entries)) {
       for (const e of data.entries) {
         const k = e.date?.slice(0,10)
         if (!k) continue
         hoursModel[k] = Number.isFinite(e.hours) ? e.hours : 0
+        lockedMap[k]  = true
       }
     }
   } catch (ex) {
@@ -165,7 +168,7 @@ function isLocked(dateObj) {
   if (dateObj > today) return true
 
   const iso = toISO(dateObj)
-  return Number(hoursModel[iso] ?? 0) > 0
+  return lockedMap[iso] === true
 }
 
 async function confirmar () {
@@ -178,12 +181,14 @@ async function confirmar () {
     today.setHours(0,0,0,0);
 
     const entries = weekdaysMonToFri.value
-      .filter(d => d.date <= today)
-      .map(d => ({
-        date: d.key,
-        hours: Number(hoursModel[d.key] ?? 0),
-        description: (descModel[d.key] ?? '').trim() || null
-      }));
+     .filter(d => d.date <= today)
+     .filter(d => !isLocked(d.date))
+     .map(d => {
+       const hrs  = Number(hoursModel[d.key] ?? 0)
+       const desc = (descModel[d.key] ?? '').trim()
+       return { date: d.key, hours: hrs, description: desc || null }
+     })
+     .filter(e => (Number.isFinite(e.hours) && e.hours > 0) || (e.description && e.description.length > 0))
 
     if (entries.length === 0) {
       error.value = 'No hay días válidos para guardar (no puede registrar días futuros).';
