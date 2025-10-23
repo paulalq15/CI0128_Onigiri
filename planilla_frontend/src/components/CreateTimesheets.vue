@@ -12,47 +12,45 @@
           @change="onDayChanged"
         />
       </div>
-      <div class="card shadow-sm border-0 rounded-3">
-        <div class="card-body">
-          <div class="row text-center fw-semibold mb-3">
-            <div class="col">Lunes</div>
-            <div class="col">Martes</div>
-            <div class="col">Miércoles</div>
-            <div class="col">Jueves</div>
-            <div class="col">Viernes</div>
-          </div>
-          <div class="rounded-3 p-4 bg-light">
-            <div class="row text-center align-items-center">
-              <div
-                class="col"
-                v-for="d in weekdaysMonToFri"
-                :key="d.key"
-              >
-                <input
-                  type="number"
-                  class="form-control text-center fw-semibold"
-                  :min="0" :max="9" step="1"
-                  v-model.number="hoursModel[d.key]"
-                  @input="boundHours(d.key)"
-                  :disabled="isLocked(d.date)"
-                />
-                <div class="form-text mt-1 small text-muted">
-                  {{ formatShort(d.date) }}
-                </div>
+      <div class="card-body">
+        <div class="row text-center fw-semibold mb-3">
+          <div class="col">Lunes</div>
+          <div class="col">Martes</div>
+          <div class="col">Miércoles</div>
+          <div class="col">Jueves</div>
+          <div class="col">Viernes</div>
+        </div>
+        <div class="rounded-3 p-4 bg-light">
+          <div class="row text-center align-items-center">
+            <div
+              class="col"
+              v-for="d in weekdaysMonToFri"
+              :key="d.key"
+            >
+              <input
+                type="number"
+                class="form-control text-center fw-semibold"
+                :min="0" :max="9" step="1"
+                v-model.number="hoursModel[d.key]"
+                @input="boundHours(d.key)"
+                :disabled="isLocked(d.date)"
+              />
+              <div class="form-text mt-1 small text-muted">
+                {{ formatShort(d.date) }}
               </div>
             </div>
           </div>
-          <div class="mt-4">
-            <button
-              class="btn btn-success px-4 py-2 rounded-pill fw-semibold"
-              @click="confirmar"
-              :disabled="loading || !weekStart"
-            >
-              {{ loading ? 'Guardando...' : 'Confirmar' }}
-            </button>
-            <span v-if="error" class="text-danger ms-3">{{ error }}</span>
-            <span v-if="ok" class="text-success ms-3">Guardado</span>
-          </div>
+        </div>
+        <div class="mt-4">
+          <button
+            class="btn btn-success px-4 py-2 rounded-pill fw-semibold"
+            @click="confirmar"
+            :disabled="loading || !weekStart"
+          >
+            {{ loading ? 'Guardando...' : 'Confirmar' }}
+          </button>
+          <span v-if="error" class="text-danger ms-3">{{ error }}</span>
+          <span v-if="ok" class="text-success ms-3">Guardado</span>
         </div>
       </div>
     </div>
