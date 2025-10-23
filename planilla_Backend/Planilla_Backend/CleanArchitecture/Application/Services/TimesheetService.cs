@@ -19,7 +19,7 @@ namespace Planilla_Backend.CleanArchitecture.Application.Services
         throw new ArgumentException("Se requieren entradas de días.", nameof(entries));
 
       var weekStartMonday = WeekStartMonday(weekStart.Date);
-      var weekEnd = weekStartMonday.AddDays(entries.Count);
+      var weekEnd = weekStartMonday.AddDays(4);
 
       var existingRows = await _repo.GetWeekHoursAsync(employeeId, weekStartMonday, weekEnd, ct);
       var existingDates = new HashSet<DateTime>(existingRows
