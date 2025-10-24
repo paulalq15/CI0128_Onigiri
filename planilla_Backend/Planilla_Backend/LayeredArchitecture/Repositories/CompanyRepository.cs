@@ -250,9 +250,9 @@ namespace Planilla_Backend.LayeredArchitecture.Repositories
       {
         using var connection = new SqlConnection(this._connectionString);
 
-        maxBenefitsTaken = await connection.QueryFirstOrDefaultAsync<int>("GetMaxAmountBenefitsTakenInCompany",
-            new { companyId = companyUniqueId }, commandType: CommandType.StoredProcedure);
+        var sqlGetMaxBenTak = "SELECT dbo.GetMaxAmountBenefitsTakenInCompany(@companyId)";
 
+        maxBenefitsTaken = await connection.QueryFirstOrDefaultAsync<int>(sqlGetMaxBenTak, new { companyId = companyUniqueId });
       } 
       catch (Exception ex)
       {
