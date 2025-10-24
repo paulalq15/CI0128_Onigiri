@@ -63,12 +63,12 @@ namespace Planilla_Backend.CleanArchitecture.Application.Services
       await _tsRepo.SaveWeekAsync(employeeId, weekStartMonday, normalizedEntries);
     }
 
-    public async Task<WeekHoursDto> GetWeekHoursAsync(int employeeId, DateTime weekStart, DateTime weekEnd, CancellationToken ct = default)
+    public async Task<WeekHoursQuery> GetWeekHoursAsync(int employeeId, DateTime weekStart, DateTime weekEnd, CancellationToken ct = default)
     {
 
       var rows = await _tsRepo.GetWeekHoursAsync(employeeId, weekStart, weekEnd, ct);
 
-      return new WeekHoursDto
+      return new WeekHoursQuery
       {
         WeekStart = weekStart,
         WeekEnd = weekEnd,

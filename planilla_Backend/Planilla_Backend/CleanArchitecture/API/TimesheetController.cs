@@ -24,7 +24,7 @@ namespace Planilla_Backend.CleanArchitecture.API
     }
 
     [HttpGet("week/{personId:int}")]
-    public async Task<ActionResult<WeekHoursDto>> GetWeekHours([FromRoute] int personId, [FromQuery] DateTime? day, [FromQuery] DateTime? weekStart, [FromQuery] DateTime? weekEnd, CancellationToken ct)
+    public async Task<ActionResult<WeekHoursQuery>> GetWeekHours([FromRoute] int personId, [FromQuery] DateTime? day, [FromQuery] DateTime? weekStart, [FromQuery] DateTime? weekEnd, CancellationToken ct)
     {
       if (personId <= 0)
         return BadRequest("IdEmpleado inválido.");
