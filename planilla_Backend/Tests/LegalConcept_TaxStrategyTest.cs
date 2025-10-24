@@ -56,5 +56,44 @@ namespace Tests
       Assert.That(detail.Amount, Is.EqualTo(expected));
       Assert.That(detail.IdTax, Is.EqualTo(taxId));
     }
+
+    [Test]
+    public void Apply_ShouldThrowException_WhenEmployeePayrollIsNull()
+    {
+      var ex = Assert.Throws<ArgumentNullException>(() => _sut.Apply(null, _ctx));
+      Assert.That(ex.Message, Does.Contain("La planilla del empleado es requerida"));
+    }
+
+    [Test]
+    public void Apply_ShouldThrowException_WhenContextIsNull()
+    {
+      var employeePayroll = new EmployeePayrollModel
+      {
+        Id = 1,
+        CompanyPayrollId = 1,
+        EmployeeId = 1,
+        BaseSalaryForPeriod = 1000m
+      };
+      var ex = Assert.Throws<ArgumentNullException>(() => _sut.Apply(employeePayroll, null));
+      Assert.That(ex.Message, Does.Contain("El contexto de planilla es requerido"));
+    }
+
+    [Test]
+    public void Apply_ShouldThrowException_WhenTaxBracketsAreMissingInContext()
+    {
+      var employeePayroll = new EmployeePayrollModel
+      {
+        Id = 1,
+        CompanyPayrollId = 1,
+        EmployeeId = 1,
+        BaseSalaryForPeriod = 1000m
+      };
+      var ctx = new PayrollContext
+      {
+        TaxBrackets = new List<TaxModel>()
+      };
+      var ex = Assert.Throws<InvalidOperationException>(() => _sut.Apply(employeePayroll, ctx));
+      Assert.That(ex.Message, Does.Contain("Se requieren tramos de impuesto en el contexto"));
+    }
   }
 }
