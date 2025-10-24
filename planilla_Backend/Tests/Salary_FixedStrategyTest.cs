@@ -1,40 +1,21 @@
-using Planilla_Backend.CleanArchitecture.Domain.Calculation;
+﻿using Planilla_Backend.CleanArchitecture.Domain.Calculation;
 using Planilla_Backend.CleanArchitecture.Domain.Entities;
 
 namespace Tests
 {
-  public class Salary_HourlyStrategyTest
+  public class Salary_FixedStrategyTest
   {
 
-    Salary_HourlyStrategy _sut;
+    Salary_FixedStrategy _sut;
 
     [SetUp]
     public void Setup()
     {
-      _sut = new Salary_HourlyStrategy();
+      _sut = new Salary_FixedStrategy();
     }
 
     [Test]
-    public void Applicable_ShouldReturnTrue_WhenContractTypeIsProfessionalServices()
-    {
-      var contract = new ContractModel
-      {
-        Id = 1,
-        EmployeeId = 1,
-        Salary = 1000m,
-        PaymentAccount = "123456789",
-        ContractType = ContractType.ProfessionalServices,
-        StartDate = DateTime.Now.AddMonths(-1),
-        EndDate = null
-      };
-
-      var result = _sut.Applicable(contract);
-
-      Assert.IsTrue(result);
-    }
-
-    [Test]
-    public void Applicable_ShouldReturnFalse_WhenContractTypeIsNotProfessionalServices()
+    public void Applicable_ShouldReturnTrue_WhenContractTypeIsFixedSalary()
     {
       var contract = new ContractModel
       {
@@ -46,81 +27,40 @@ namespace Tests
         StartDate = DateTime.Now.AddMonths(-1),
         EndDate = null
       };
-
       var result = _sut.Applicable(contract);
-
-      Assert.IsFalse(result);
-    }
-
-    [TestCase(50, 0)]
-    [TestCase(0, 100)]
-    [TestCase(560.29, 99)]
-    [TestCase(1500, 100)]
-    public void CreateBaseLine_ShouldCreatePayrollLineWithCorrectAmountAndSaveGrossSalary(decimal hourlyRate, decimal hoursWorked)
-    {
-      var employeeId = 1;
-      var employeePayroll = new EmployeePayrollModel
-      {
-        Id = 1,
-        CompanyPayrollId = 10,
-        EmployeeId = employeeId,
-        Gross = 0m,
-        EmployeeDeductions = 0m,
-        EmployerDeductions = 0m,
-        Benefits = 0m,
-        Net = 0m,
-        Cost = 0m,
-        BaseSalaryForPeriod = 0m
-      };
-
-      var contract = new ContractModel
-      {
-        Id = 1,
-        EmployeeId = 1,
-        Salary = hourlyRate,
-        PaymentAccount = "123456789",
-        ContractType = ContractType.ProfessionalServices,
-        StartDate = new DateTime(2025, 10, 01),
-        EndDate = null
-      };
-
-      var context = new PayrollContext
-      {
-        DateFrom = new DateTime(2025, 10, 01),
-        DateTo = new DateTime(2025, 10, 15),
-        HoursByEmployee = new Dictionary<int, decimal>
-        {
-          { employeeId, hoursWorked }
-        }
-      };
-
-      var expectedSalary = Math.Round(hourlyRate * hoursWorked, 2);
-      var detail = _sut.CreateBaseLine(employeePayroll, contract, context);
-
-      Assert.AreEqual(expectedSalary, employeePayroll.Gross);
-      Assert.IsNotNull(detail);
-      Assert.AreEqual(employeePayroll.Id, detail.EmployeePayrollId);
-      Assert.AreEqual("Servicios Profesionales", detail.Description);
-      Assert.AreEqual(PayrollItemType.Base, detail.Type);
-      Assert.AreEqual(expectedSalary, detail.Amount);
-      Assert.IsNull(detail.IdCCSS);
-      Assert.IsNull(detail.IdTax);
-      Assert.IsNull(detail.IdElement);
+      Assert.IsTrue(result);
     }
 
     [Test]
-    public void CreateBaseLine_HourlySalary_ShouldThrow_ArgumentNullException_WhenEmployeePayrollIsNull()
+    public void Applicable_ShouldReturnFalse_WhenContractTypeIsNotFixedSalary()
     {
-      var hoursWorked = 30m;
-      var hourlyRate = 100m;
+      var contract = new ContractModel
+      {
+        Id = 1,
+        EmployeeId = 1,
+        Salary = 1000m,
+        PaymentAccount = "123456789",
+        ContractType = ContractType.ProfessionalServices,
+        StartDate = DateTime.Now.AddMonths(-1),
+        EndDate = null
+      };
+      var result = _sut.Applicable(contract);
+      Assert.IsFalse(result);
+    }
+
+    [Test]
+    public void CreateBaseLine_FixedSalary_ShouldThrow_ArgumentNullException_WhenEmployeePayrollIsNull()
+    {
+      var monthlySalary = 500000;
+      var hoursWorked = 100m;
 
       var contract = new ContractModel
       {
         Id = 1,
         EmployeeId = 1,
-        Salary = hourlyRate,
+        Salary = monthlySalary,
         PaymentAccount = "123456789",
-        ContractType = ContractType.ProfessionalServices,
+        ContractType = ContractType.FixedSalary,
         StartDate = DateTime.Now.AddMonths(-1),
         EndDate = null
       };
@@ -137,10 +77,10 @@ namespace Tests
     }
 
     [Test]
-    public void CreateBaseLine_HourlySalary_ShouldThrow_ArgumentNullException_WhenContractIsNull()
+    public void CreateBaseLine_FixedSalary_ShouldThrow_ArgumentNullException_WhenContractIsNull()
     {
       var hoursWorked = 30m;
-      var hourlyRate = 100m;
+      var monthlySalary = 500000;
 
       var employeePayroll = new EmployeePayrollModel
       {
@@ -161,10 +101,10 @@ namespace Tests
     }
 
     [Test]
-    public void CreateBaseLine_HourlySalary_ShouldThrow_ArgumentNullException_WhenContextIsNull()
+    public void CreateBaseLine_FixedSalary_ShouldThrow_ArgumentNullException_WhenContextIsNull()
     {
       var hoursWorked = 30m;
-      var hourlyRate = 100m;
+      var monthlySalary = 500000;
       var employeePayroll = new EmployeePayrollModel
       {
         Id = 1,
@@ -175,9 +115,9 @@ namespace Tests
       {
         Id = 1,
         EmployeeId = 1,
-        Salary = hourlyRate,
+        Salary = monthlySalary,
         PaymentAccount = "123456789",
-        ContractType = ContractType.ProfessionalServices,
+        ContractType = ContractType.FixedSalary,
         StartDate = DateTime.Now.AddMonths(-1),
         EndDate = null
       };
@@ -185,12 +125,12 @@ namespace Tests
     }
 
     [Test]
-    public void CreateBaseLine_HourlySalary_ShouldThrow_InvalidOperationException_WhenContextHoursByEmployeeIsNull()
+    public void CreateBaseLine_FixedSalary_ShouldThrow_InvalidOperationException_WhenContextHoursByEmployeeIsNull()
     {
       var employeeId = 1;
       var secondEmployeeId = 10;
       var hoursWorked = 30m;
-      var hourlyRate = 100m;
+      var monthlySalary = 500000;
 
       var employeePayroll = new EmployeePayrollModel
       {
@@ -203,9 +143,9 @@ namespace Tests
       {
         Id = 1,
         EmployeeId = 1,
-        Salary = hourlyRate,
+        Salary = monthlySalary,
         PaymentAccount = "123456789",
-        ContractType = ContractType.ProfessionalServices,
+        ContractType = ContractType.FixedSalary,
         StartDate = DateTime.Now.AddMonths(-1),
         EndDate = null
       };
@@ -222,5 +162,9 @@ namespace Tests
 
       Assert.Throws<InvalidOperationException>(() => _sut.CreateBaseLine(employeePayroll, contract, context));
     }
+
+
+
+
   }
 }
