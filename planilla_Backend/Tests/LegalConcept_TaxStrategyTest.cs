@@ -55,6 +55,11 @@ namespace Tests
 
       Assert.That(detail.Amount, Is.EqualTo(expected));
       Assert.That(detail.IdTax, Is.EqualTo(taxId));
+      Assert.That(detail.EmployeePayrollId, Is.EqualTo(employeePayroll.Id));
+      Assert.That(detail.Description, Is.EqualTo("Impuesto sobre la renta"));
+      Assert.That(detail.Type, Is.EqualTo(PayrollItemType.EmployeeDeduction));
+      Assert.That(detail.IdCCSS, Is.Null);
+      Assert.That(detail.IdElement, Is.Null);
     }
 
     [Test]
