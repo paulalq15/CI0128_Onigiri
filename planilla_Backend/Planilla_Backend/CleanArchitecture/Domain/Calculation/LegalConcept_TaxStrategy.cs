@@ -8,6 +8,7 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
     {
       var detailList = new List<PayrollDetailModel>();
       var acumulatedTax = 0m;
+      var taxId = 0;
 
       foreach (var bracket in ctx.TaxBrackets)
       {
@@ -19,6 +20,7 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
         else if (bracket.Max == null || employeePayroll.BaseSalaryForPeriod <= bracket.Max.Value)
         {
           acumulatedTax += (employeePayroll.BaseSalaryForPeriod - bracket.Min) * bracket.Rate;
+          taxId = bracket.Id;
           break;
         }
       }
@@ -30,7 +32,7 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
         Type = PayrollItemType.EmployeeDeduction,
         Amount = acumulatedTax,
         IdCCSS = null,
-        IdTax = 1,
+        IdTax = taxId,
         IdElement = null,
       };
       detailList.Add(line);
