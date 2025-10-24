@@ -197,6 +197,9 @@ async function confirmar () {
     await URLBaseAPI.post(`/api/Timesheet/week/${personId.value}`, {weekStart: weekStartISO, entries});
 
     ok.value = true;
+    for (const e of entries) {
+    lockedMap[e.date] = true
+    }
   } catch (ex) {
     error.value = 'No se pudieron guardar las horas.';
   } finally {
