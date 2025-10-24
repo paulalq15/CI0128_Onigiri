@@ -62,11 +62,11 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
 	              WHERE h.Fecha >= @dateFrom AND h.Fecha <= @dateTo
 	              GROUP BY h.IdEmpleado
 	              HAVING SUM(CAST(h.Horas AS decimal(10,2))) > 0)
-              AND p.IdPersona IN (
-	              SELECT c.IdPersona
-	              FROM Contrato AS c
-	              WHERE c.FechaInicio <= @dateTo
-	              AND (c.FechaFin IS NULL OR c.FechaFin >= @dateFrom));";
+              AND EXISTS (
+                SELECT 1
+                FROM dbo.fn_GetPayrollTimesheets(@companyId, @dateFrom, @dateTo) AS fn
+                WHERE fn.EmployeeId = p.IdPersona
+              );";
 
         var employees = await connection.QueryAsync<EmployeeModel>(query, new { companyId, dateFrom, dateTo });
         return employees;
@@ -98,12 +98,11 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
             WHERE e.IdEmpresa = @companyId
             AND c.FechaInicio <= @dateTo
             AND (c.FechaFin IS NULL OR c.FechaFin >= @dateFrom)
-            AND p.IdPersona IN (
-	            SELECT h.IdEmpleado
-	            FROM HojaHoras AS h
-	            WHERE h.Fecha >= @dateFrom AND h.Fecha <= @dateTo
-	            GROUP BY h.IdEmpleado
-	            HAVING SUM(CAST(h.Horas AS decimal(10,2))) > 0);";
+            AND EXISTS (
+              SELECT 1
+              FROM dbo.fn_GetPayrollTimesheets(@companyId, @dateFrom, @dateTo) AS fn
+              WHERE fn.EmployeeId = c.IdPersona
+            );";
 
         var contracts = await connection.QueryAsync<ContractModel>(query, new { companyId, dateFrom, dateTo });
         return contracts;
@@ -157,14 +156,8 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         using var connection = new SqlConnection(_connectionString);
 
         const string query =
-          @"SELECT h.IdEmpleado AS EmployeeId, SUM(CAST(h.Horas AS decimal(10,2))) AS TotalHours
-            FROM HojaHoras AS h
-              JOIN Persona AS p ON p.IdPersona = h.IdEmpleado
-              JOIN Usuario AS u ON u.IdPersona = p.IdPersona
-              JOIN UsuariosPorEmpresa AS ue ON ue.IdUsuario = u.IdUsuario
-              JOIN Empresa AS e ON ue.IdEmpresa = e.IdEmpresa
-            WHERE e.IdEmpresa = @companyId AND h.Fecha >= @dateFrom AND h.Fecha <= @dateTo
-            GROUP BY h.IdEmpleado;";
+          @"SELECT EmployeeId, TotalHours
+            FROM dbo.fn_GetPayrollTimesheets(@companyId, @dateFrom, @dateTo);";
 
         var rows = await connection.QueryAsync<(int EmployeeId, decimal TotalHours)>(
           new CommandDefinition(query, new { companyId, dateFrom, dateTo }));
