@@ -6,6 +6,10 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
   {
     public IEnumerable<PayrollDetailModel> Apply(EmployeePayrollModel employeePayroll, PayrollContext ctx)
     {
+      if (employeePayroll == null) throw new ArgumentNullException("La planilla del empleado es requerida");
+      if (ctx == null) throw new ArgumentNullException("El contexto de planilla es requerido");
+      if (ctx.TaxBrackets == null || ctx.TaxBrackets.Count == 0) throw new InvalidOperationException("Se requieren tramos de impuesto en el contexto");
+      
       var detailList = new List<PayrollDetailModel>();
       var acumulatedTax = 0m;
       var taxId = 0;
@@ -30,7 +34,7 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
         EmployeePayrollId = employeePayroll.Id,
         Description = "Impuesto sobre la renta",
         Type = PayrollItemType.EmployeeDeduction,
-        Amount = acumulatedTax,
+        Amount = Math.Round(acumulatedTax, 2),
         IdCCSS = null,
         IdTax = taxId,
         IdElement = null,
