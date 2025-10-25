@@ -76,21 +76,20 @@
     { label: "Tipo", key: "type"},
     { label: "Pagado por", key: "paidBy" },
     { label: "Estado", key: "status"},
-    { label: "Acción", key: "action"},
   ];
+
   var elements = ref([]);
 
   onMounted(() => {
-    GetPayrollElements();
+    const userType = user.typeUser;
+    GetPayrollElements(userType);
   });
 
-  function GetPayrollElements() {
-    const userType = user.typeUser;
-    console.log("Tipo de usuario: " + userType);
+  function GetPayrollElements(userType) {
     if (userType === "Administrador") GetCompanies();
     else {
       const companyId = user.companyUniqueId;
-      GetCompanyPayrollElements(companyId);
+      GetCompanyPayrollElements(companyId, userType);
     }
   }
 
@@ -104,19 +103,22 @@
         .catch();
   }
 
-  async function GetCompanyPayrollElements(idCompany) {
-    console.log("Company id: " + idCompany);
+  async function GetCompanyPayrollElements(idCompany, userType) {
     elements.value = [];
     await URLBaseAPI.get("/api/PayrollElement/GetPayRollElements", {params: {idCompany: idCompany}})
         .then((response) => {
-          console.log(response.data);
           elements.value = response.data.map(e => ({
             ...e,
+            paidBy: e.calculationType === 'API' ? 'Empleador' : e.paidBy,
             type: e.paidBy === 'Empleador' ? 'Beneficio' : 'Deducción',
-            action: `<button class="btn btn-sm btn-success" data-id="${e.idElement}">Editar</button>`
+            ...(userType === 'Empleador' && {
+              action: `<button class="btn btn-sm btn-success" data-id="${e.idElement}">Editar</button>`
+            })
           }));
 
-          elements.value.paidBy == elements.value.calculationType === 'API' ? 'Empleador' : elements.value.paidBy;
+          if (userType === 'Empleador') {
+            header.push({ label: "Acción", key: "action" });
+          }
         })
         .catch((error) => {
           if (error.response) console.log('Error del backend:', error.response.data);
