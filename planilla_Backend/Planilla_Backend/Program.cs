@@ -4,6 +4,7 @@ using Planilla_Backend.LayeredArchitecture.Services.EmailService;
 using Planilla_Backend.LayeredArchitecture.Services.Utils;
 
 using Planilla_Backend.CleanArchitecture.Application.Ports;
+using Planilla_Backend.CleanArchitecture.Application.Services;
 using Planilla_Backend.CleanArchitecture.Application.UseCases;
 using Planilla_Backend.CleanArchitecture.Domain.Calculation;
 using Planilla_Backend.CleanArchitecture.Infrastructure;
@@ -13,13 +14,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: MyAllowSpecificOrigins,
-                      policy =>
-                      {
-                          policy.WithOrigins("http://localhost:8080")
-                                .AllowAnyHeader()
-                                .AllowAnyMethod();
-                      });
+  options.AddPolicy(name: MyAllowSpecificOrigins,
+                    policy =>
+                    {
+                      policy.WithOrigins("http://localhost:8080")
+                              .AllowAnyHeader()
+                              .AllowAnyMethod();
+                    });
 });
 
 // Add services to the container.
@@ -27,15 +28,15 @@ builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<EmployeeRepository>();
 builder.Services.AddScoped<EmployeeService>();
-builder.Services.AddScoped <CompanyRepository>();
-builder.Services.AddScoped <CompanyService>();
-builder.Services.AddScoped <CountryDivisionRepository>();
-builder.Services.AddScoped <CountryDivisionService>();
-builder.Services.AddScoped <DirectionsRepository>();
-builder.Services.AddScoped <PayrollElementRepository>();
-builder.Services.AddScoped <PayrollElementService>();
-builder.Services.AddScoped <PersonUserRepository>();
-builder.Services.AddScoped <PersonUserService>();
+builder.Services.AddScoped<CompanyRepository>();
+builder.Services.AddScoped<CompanyService>();
+builder.Services.AddScoped<CountryDivisionRepository>();
+builder.Services.AddScoped<CountryDivisionService>();
+builder.Services.AddScoped<DirectionsRepository>();
+builder.Services.AddScoped<PayrollElementRepository>();
+builder.Services.AddScoped<PayrollElementService>();
+builder.Services.AddScoped<PersonUserRepository>();
+builder.Services.AddScoped<PersonUserService>();
 
 builder.Services.AddScoped<ICreatePayrollCommand, CreatePayrollCommand>();
 builder.Services.AddScoped<IPayPayrollCommand, PayPayrollCommand>();
@@ -54,6 +55,9 @@ builder.Services.AddScoped<IConceptStrategy, Concept_PercentageStrategy>();
 builder.Services.AddScoped<ILegalConceptStrategy, LegalConcept_CCSSStrategy>();
 builder.Services.AddScoped<ILegalConceptStrategy, LegalConcept_TaxStrategy>();
 
+builder.Services.AddScoped<ITimesheetRepository, TimesheetRepository>();
+builder.Services.AddScoped<ITimesheetService, TimesheetService>();
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -69,8 +73,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+  app.UseSwagger();
+  app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
