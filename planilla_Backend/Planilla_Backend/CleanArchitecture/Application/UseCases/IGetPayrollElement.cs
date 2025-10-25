@@ -4,6 +4,6 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
 {
   public interface IGetPayrollElement
   {
-    Task<PayrollElementEntity?> Execute();
+    Task<PayrollElementEntity?> Execute(int payElementId);
   }
 }

@@ -8,19 +8,16 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
   {
     private readonly IPayrollElementRepository payrollElementRepository;
 
-    private readonly PayrollElementEntity payrollElement;
-
-    public UpdatePayrollElement(IPayrollElementRepository payrollElementRepository, PayrollElementEntity payrollElement)
+    public UpdatePayrollElement(IPayrollElementRepository payrollElementRepository)
     {
       this.payrollElementRepository = payrollElementRepository;
-      this.payrollElement = payrollElement;
     }
 
-    public async Task<int> Execute()
+    public async Task<int> Execute(PayrollElementEntity payrollElement)
     {
-      if (this.payrollElement.ElementName.IsNullOrEmpty()) throw new ArgumentException("El nombre del elemento es obligatorio");
+      if (payrollElement.ElementName.IsNullOrEmpty()) throw new ArgumentException("El nombre del elemento es obligatorio");
 
-      int affectedRows = await this.payrollElementRepository.UpdatePayrollElement(this.payrollElement);
+      int affectedRows = await this.payrollElementRepository.UpdatePayrollElement(payrollElement);
       
       return affectedRows;
     }

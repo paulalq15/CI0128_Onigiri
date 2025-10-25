@@ -6,19 +6,17 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
   public class GetPayrollElementById : IGetPayrollElement
   {
     private readonly IPayrollElementRepository payrollElementRepository;
-    private readonly int elementId;
 
-    public GetPayrollElementById(IPayrollElementRepository payrollElementRepository, int elementId)
+    public GetPayrollElementById(IPayrollElementRepository payrollElementRepository)
     {
       this.payrollElementRepository = payrollElementRepository;
-      this.elementId = elementId;
     }
 
-    public async Task<PayrollElementEntity?> Execute()
+    public async Task<PayrollElementEntity?> Execute(int payElementId)
     {
-      if (this.elementId <= 0) throw new ArgumentException("El parámetro elementId debe ser mayor que cero");
+      if (payElementId <= 0) throw new ArgumentException("El parámetro elementId debe ser mayor que cero");
 
-      PayrollElementEntity? payrollElementEntity = await this.payrollElementRepository.GetPayrollElementByElementId(this.elementId);
+      PayrollElementEntity? payrollElementEntity = await this.payrollElementRepository.GetPayrollElementByElementId(payElementId);
 
       return payrollElementEntity;
     }

@@ -4,6 +4,6 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
 {
   public interface IUpdatePayrollElement
   {
-    Task<int> Execute();
+    Task<int> Execute(PayrollElementEntity payrollElement);
   }
 }

@@ -9,11 +9,13 @@ namespace Planilla_Backend.CleanArchitecture.API
   [ApiController]
   public class PayrollElementController : ControllerBase
   {
-    private readonly IPayrollElementRepository payrollElementRepository;
+    private IGetPayrollElement getPayrollElementCommand;
+    private IUpdatePayrollElement updatePayrollElementCommand;
 
-    public PayrollElementController(IPayrollElementRepository payrollElementRepository)
+    public PayrollElementController(IGetPayrollElement getPayrollElement, IUpdatePayrollElement updatePayrollElement)
     {
-      this.payrollElementRepository = payrollElementRepository;
+      this.getPayrollElementCommand = getPayrollElement;
+      this.updatePayrollElementCommand = updatePayrollElement;
     }
 
     [HttpGet("{payrollElementId:int}")]
@@ -21,8 +23,7 @@ namespace Planilla_Backend.CleanArchitecture.API
     {
       try
       {
-        IGetPayrollElement getPayrollElementCommand = new GetPayrollElementById(this.payrollElementRepository, payrollElementId);
-        PayrollElementEntity? element = await getPayrollElementCommand.Execute();
+        PayrollElementEntity? element = await this.getPayrollElementCommand.Execute(payrollElementId);
 
         return Ok(element);
       }
@@ -37,9 +38,7 @@ namespace Planilla_Backend.CleanArchitecture.API
     {
       try
       {
-        IUpdatePayrollElement updatePayrollElementCommand = new UpdatePayrollElement(this.payrollElementRepository, payrollElement);
-
-        int affectedRows = await updatePayrollElementCommand.Execute();
+        int affectedRows = await this.updatePayrollElementCommand.Execute(payrollElement);
 
         if (affectedRows == 0) return NotFound(new { message = "Error al actualizar el elemento de planilla" });
 
