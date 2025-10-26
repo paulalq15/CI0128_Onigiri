@@ -145,21 +145,83 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
         }
       }
 
-      // TODO: update totals for each employee payroll and company payroll
+      var totalsByPayroll = new Dictionary<int, (decimal Gross, decimal EmpDed, decimal EmprDed, decimal Benefits, decimal BaseSalary)>();
 
-      // Employee Totals using dictionary ctx.EmployeePayrollByEmployeeId
-      //...
+      foreach (var line in calculatedLines)
+      {
+        if (line is null || line.EmployeePayrollId <= 0) continue;
 
-      // Company Totals using companyPayroll
-      //...
+        if (!totalsByPayroll.TryGetValue(line.EmployeePayrollId, out var t))
+          t = (0m, 0m, 0m, 0m, 0m);
 
-      //Dummy data for testing
-      companyPayroll.Gross = 15000000.50m;
-      companyPayroll.EmployeeDeductions = 2690000.59m;
-      companyPayroll.EmployerDeductions = 7980000.59m;
-      companyPayroll.Benefits = 5600000.00m;
-      companyPayroll.Net = 11890600.00m;
-      companyPayroll.Cost = 26589000.59m;
+        switch (line.Type)
+        {
+          case PayrollItemType.Base:
+            t.Gross += line.Amount;
+            break;
+
+          case PayrollItemType.Tax:
+            t.EmpDed += line.Amount;
+            break;
+
+          case PayrollItemType.EmployeeDeduction:
+            t.EmpDed += line.Amount;
+            break;
+
+          case PayrollItemType.EmployerContribution:
+            t.EmprDed += line.Amount;
+            break;
+
+          case PayrollItemType.Benefit:
+            t.Benefits += line.Amount;
+            break;
+
+          default:
+            break;
+        }
+
+        totalsByPayroll[line.EmployeePayrollId] = t;
+      }
+
+      decimal companyGross = 0m, companyEmpDed = 0m, companyEmprDed = 0m, companyBenefits = 0m, companyNet = 0m, companyCost = 0m;
+
+      foreach (var kvp in totalsByPayroll)
+      {
+        var employeePayrollId = kvp.Key;
+        var t = kvp.Value;
+
+        var net = t.Gross - t.EmpDed;
+        var cost = net + t.EmprDed + t.Benefits;
+
+        var empModel = ctx.EmployeePayrollByEmployeeId.Values.FirstOrDefault(e => e.Id == employeePayrollId);
+        if (empModel is null) continue;
+
+        empModel.Gross = t.Gross;
+        empModel.EmployeeDeductions = t.EmpDed;
+        empModel.EmployerDeductions = t.EmprDed;
+        empModel.Benefits = t.Benefits;
+        empModel.Net = net;
+        empModel.Cost = cost;
+        empModel.BaseSalaryForPeriod = t.BaseSalary;
+
+        await _repo.UpdateEmployeePayrollTotals(employeePayrollId, empModel);
+
+        companyGross += empModel.Gross;
+        companyEmpDed += empModel.EmployeeDeductions;
+        companyEmprDed += empModel.EmployerDeductions;
+        companyBenefits += empModel.Benefits;
+        companyNet += empModel.Net;
+        companyCost += empModel.Cost;
+      }
+
+      companyPayroll.Gross = companyGross;
+      companyPayroll.EmployeeDeductions = companyEmpDed;
+      companyPayroll.EmployerDeductions = companyEmprDed;
+      companyPayroll.Benefits = companyBenefits;
+      companyPayroll.Net = companyNet;
+      companyPayroll.Cost = companyCost;
+
+      await _repo.UpdateCompanyPayrollTotals(companyPayrollId, companyPayroll);
 
       // Payroll summary to return
       return new PayrollSummary
