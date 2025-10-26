@@ -1,5 +1,5 @@
-﻿using Planilla_Backend.CleanArchitecture.Domain.Entities;
-using Planilla_Backend.CleanArchitecture.Infrastructure;
+﻿using Planilla_Backend.CleanArchitecture.Application.Ports;
+using Planilla_Backend.CleanArchitecture.Domain.Entities;
 
 namespace Planilla_Backend.CleanArchitecture.Application.UseCases
 {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+using Planilla_Backend.CleanArchitecture.Application.Ports;
 using Planilla_Backend.CleanArchitecture.Domain.Entities;
-using Planilla_Backend.CleanArchitecture.Infrastructure;
 
 namespace Planilla_Backend.CleanArchitecture.Application.UseCases
 {

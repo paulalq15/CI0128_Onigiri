@@ -9,7 +9,6 @@ using Planilla_Backend.CleanArchitecture.Application.Ports;
 using Planilla_Backend.CleanArchitecture.Application.Services;
 using Planilla_Backend.CleanArchitecture.Application.UseCases;
 using Planilla_Backend.CleanArchitecture.Domain.Calculation;
-using Planilla_Backend.CleanArchitecture.Infrastructure;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
