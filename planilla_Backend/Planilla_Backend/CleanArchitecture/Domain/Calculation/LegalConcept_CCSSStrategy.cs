@@ -6,22 +6,27 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
   {
     public IEnumerable<PayrollDetailModel> Apply(EmployeePayrollModel employeePayroll, PayrollContext ctx)
     {
-      // TODO: implement the logic
+      if (employeePayroll == null) throw new ArgumentNullException("La planilla del empleado es requerida");
+      if (ctx == null) throw new ArgumentNullException("El contexto de planilla es requerido");
+      if (ctx.CCSSRates == null || ctx.CCSSRates.Count == 0) throw new InvalidOperationException("Las tasas de la CCSS son requeridas");
 
-      // Dummy data for testing
       var detailList = new List<PayrollDetailModel>();
 
-      var line = new PayrollDetailModel
+      foreach (CCSSModel actualCCSSRate in ctx.CCSSRates)
       {
-        EmployeePayrollId = employeePayroll.Id,
-        Description = "CCSS - Concepto XX",
-        Type = PayrollItemType.EmployeeDeduction,
-        Amount = employeePayroll.Gross * 0.05m,
-        IdCCSS = 2,
-        IdTax = null,
-        IdElement = null,
-      };
-      detailList.Add(line);
+        var line = new PayrollDetailModel
+        {
+          EmployeePayrollId = employeePayroll.Id,
+          Description = actualCCSSRate.Category + " - " + actualCCSSRate.Concept,
+          Type = actualCCSSRate.ItemType,
+          Amount = Math.Round(employeePayroll.Gross * actualCCSSRate.Rate, 2),
+          IdCCSS = actualCCSSRate.Id,
+          IdTax = null,
+          IdElement = null,
+        };
+        
+        detailList.Add(line);
+      }
 
       return detailList;
     }
