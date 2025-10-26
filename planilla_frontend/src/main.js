@@ -35,6 +35,7 @@ import ActivationAccountPage from './components/ActivationAccountpage.vue';
 import ResendActivationAccountPage from './components/ResendActivationAccountPage.vue';
 import ForbiddenPage from './components/ForbiddenPage.vue';
 import EmployeeActivation from './components/EmployeeActivation.vue';
+import ModifyPayrollElement from './components/ModifyPayrollElement.vue';
 
 const employerOnly = { requiresAuth: true, roles: ['Empleador'] }
 const employerOrAdmin = { requiresAuth: true, roles: ['Empleador','Administrador'] }
@@ -77,6 +78,7 @@ const router = createRouter({
         { path: 'Planilla/CrearPlanilla', name: 'Crear Planilla', component: CreatePayroll, meta: employerOrApprover },
         { path: 'Planilla/VerBeneficiosDeducciones', name: 'Ver Beneficios y Deducciones', component: ViewPayrollElement},
         { path: 'Planilla/CrearBeneficiosDeducciones', name: 'Crear Beneficios y Deducciones', component: CreatePayrollElement, meta: employerOnly},
+        { path: 'Planilla/EditarBeneficioDeduccion/:PEId', name: 'EditarBeneficioODeduccion', component: ModifyPayrollElement },
         { path: 'Planilla/AsignarDeducciones', name: 'Asignar Deducciones', component: AssignDeduction, meta: employerOrApprover },
         { path: 'Planilla/SeleccionarBeneficios', name: 'Seleccionar Beneficios', component: SelectBenefit, meta: employerApproverEmployee},
         { path: 'Pagos/VerPagos', name: 'Ver Pagos', component: ViewPayment, meta: employerApproverEmployee},

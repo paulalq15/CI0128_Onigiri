@@ -1,5 +1,7 @@
-using Planilla_Backend.LayeredArchitecture.Services;
+using Planilla_Backend.CleanArchitecture.Application;
+using Planilla_Backend.CleanArchitecture.Infrastructure;
 using Planilla_Backend.LayeredArchitecture.Repositories;
+using Planilla_Backend.LayeredArchitecture.Services;
 using Planilla_Backend.LayeredArchitecture.Services.EmailService;
 using Planilla_Backend.LayeredArchitecture.Services.Utils;
 
@@ -7,7 +9,6 @@ using Planilla_Backend.CleanArchitecture.Application.Ports;
 using Planilla_Backend.CleanArchitecture.Application.Services;
 using Planilla_Backend.CleanArchitecture.Application.UseCases;
 using Planilla_Backend.CleanArchitecture.Domain.Calculation;
-using Planilla_Backend.CleanArchitecture.Infrastructure;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
@@ -55,6 +56,12 @@ builder.Services.AddScoped<IConceptStrategy, Concept_PercentageStrategy>();
 builder.Services.AddScoped<ILegalConceptStrategy, LegalConcept_CCSSStrategy>();
 builder.Services.AddScoped<ILegalConceptStrategy, LegalConcept_TaxStrategy>();
 
+// Payroll Element
+builder.Services.AddScoped<IPayrollElementRepository, PayrollElementRepositoryCA>();
+builder.Services.AddScoped<IGetPayrollElement, GetPayrollElementById>();
+builder.Services.AddScoped<IUpdatePayrollElement, UpdatePayrollElement>();
+
+// Timesheet
 builder.Services.AddScoped<ITimesheetRepository, TimesheetRepository>();
 builder.Services.AddScoped<ITimesheetService, TimesheetService>();
 
