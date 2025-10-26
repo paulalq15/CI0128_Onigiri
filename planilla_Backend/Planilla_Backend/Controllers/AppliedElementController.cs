@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Planilla_Backend.Models;
 using Planilla_Backend.Services;
+using System.Reflection.PortableExecutable;
+using System.Text.Json;
 
 namespace Planilla_Backend.Controllers
 {
@@ -20,6 +22,22 @@ namespace Planilla_Backend.Controllers
         public List<AppliedElement> getAppliedElements([FromQuery] int employeeId)
         {
             return this.appliedElementService.getAppliedElements(employeeId);
+        }
+
+        [HttpPost("addAppliedElement")]
+        public async Task<IActionResult> AddAppliedElement([FromBody] AppliedElement appliedElement)
+        {
+            if (appliedElement == null || !appliedElement.UserId.HasValue || !appliedElement.ElementId.HasValue)
+            {
+                return BadRequest("Invalid applied element data.");
+            }
+
+            Console.WriteLine(appliedElement.ElementId);
+            Console.WriteLine(appliedElement.UserId);
+
+            this.appliedElementService.addAppliedElement(appliedElement);
+
+            return CreatedAtAction(nameof(AddAppliedElement), new { id = appliedElement.ElementId }, appliedElement);
         }
     }
 }

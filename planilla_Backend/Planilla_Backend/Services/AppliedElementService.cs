@@ -17,5 +17,9 @@ namespace Planilla_Backend.Services
         {
             return this.appliedElementRepository.getAppliedElements(employeeId);
         }
+
+        public async void addAppliedElement(AppliedElement newAppliedElement) {
+            await this.appliedElementRepository.addAppliedElement(newAppliedElement);
+        }
     }
 }

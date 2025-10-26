@@ -30,7 +30,7 @@
             <td>{{ benefit.elementName }}</td>
             <td>{{ benefit.calculationType }}</td>
             <td>{{ benefit.calculationValue }}</td>
-            <td><button class="btn btn-secondary btn-sm" @click="addAppliedElement(index)">Seleccionar</button></td>
+            <td><button class="btn btn-secondary btn-sm" @click="addAppliedElement(index, benefit.elementId)">Seleccionar</button></td>
           </tr>
 
           <!-- Fila con contador total -->
@@ -130,6 +130,7 @@
           this.companyId = response.data;
           this.getBenefits();
           this.maxCompanyBenefits = this.getCompanyTotalBenefitsElements();
+
         } catch (error) {
           console.error("Error getting companyId:", error);
         }
@@ -182,25 +183,55 @@
         return date.toLocaleDateString();
       },
 
-      addAppliedElement(index) {
-        if (this.totalSelectedEmployeeBenefits == this.totalCompanyBenefits) {
-          alert("ALERTA: Se llegó al máximo de beneficios disponibles");
+      addAppliedElement(index, elementId) {
+        // Verify if the employee reached the max ammount of benefits:
+        if (this.totalSelectedEmployeeBenefits == this.maxCompanyBenefits) {
+          alert("ALERTA: Se llegó al máximo de beneficios disponibles.");
           return;
         }
 
         // Verify that the benefit hasn't been selected yet:
         const selectedBenefitName = this.filteredBenefits[index].elementName;
 
-        // Verificar si el beneficio ya está aplicado
         const alreadySelected = this.appliedElements.some(
-        (applied) => applied.elementName === selectedBenefitName
-        );
+        (applied) => applied.elementName == selectedBenefitName);
 
         if (alreadySelected) {
           alert("Este beneficio ya está seleccionado.");
           return;
         }
-      }
+
+        if (!this.user || !this.user.userId) {
+          alert("User ID no está definido");
+          return;
+        }
+
+        if (!elementId) {
+          alert("Element ID no está definido");
+          return;
+        }
+
+        // Make a POST request to add the new applied element:
+        axios.post(`https://localhost:7071/api/AppliedElement/addAppliedElement`,
+        {
+          UserId: this.user.userId,
+          ElementId: elementId
+        })
+
+        .then(response => {
+        alert("Beneficio agregado exitosamente.");  // TEST.
+
+        // Update the appliedElements list and totals after the successful addition:
+        this.appliedElements.push(response.data);
+        this.totalSelectedEmployeeBenefits++;
+        window.location.reload();
+        })
+
+        .catch(error => {
+          console.error("Error adding applied element:", error);
+          alert("Error al agregar el beneficio.");
+        });
+      },
     },
 
     created() {
@@ -209,7 +240,7 @@
       this.getAppliedElements();
     },
   };
-</script>
 
+</script>
 
 <style lang="scss" scoped></style>

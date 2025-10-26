@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Data.SqlClient;
 using Planilla_Backend.Models;
 using System.Data.SqlClient;
@@ -34,5 +35,37 @@ namespace Planilla_Backend.Repositories
 
             return connection.Query<AppliedElement>(query, new { employeeId }).ToList();
         }
+
+        public async Task addAppliedElement(AppliedElement newAppliedElement)
+        {
+            if (newAppliedElement == null)
+                throw new ArgumentNullException(nameof(newAppliedElement));
+            if (!newAppliedElement.UserId.HasValue)
+                throw new ArgumentException("UserId no puede ser nulo.");
+            if (!newAppliedElement.ElementId.HasValue)
+                throw new ArgumentException("ElementId no puede ser nulo.");
+
+            const string query = @"
+        INSERT INTO dbo.ElementoAplicado (IdUsuario, IdElemento, FechaInicio, FechaFin)
+        VALUES (@IdUsuario, @IdElemento, GETDATE(), NULL);
+    ";
+
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
+                using var command = new SqlCommand(query, connection);
+
+                command.Parameters.Add(new SqlParameter("@IdUsuario", newAppliedElement.UserId.Value));
+                command.Parameters.Add(new SqlParameter("@IdElemento", newAppliedElement.ElementId.Value));
+
+                await connection.OpenAsync();
+                await command.ExecuteNonQueryAsync();
+            }
+            catch (SqlException ex)
+            {
+                throw new ApplicationException("Error al insertar el elemento aplicado en la base de datos.", ex);
+            }
+        }
+
     }
 }
