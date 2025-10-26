@@ -2,6 +2,8 @@
 {
   public class PayrollElementModel
   {
+    public int idElement {  get; set; }
+
     public string ElementName { get; set; }
 
     public string PaidBy { get; set; }

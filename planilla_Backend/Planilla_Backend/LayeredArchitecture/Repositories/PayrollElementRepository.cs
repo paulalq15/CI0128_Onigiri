@@ -56,6 +56,7 @@ namespace Planilla_Backend.LayeredArchitecture.Repositories
 
         const string sqlGetPayrollElements = @"
           SELECT
+          IdElemento As IdElement,
           Nombre AS ElementName,
           Tipo AS CalculationType,
           Valor AS CalculationValue,
