@@ -32,9 +32,6 @@ namespace Planilla_Backend.Controllers
                 return BadRequest("Invalid applied element data.");
             }
 
-            Console.WriteLine(appliedElement.ElementId);
-            Console.WriteLine(appliedElement.UserId);
-
             this.appliedElementService.addAppliedElement(appliedElement);
 
             return CreatedAtAction(nameof(AddAppliedElement), new { id = appliedElement.ElementId }, appliedElement);
