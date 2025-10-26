@@ -125,18 +125,18 @@ namespace Tests
     }
 
     [Test]
-    public void CreateBaseLine_FixedSalary_ShouldThrow_InvalidOperationException_WhenContextHoursByEmployeeIsNull()
+    public void CreateBaseLine_FixedSalary_ShouldCreatePayrollLineForTheWholePeriod()
     {
       var employeeId = 1;
-      var secondEmployeeId = 10;
-      var hoursWorked = 30m;
-      var monthlySalary = 500000;
-
+      var monthlySalary = 1000000m;
+      var hoursWorked = 100m;
       var employeePayroll = new EmployeePayrollModel
       {
         Id = 1,
         CompanyPayrollId = 10,
         EmployeeId = employeeId,
+        Gross = 0m,
+        BaseSalaryForPeriod = 0m
       };
 
       var contract = new ContractModel
@@ -145,26 +145,138 @@ namespace Tests
         EmployeeId = 1,
         Salary = monthlySalary,
         PaymentAccount = "123456789",
-        ContractType = ContractType.FixedSalary,
-        StartDate = DateTime.Now.AddMonths(-1),
+        ContractType = ContractType.ProfessionalServices,
+        StartDate = new DateTime(2025, 10, 01),
         EndDate = null
       };
 
       var context = new PayrollContext
       {
-        DateFrom = DateTime.Today.AddDays(-15),
-        DateTo = DateTime.Today,
-        HoursByEmployee = new Dictionary<int, decimal>
+        DateFrom = new DateTime(2025, 10, 01),
+        DateTo = new DateTime(2025, 10, 15),
+        Company = new CompanyModel
         {
-          { secondEmployeeId, hoursWorked }
+          PaymentFrequency = PaymentFrequency.Biweekly
         }
       };
 
-      Assert.Throws<InvalidOperationException>(() => _sut.CreateBaseLine(employeePayroll, contract, context));
+      var expectedSalary = Math.Round(monthlySalary / 2, 2);
+      var detail = _sut.CreateBaseLine(employeePayroll, contract, context);
+
+      Assert.AreEqual(expectedSalary, employeePayroll.Gross);
+      Assert.AreEqual(monthlySalary, employeePayroll.BaseSalaryForPeriod);
+      Assert.IsNotNull(detail);
+      Assert.AreEqual(employeePayroll.Id, detail.EmployeePayrollId);
+      Assert.AreEqual("Salario bruto", detail.Description);
+      Assert.AreEqual(PayrollItemType.Base, detail.Type);
+      Assert.AreEqual(expectedSalary, detail.Amount);
+      Assert.IsNull(detail.IdCCSS);
+      Assert.IsNull(detail.IdTax);
+      Assert.IsNull(detail.IdElement);
     }
 
+    [Test]
+    public void CreateBaseLine_FixedSalary_ShouldCreatePayrollLineForAfterTheContractStarted()
+    {
+      var employeeId = 1;
+      var monthlySalary = 1000000m;
+      var hoursWorked = 100m;
+      var employeePayroll = new EmployeePayrollModel
+      {
+        Id = 1,
+        CompanyPayrollId = 10,
+        EmployeeId = employeeId,
+        Gross = 0m,
+        BaseSalaryForPeriod = 0m
+      };
 
+      var contract = new ContractModel
+      {
+        Id = 1,
+        EmployeeId = 1,
+        Salary = monthlySalary,
+        PaymentAccount = "123456789",
+        ContractType = ContractType.ProfessionalServices,
+        StartDate = new DateTime(2025, 10, 6),
+        EndDate = null
+      };
 
+      var context = new PayrollContext
+      {
+        DateFrom = new DateTime(2025, 10, 01),
+        DateTo = new DateTime(2025, 10, 15),
+        Company = new CompanyModel
+        {
+          PaymentFrequency = PaymentFrequency.Biweekly
+        }
+      };
 
+      var expectedSalary = Math.Round(monthlySalary / 30 * (15 - 6 + 1), 2);
+      var expectedMonthlySalary = Math.Round(monthlySalary / 30 * (31 - 6 + 1), 2);
+      var detail = _sut.CreateBaseLine(employeePayroll, contract, context);
+
+      Assert.AreEqual(expectedSalary, employeePayroll.Gross);
+      Assert.AreEqual(expectedMonthlySalary, employeePayroll.BaseSalaryForPeriod);
+      Assert.IsNotNull(detail);
+      Assert.AreEqual(employeePayroll.Id, detail.EmployeePayrollId);
+      Assert.AreEqual("Salario bruto", detail.Description);
+      Assert.AreEqual(PayrollItemType.Base, detail.Type);
+      Assert.AreEqual(expectedSalary, detail.Amount);
+      Assert.IsNull(detail.IdCCSS);
+      Assert.IsNull(detail.IdTax);
+      Assert.IsNull(detail.IdElement);
+    }
+
+    [Test]
+    public void CreateBaseLine_FixedSalary_ShouldCreatePayrollLineForBeforeTheContractEnds()
+    {
+      var employeeId = 1;
+      var monthlySalary = 1000000m;
+      var hoursWorked = 100m;
+      var employeePayroll = new EmployeePayrollModel
+      {
+        Id = 1,
+        CompanyPayrollId = 10,
+        EmployeeId = employeeId,
+        Gross = 0m,
+        BaseSalaryForPeriod = 0m
+      };
+
+      var contract = new ContractModel
+      {
+        Id = 1,
+        EmployeeId = 1,
+        Salary = monthlySalary,
+        PaymentAccount = "123456789",
+        ContractType = ContractType.ProfessionalServices,
+        StartDate = new DateTime(2025, 10, 6),
+        EndDate = new DateTime(2025, 10, 20)
+      };
+
+      var context = new PayrollContext
+      {
+        DateFrom = new DateTime(2025, 10, 01),
+        DateTo = new DateTime(2025, 10, 15),
+        Company = new CompanyModel
+        {
+          PaymentFrequency = PaymentFrequency.Biweekly
+        }
+      };
+
+      var expectedSalary = Math.Round(monthlySalary / 30 * (15 - 6 + 1), 2);
+      var expectedMonthlySalary = Math.Round(monthlySalary / 30 * (20 - 6 + 1), 2);
+      var detail = _sut.CreateBaseLine(employeePayroll, contract, context);
+
+      Assert.AreEqual(expectedSalary, employeePayroll.Gross);
+      Assert.AreEqual(expectedMonthlySalary, employeePayroll.BaseSalaryForPeriod);
+      Assert.IsNotNull(detail);
+      Assert.AreEqual(employeePayroll.Id, detail.EmployeePayrollId);
+      Assert.AreEqual("Salario bruto", detail.Description);
+      Assert.AreEqual(PayrollItemType.Base, detail.Type);
+      Assert.AreEqual(expectedSalary, detail.Amount);
+      Assert.IsNull(detail.IdCCSS);
+      Assert.IsNull(detail.IdTax);
+      Assert.IsNull(detail.IdElement);
+    }
   }
 }
