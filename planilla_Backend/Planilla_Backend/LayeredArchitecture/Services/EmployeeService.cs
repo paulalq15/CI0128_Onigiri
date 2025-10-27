@@ -12,7 +12,7 @@ namespace Planilla_Backend.LayeredArchitecture.Services
       _employeeRepo = employeeRepo;
     }
 
-    public int RegisterEmployee(RegisterEmployee employeeModel)
+    public int RegisterEmployee(EmployeeModel employeeModel)
     {
       try
       {
