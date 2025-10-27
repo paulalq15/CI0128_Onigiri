@@ -183,6 +183,7 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
         totalsByPayroll[line.EmployeePayrollId] = t;
       }
 
+      var paymentDate = DateTime.Now;
       decimal companyGross = 0m, companyEmpDed = 0m, companyEmprDed = 0m, companyBenefits = 0m, companyNet = 0m, companyCost = 0m;
 
       foreach (var kvp in totalsByPayroll)
@@ -206,6 +207,19 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
 
         await _repo.UpdateEmployeePayrollTotals(employeePayrollId, empModel);
 
+        //Pay each employee payroll immediately
+        await _repo.UpdateEmployeePayrollTotals(employeePayrollId, empModel);
+        var payment = new PaymentModel
+        {
+          EmployeePayrollId = employeePayrollId,
+          Amount = empModel.Net,
+          PaymentDate = paymentDate,
+          PaymentRef = BuildPaymentRef(companyPayrollId, employeePayrollId, paymentDate),
+          CreatedBy = personId
+        };
+
+        await _repo.SavePayment(employeePayrollId, payment);
+
         companyGross += empModel.Gross;
         companyEmpDed += empModel.EmployeeDeductions;
         companyEmprDed += empModel.EmployerDeductions;
@@ -220,6 +234,7 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
       companyPayroll.Benefits = companyBenefits;
       companyPayroll.Net = companyNet;
       companyPayroll.Cost = companyCost;
+      companyPayroll.PayrollStatus = "Pagado";
 
       await _repo.UpdateCompanyPayrollTotals(companyPayrollId, companyPayroll);
 
@@ -235,9 +250,10 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
         TotalEmployerCost = companyPayroll.Cost,
         DateFrom = companyPayroll.DateFrom,
         DateTo = companyPayroll.DateTo,
+        PayDate = paymentDate,
       };
     }
-
+    
     private async Task<IDictionary<int, IList<ElementModel>>> BuildElementsMapAsync(int companyId, IList<EmployeeModel> employees, DateTime dateFrom, DateTime dateTo)
     {
       var tasks = employees.Select(async e =>
@@ -253,6 +269,11 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
         dict[r.EmployeeId] = r.Elements;
 
       return dict;
+    }
+
+    private static string BuildPaymentRef(int companyPayrollId, int employeePayrollId, DateTime date)
+    {
+      return "PAY-" + companyPayrollId + "-" + employeePayrollId + "-" + date.ToString("yyyyMMdd");
     }
   }
 }

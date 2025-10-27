@@ -11,9 +11,6 @@
     Task<IDictionary<int, decimal>> GetEmployeeTimesheets(int companyId, DateTime dateFrom, DateTime dateTo);
     Task<IEnumerable<TaxModel>> GetTaxes(DateTime dateFrom, DateTime dateTo);
     Task<IEnumerable<CCSSModel>> GetCCSS(DateTime dateFrom, DateTime dateTo);
-    Task<CompanyPayrollModel?> GetLatestOpenCompanyPayroll(int companyId);
-    Task<CompanyPayrollModel?> GetCompanyPayrollById(int companyPayrollId);
-    Task<IEnumerable<EmployeePayrollModel>> GetUnpaidEmployeePayrolls(int companyPayrollId);
     Task<bool> ExistsPayrollForPeriod(int companyId, DateTime dateFrom, DateTime dateTo);
 
     // Commands
@@ -23,6 +20,5 @@
     Task UpdateEmployeePayrollTotals(int employeePayrollId, EmployeePayrollModel totalsAndStatus);
     Task UpdateCompanyPayrollTotals(int companyPayrollId, CompanyPayrollModel totalsAndStatus);
     Task SavePayment(int employeePayrollId, PaymentModel payment);
-    Task UpdatePaidCompanyPayroll(int companyPayrollId);
   }
 }

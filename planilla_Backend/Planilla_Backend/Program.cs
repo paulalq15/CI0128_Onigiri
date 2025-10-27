@@ -40,8 +40,6 @@ builder.Services.AddScoped<PersonUserRepository>();
 builder.Services.AddScoped<PersonUserService>();
 
 builder.Services.AddScoped<ICreatePayrollCommand, CreatePayrollCommand>();
-builder.Services.AddScoped<IPayPayrollCommand, PayPayrollCommand>();
-builder.Services.AddScoped<IGetPayrollSummaryQuery, GetPayrollSummaryQuery>();
 builder.Services.AddScoped<IPayrollRepository, PayrollRepository>();
 builder.Services.AddScoped<PayrollTemplate, StandardPayrollRun>();
 builder.Services.AddScoped<CalculationFactory>();
