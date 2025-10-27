@@ -13,7 +13,7 @@ namespace Planilla_Backend.LayeredArchitecture.Repositories
     }
 
     // Método para guardar una nueva Persona, su Usuario y su Contrato en la base de datos
-    public int saveEmployee(RegisterEmployee employee)
+    public int saveEmployee(EmployeeModel employee)
     {
       using var connection = new SqlConnection(_connectionString);
       connection.Open();
