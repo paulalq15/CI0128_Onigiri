@@ -22,7 +22,7 @@ public class EmployeeController : ControllerBase
   }
 
   [HttpPost]
-  public ActionResult RegisterEmployee([FromBody] RegisterEmployee employee)
+  public ActionResult RegisterEmployee([FromBody] EmployeeModel employee)
   {
     // Front-end already validated; here we just call the service
     int personId = _employeeService.RegisterEmployee(employee);
