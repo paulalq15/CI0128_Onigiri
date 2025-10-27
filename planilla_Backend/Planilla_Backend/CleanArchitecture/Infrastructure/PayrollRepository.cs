@@ -407,13 +407,56 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         throw;
       }
     }
-    public Task UpdateEmployeePayrollTotals(int employeePayrollId, EmployeePayrollModel totalsAndStatus)
+    public async Task UpdateEmployeePayrollTotals(int employeePayrollId, EmployeePayrollModel totalsAndStatus)
     {
-      return Task.CompletedTask;
+      using var connection = new SqlConnection(_connectionString);
+      const string sql = @" UPDATE NominaEmpleado
+                            SET
+                              MontoBruto = @Gross,
+                              DeduccionesEmpleado = @EmployeeDeductions,
+                              DeduccionesEmpleador = @EmployerDeductions,
+                              Beneficios = @Benefits,
+                              MontoNeto = @Net,
+                              Costo = @Cost
+                            WHERE IdNominaEmpleado = @employeePayrollId;";
+      var affected = await connection.ExecuteAsync(sql, new
+      {
+        employeePayrollId,
+        totalsAndStatus.Gross,
+        totalsAndStatus.EmployeeDeductions,
+        totalsAndStatus.EmployerDeductions,
+        totalsAndStatus.Benefits,
+        totalsAndStatus.Net,
+        totalsAndStatus.Cost,
+        totalsAndStatus.BaseSalaryForPeriod
+      });
+      if (affected != 1)
+        throw new InvalidOperationException($"No se pudo actualizar la Nomina de Empleado Id={employeePayrollId} (registros afectados: {affected}).");
     }
-    public Task UpdateCompanyPayrollTotals(int companyPayrollId, CompanyPayrollModel totalsAndStatus)
+    public async Task UpdateCompanyPayrollTotals(int companyPayrollId, CompanyPayrollModel totalsAndStatus)
     {
-      return Task.CompletedTask;
+      using var connection = new SqlConnection(_connectionString);
+      const string sql = @" UPDATE NominaEmpresa
+                            SET
+                              MontoBruto = @Gross,
+                              DeduccionesEmpleado = @EmployeeDeductions,
+                              DeduccionesEmpleador = @EmployerDeductions,
+                              Beneficios = @Benefits,
+                              MontoNeto = @Net,
+                              Costo = @Cost
+                            WHERE IdNominaEmpresa = @CompanyPayrollId;";
+      var affected = await connection.ExecuteAsync(sql, new
+      {
+        companyPayrollId,
+        totalsAndStatus.Gross,
+        totalsAndStatus.EmployeeDeductions,
+        totalsAndStatus.EmployerDeductions,
+        totalsAndStatus.Benefits,
+        totalsAndStatus.Net,
+        totalsAndStatus.Cost
+      });
+      if (affected != 1)
+        throw new InvalidOperationException($"No se pudo actualizar la Nomina de Empleado Id={companyPayrollId} (registros afectados: {affected}).");
     }
     public async Task SavePayment(int employeePayrollId, PaymentModel payment)
     {
