@@ -36,5 +36,10 @@ namespace Planilla_Backend.Controllers
 
             return CreatedAtAction(nameof(AddAppliedElement), new { id = appliedElement.ElementId }, appliedElement);
         }
+
+        [HttpPost("deactivateAppliedElement")]
+        public void deactivateAppliedElement([FromBody] AppliedElement appliedElement) {
+            this.appliedElementService.deactivateAppliedElement(appliedElement);
+        }
     }
 }

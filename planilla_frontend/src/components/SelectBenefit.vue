@@ -67,15 +67,15 @@
             <td>{{ this.formatDate(appliedElement.startDate) }}</td>
             <td>{{ this.formatDate(appliedElement.endDate) }}</td>
             <td>{{ appliedElement.status }}</td>
-            <td><button class="btn btn-danger btn-sm">Desactivar</button></td>
+            <td><button class="btn btn-danger btn-sm" @click="this.deactivateAppliedElement(this.appliedElements[index].elementId, appliedElement.status)">Desactivar</button></td>
           </tr>
 
           <tr>
             <td style="text-align: center; width: 50px; height: 50px; border: 1px solid #000; font-weight: bold; vertical-align: middle;">
-              Beneficios seleccionados: {{ appliedElements.length }}
+              Beneficios seleccionados: {{ this.getTotalActiveAppliedElements() }}
             </td>
             <td style="text-align: center; width: 50px; height: 50px; border: 1px solid #000; font-weight: bold; vertical-align: middle;">
-              Beneficios restantes: {{ this.maxCompanyBenefits - appliedElements.length }}
+              Beneficios restantes: {{ this.maxCompanyBenefits - this.getTotalActiveAppliedElements() }}
             </td>
           </tr>
         </tbody>
@@ -232,6 +232,31 @@
           alert("Error al agregar el beneficio.");
         });
       },
+
+      async deactivateAppliedElement(appliedElementId, status) {
+        if (status == "Inactivo") {
+          alert("El elemento seleccionado ya está inactivo.");
+          return;
+        }
+
+        try {
+          await axios.post('https://localhost:7071/api/AppliedElement/deactivateAppliedElement', {
+            ElementId: appliedElementId
+          });
+
+          window.location.reload();
+        }
+
+        catch (error) {
+          if (error.code === 'ECONNABORTED') {
+            console.error('Request aborted or timed out');
+          } 
+
+          else {
+            console.error('Error in request:', error.message);
+          }
+        }
+      }
     },
 
     created() {

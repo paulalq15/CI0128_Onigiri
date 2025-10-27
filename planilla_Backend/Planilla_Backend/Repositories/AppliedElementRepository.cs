@@ -69,5 +69,30 @@ namespace Planilla_Backend.Repositories
                 throw new ApplicationException("Error al insertar el elemento aplicado en la base de datos.", ex);
             }
         }
+
+        public void deactivateAppliedElement(AppliedElement appliedElement)
+        {
+            const string query = @"
+              UPDATE dbo.ElementoAplicado
+              SET FechaFin = GETDATE()
+              WHERE IdElemento = @IdElemento;
+            ";
+
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
+                using var command = new SqlCommand(query, connection);
+
+                command.Parameters.Add(new SqlParameter("@IdElemento", appliedElement.ElementId));
+
+                connection.Open();
+                command.ExecuteNonQuery();
+            }
+
+            catch (SqlException ex)
+            {
+                throw new ApplicationException("Error al intentar modificar el elemento aplicado en la base de datos.", ex);
+            }
+        }
     }
 }

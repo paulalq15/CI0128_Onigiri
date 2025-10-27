@@ -21,5 +21,10 @@ namespace Planilla_Backend.Services
         public async void addAppliedElement(AppliedElement newAppliedElement) {
             await this.appliedElementRepository.addAppliedElement(newAppliedElement);
         }
+
+        public void deactivateAppliedElement(AppliedElement appliedElement)
+        {
+            this.appliedElementRepository.deactivateAppliedElement(appliedElement);
+        }
     }
 }
