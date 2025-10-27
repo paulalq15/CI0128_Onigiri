@@ -19,7 +19,7 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
           EmployeePayrollId = employeePayroll.Id,
           Description = actualCCSSRate.Category + " - " + actualCCSSRate.Concept,
           Type = actualCCSSRate.ItemType,
-          Amount = Math.Round(employeePayroll.Gross * actualCCSSRate.Rate, 2),
+          Amount = Math.Round(employeePayroll.Gross * (actualCCSSRate.Rate / 100), 2),
           IdCCSS = actualCCSSRate.Id,
           IdTax = null,
           IdElement = null,
