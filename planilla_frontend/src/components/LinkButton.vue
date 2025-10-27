@@ -30,22 +30,8 @@ export default {
 
   button:hover {
     color: #1C4532;
-    border-color: #6FB595;
-    background-color: #6FB595;
-  }
-
-  button:focus {
-    background-color: #1C4532;
-    border-color: #6FB595;
-    box-shadow: none;
-    color: white;
-  }
-
-  button:active {
-    background-color: #1C4532;
-    border-color: #6FB595;
-    box-shadow: none;
-    color: white;
+    border-color: #7A9E70;
+    background-color: #7A9E70;
   }
 
   button:disabled {

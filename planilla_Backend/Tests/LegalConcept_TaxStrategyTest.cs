@@ -1,0 +1,228 @@
+﻿using Planilla_Backend.CleanArchitecture.Domain.Calculation;
+using Planilla_Backend.CleanArchitecture.Domain.Entities;
+
+namespace Tests
+{
+  public class LegalConcept_TaxStrategyTest
+  {
+    LegalConcept_TaxStrategy _sut;
+    PayrollContext _ctx;
+
+    [SetUp]
+    public void Setup()
+    {
+      _sut = new LegalConcept_TaxStrategy();
+      _ctx = BuildContextWith2025TaxBrackets();
+    }
+
+    private static PayrollContext BuildContextWith2025TaxBrackets() => new PayrollContext
+    {
+      TaxBrackets = new List<TaxModel>
+      {
+        new() {Id = 1, Min = 0m, Max = 922000m, Rate = 0.00m, ItemType = PayrollItemType.EmployeeDeduction},
+        new() {Id = 2, Min = 922000m, Max = 1352000m, Rate = 10.00m, ItemType = PayrollItemType.EmployeeDeduction},
+        new() {Id = 3, Min = 1352000m, Max = 2373000m, Rate = 15.00m, ItemType = PayrollItemType.EmployeeDeduction},
+        new() {Id = 4, Min = 2373000m, Max = 4745000m, Rate = 20.00m, ItemType = PayrollItemType.EmployeeDeduction},
+        new() {Id = 5, Min = 4745000m, Max = null, Rate = 25.00m, ItemType = PayrollItemType.EmployeeDeduction},
+      }
+    };
+
+    [TestCase(0, 0, 1)]
+    [TestCase(400000, 0, 1)]
+    [TestCase(922000, 0, 1)]
+    [TestCase(1200000, 27800, 2)]
+    [TestCase(1352000, 43000, 2)]
+    [TestCase(1352001, 43000.15, 3)]
+    [TestCase(1893560.85, 124234.13, 3)]
+    [TestCase(2373000, 196150, 3)]
+    [TestCase(3560000, 433550, 4)]
+    [TestCase(4745000, 670550, 4)]
+    [TestCase(4800000, 684300, 5)]
+    [TestCase(6200890.59, 1034522.65, 5)]
+    public void Apply_ShouldReturnTheSameExpectedValueAndTaxId_Monthly(decimal baseSalary, decimal expected, int taxId)
+    {
+      var employeeId = 1;
+
+      var employeePayroll = new EmployeePayrollModel
+      {
+        Id = 1,
+        CompanyPayrollId = 1,
+        EmployeeId = employeeId,
+        Gross = baseSalary,
+        BaseSalaryForPeriod = baseSalary
+      };
+
+      _ctx.Company = new CompanyModel
+      {
+        Id = 1,
+        PaymentFrequency = PaymentFrequency.Monthly
+      };
+
+      var detail = _sut.Apply(employeePayroll, _ctx).First();
+
+      Assert.That(detail.Amount, Is.EqualTo(expected));
+      Assert.That(detail.IdTax, Is.EqualTo(taxId));
+      Assert.That(detail.EmployeePayrollId, Is.EqualTo(employeePayroll.Id));
+      Assert.That(detail.Description, Is.EqualTo("Impuesto sobre la renta"));
+      Assert.That(detail.Type, Is.EqualTo(PayrollItemType.EmployeeDeduction));
+      Assert.That(detail.IdCCSS, Is.Null);
+      Assert.That(detail.IdElement, Is.Null);
+    }
+
+    [TestCase(0, 0, 1)]
+    [TestCase(400000, 0, 1)]
+    [TestCase(922000, 0, 1)]
+    [TestCase(1200000, 13900, 2)]
+    [TestCase(1352000, 21500, 2)]
+    [TestCase(1352001, 21500.08, 3)]
+    [TestCase(1893560.85, 62117.06, 3)]
+    [TestCase(2373000, 98075, 3)]
+    [TestCase(3560000, 216775, 4)]
+    [TestCase(4745000, 335275, 4)]
+    [TestCase(4800000, 342150, 5)]
+    [TestCase(6200890.59, 517261.32, 5)]
+    public void Apply_ShouldReturnTheSameExpectedValueAndTaxId_BiweeklyWholePeriod(decimal baseSalary, decimal expected, int taxId)
+    {
+      var employeeId = 1;
+
+      var employeePayroll = new EmployeePayrollModel
+      {
+        Id = 1,
+        CompanyPayrollId = 1,
+        EmployeeId = employeeId,
+        Gross = baseSalary / 2,
+        BaseSalaryForPeriod = baseSalary
+      };
+
+      _ctx.Company = new CompanyModel
+      {
+        Id = 1,
+        PaymentFrequency = PaymentFrequency.Biweekly
+      };
+
+      var detail = _sut.Apply(employeePayroll, _ctx).First();
+
+      Assert.That(detail.Amount, Is.EqualTo(expected));
+      Assert.That(detail.IdTax, Is.EqualTo(taxId));
+      Assert.That(detail.EmployeePayrollId, Is.EqualTo(employeePayroll.Id));
+      Assert.That(detail.Description, Is.EqualTo("Impuesto sobre la renta"));
+      Assert.That(detail.Type, Is.EqualTo(PayrollItemType.EmployeeDeduction));
+      Assert.That(detail.IdCCSS, Is.Null);
+      Assert.That(detail.IdElement, Is.Null);
+    }
+
+    [TestCase(0, 0, 1)]
+    [TestCase(400000, 0, 1)]
+    [TestCase(922000, 0, 1)]
+    [TestCase(1200000, 18626, 2)]
+    [TestCase(1352000, 28810, 2)]
+    [TestCase(1352001, 28810.10, 3)]
+    [TestCase(1893560.85, 83236.87, 3)]
+    [TestCase(2373000, 131420.5, 3)]
+    [TestCase(3560000, 290478.5, 4)]
+    [TestCase(4745000, 449268.5, 4)]
+    [TestCase(4800000, 458481, 5)]
+    [TestCase(6200890.59, 693130.17, 5)]
+    public void Apply_ShouldReturnTheSameExpectedValueAndTaxId_Biweekly_TwoOfThreeWeeks(decimal baseSalary, decimal expected, int taxId)
+    {
+      var employeeId = 1;
+
+      var employeePayroll = new EmployeePayrollModel
+      {
+        Id = 1,
+        CompanyPayrollId = 1,
+        EmployeeId = employeeId,
+        Gross = Math.Round(baseSalary * 0.67m, 2),
+        BaseSalaryForPeriod = baseSalary
+      };
+
+      _ctx.Company = new CompanyModel
+      {
+        Id = 1,
+        PaymentFrequency = PaymentFrequency.Biweekly
+      };
+
+      var detail = _sut.Apply(employeePayroll, _ctx).First();
+
+      Assert.That(detail.Amount, Is.EqualTo(expected));
+      Assert.That(detail.IdTax, Is.EqualTo(taxId));
+      Assert.That(detail.EmployeePayrollId, Is.EqualTo(employeePayroll.Id));
+      Assert.That(detail.Description, Is.EqualTo("Impuesto sobre la renta"));
+      Assert.That(detail.Type, Is.EqualTo(PayrollItemType.EmployeeDeduction));
+      Assert.That(detail.IdCCSS, Is.Null);
+      Assert.That(detail.IdElement, Is.Null);
+    }
+
+    [Test]
+    public void Apply_ShouldReturnTheSameExpectedValueAndTaxId_Biweekly_TwoOfThreeWeeks()
+    {
+
+      var baseSalary = 1200000m;
+      var expected = 10425;
+      var employeeId = 1;
+
+      var employeePayroll = new EmployeePayrollModel
+      {
+        Id = 1,
+        CompanyPayrollId = 1,
+        EmployeeId = employeeId,
+        Gross = 450000m,
+        BaseSalaryForPeriod = baseSalary
+      };
+
+      _ctx.Company = new CompanyModel
+      {
+        Id = 1,
+        PaymentFrequency = PaymentFrequency.Biweekly
+      };
+
+      var detail = _sut.Apply(employeePayroll, _ctx).First();
+
+      Assert.That(detail.Amount, Is.EqualTo(expected));
+      Assert.That(detail.EmployeePayrollId, Is.EqualTo(employeePayroll.Id));
+      Assert.That(detail.Description, Is.EqualTo("Impuesto sobre la renta"));
+      Assert.That(detail.Type, Is.EqualTo(PayrollItemType.EmployeeDeduction));
+      Assert.That(detail.IdCCSS, Is.Null);
+      Assert.That(detail.IdElement, Is.Null);
+    }
+
+    [Test]
+    public void Apply_ShouldThrowException_WhenEmployeePayrollIsNull()
+    {
+      var ex = Assert.Throws<ArgumentNullException>(() => _sut.Apply(null, _ctx));
+      Assert.That(ex.Message, Does.Contain("La planilla del empleado es requerida"));
+    }
+
+    [Test]
+    public void Apply_ShouldThrowException_WhenContextIsNull()
+    {
+      var employeePayroll = new EmployeePayrollModel
+      {
+        Id = 1,
+        CompanyPayrollId = 1,
+        EmployeeId = 1,
+        BaseSalaryForPeriod = 1000m
+      };
+      var ex = Assert.Throws<ArgumentNullException>(() => _sut.Apply(employeePayroll, null));
+      Assert.That(ex.Message, Does.Contain("El contexto de planilla es requerido"));
+    }
+
+    [Test]
+    public void Apply_ShouldThrowException_WhenTaxBracketsAreMissingInContext()
+    {
+      var employeePayroll = new EmployeePayrollModel
+      {
+        Id = 1,
+        CompanyPayrollId = 1,
+        EmployeeId = 1,
+        BaseSalaryForPeriod = 1000m
+      };
+      var ctx = new PayrollContext
+      {
+        TaxBrackets = new List<TaxModel>()
+      };
+      var ex = Assert.Throws<InvalidOperationException>(() => _sut.Apply(employeePayroll, ctx));
+      Assert.That(ex.Message, Does.Contain("Se requieren tramos de impuesto en el contexto"));
+    }
+  }
+}

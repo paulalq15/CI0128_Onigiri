@@ -1,10 +1,5 @@
 <template>
-  <!--Restrict page if user is not Employer-->
-  <div v-if="$session.user?.typeUser !== 'Empleador'" class="d-flex flex-column text-center">
-    <h3>Acceso restringido</h3>
-    <p>Esta página no está disponible</p>
-  </div>
-  <div v-else class="d-flex flex-column">
+  <div class="d-flex flex-column">
     <h1 class="text-center">Crear nueva empresa</h1>
 
     <div class="container py-4 flex-fill d-flex justify-content-center">
@@ -166,7 +161,12 @@
             :disabled="!paymentFrequency"
           >
             <option selected disabled value="">Día de pago</option>
-            <option v-for="day in 31" :key="day" :value="day">{{ day }}</option>
+            <div v-if="paymentFrequency === 'Quincenal'">
+              <option v-for="day in middleMonthDay" :key="day" :value="day">{{ day }}</option>
+            </div>
+            <div v-else>
+              <option v-for="day in lastMonthDay" :key="day" :value="day">{{ day }}</option>
+            </div>
           </select>
           <div class="invalid-feedback">Seleccione el día de pago de la planilla</div>
         </div>
@@ -233,15 +233,16 @@ export default {
       toastMessage: '',
       toastType: 'bg-success',
       toastTimeout: 3000,
-      lastMonthDay: 31,
+      middleMonthDay: 15,
+      lastMonthDay: 30,
     };
   },
   computed: {
     daysAfterFirst() {
       if (!this.payDay1) return [];
       return Array.from(
-        { length: this.lastMonthDay - this.payDay1 },
-        (_, i) => this.payDay1 + i + 1
+        { length: this.lastMonthDay - this.middleMonthDay },
+        (_, i) => this.middleMonthDay + i + 1
       );
     },
   },

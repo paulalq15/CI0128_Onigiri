@@ -89,8 +89,8 @@
   <div v-else class="d-flex flex-column text-center">
     <p>Acceso no autorizado</p>
   </div>
-</template>
 
+</template>
 
 <script>
   import axios from "axios";
