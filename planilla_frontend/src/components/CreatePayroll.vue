@@ -39,19 +39,16 @@
             :disabled="!selectedMonth"
             @click="createPayroll"
           >
-            Crear
+            Crear y pagar planilla
           </button>
         </div>
       </div>
 
-      <!-- Payroll exists and needs to be paid -->
+      <!-- Payroll was created -->
       <div v-else class="row align-items-center justify-content-between my-4">
         <div class="col-auto">
           <div class="fs-5 mb-1">Fecha inicial: {{ formatDate(payroll.dateFrom) }}</div>
           <div class="fs-5">Fecha final: {{ formatDate(payroll.dateTo) }}</div>
-        </div>
-        <div v-if="!isPaid" class="col-auto text-end">
-          <button type="button" class="btn btn-secondary btn-lg" @click="payPayroll">Pagar</button>
         </div>
       </div>
 
@@ -127,11 +124,6 @@ export default {
       toastTimeout: 3000,
     };
   },
-  computed: {
-    isPaid() {
-      return !!(this.payroll && this.payroll.payDate);
-    },
-  },
   methods: {
     getCurrentMonth() {
       const d = new Date();
@@ -182,7 +174,7 @@ export default {
         .then((response) => {
           this.payroll = response.data;
 
-          self.toastMessage = 'Planilla creada correctamente';
+          self.toastMessage = 'Planilla creada y pagada correctamente';
           self.toastType = 'bg-success';
           self.showToast = true;
           setTimeout(function () {
@@ -205,42 +197,6 @@ export default {
           }, self.toastTimeout);
         });
     },
-    payPayroll() {
-      this.dateFrom = this.getDateFrom();
-      this.dateTo = this.getDateTo();
-      var self = this;
-
-      const params = {
-        payrollId: this.payroll.companyPayrollId,
-        personId: Number(this.$session.user?.personId),
-      };
-
-      URLBaseAPI.post('/api/Payroll/payment', null, { params })
-        .then((response) => {
-          this.payroll = response.data;
-
-          self.toastMessage = 'Planilla pagada correctamente';
-          self.toastType = 'bg-success';
-          self.showToast = true;
-          setTimeout(function () {
-            self.showToast = false;
-          }, self.toastTimeout);
-        })
-        .catch(function (error) {
-          const data = error && error.response && error.response.data ? error.response.data : null;
-          const msg =
-            typeof data === 'string'
-              ? data
-              : (data && (data.message || data.detail)) || 'Error inesperado al pagar la planilla';
-          self.toastMessage = msg;
-          self.toastType = 'bg-danger';
-          self.showToast = true;
-
-          setTimeout(function () {
-            self.showToast = false;
-          }, self.toastTimeout);
-        });
-    },
     getCompanyInfo() {
       const companyId = this.$session.user?.companyUniqueId;
       URLBaseAPI.get('/api/Company/getCompanyByID', {
@@ -249,14 +205,6 @@ export default {
         },
       }).then((response) => {
         this.paymentFrequency = response.data?.paymentFrequency || null;
-      });
-    },
-    getPayroll() {
-      const companyId = this.$session.user?.companyUniqueId;
-      URLBaseAPI.get(`/api/Payroll/summary?companyId=${companyId}`).then((response) => {
-        this.payroll = response.data;
-        this.dateFrom = response.data?.dateFrom || null;
-        this.dateTo = response.data?.dateTo || null;
       });
     },
     formatDate(dateString) {
@@ -275,7 +223,6 @@ export default {
     if (this.$session.user?.typeUser !== 'Empleador') return;
     if (!this.selectedMonth) this.selectedMonth = this.getCurrentMonth();
     this.getCompanyInfo();
-    this.getPayroll();
   },
 };
 </script>
