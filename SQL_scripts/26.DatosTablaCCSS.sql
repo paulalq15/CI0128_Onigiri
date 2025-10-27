@@ -1,15 +1,15 @@
-Insert Into CCSS(FechaInicio, Porcentaje, Categoria, Concepto, PagadoPor)
-Values
-	(CAST(GETDATE() AS DATE), 9.25, 'CCSS', 'SEM', 'Empleador'),
-	(CAST(GETDATE() AS DATE), 5.50, 'CCSS', 'SEM', 'Empleado'),
-	(CAST(GETDATE() AS DATE), 5.42, 'CCSS', 'IVM', 'Empleador'),
-	(CAST(GETDATE() AS DATE), 4.17, 'CCSS', 'IVM', 'Empleado'),
-	(CAST(GETDATE() AS DATE), 0.25, 'Otras instituciones', 'Banco Popular (BPOP)', 'Empleador'),
-	(CAST(GETDATE() AS DATE), 5.00, 'Otras instituciones', 'Asignaciones familiares', 'Empleador'),
-	(CAST(GETDATE() AS DATE), 0.50, 'Otras instituciones', 'IMAS', 'Empleador'),
-	(CAST(GETDATE() AS DATE), 1.50, 'Otras instituciones', 'INA', 'Empleador'),
-	(CAST(GETDATE() AS DATE), 0.25, 'Ley de Protecci髇 al Trabajador (LPT)', 'Banco Popular (BPOP)', 'Empleador'),
-	(CAST(GETDATE() AS DATE), 1.00, 'Ley de Protecci髇 al Trabajador (LPT)', 'Banco Popular (BPOP)', 'Empleado'),
-	(CAST(GETDATE() AS DATE), 1.50, 'Ley de Protecci髇 al Trabajador (LPT)', 'Fondo de Capitalizaci髇 Laboral (FCL)', 'Empleador'),
-	(CAST(GETDATE() AS DATE), 2.00, 'Ley de Protecci髇 al Trabajador (LPT)', 'Operadora de pensiones complementaria (OPC)', 'Empleador'),
-	(CAST(GETDATE() AS DATE), 1.00, 'Ley de Protecci髇 al Trabajador (LPT)', 'INS', 'Empleador');
+INSERT INTO CCSS (FechaInicio, Porcentaje, Categoria, Concepto, PagadoPor)
+VALUES
+    ('2025-01-01', 9.25, 'CCSS', 'SEM', 'Empleador'),
+    ('2025-01-01', 5.50, 'CCSS', 'SEM', 'Empleado'),
+    ('2025-01-01', 5.42, 'CCSS', 'IVM', 'Empleador'),
+    ('2025-01-01', 4.17, 'CCSS', 'IVM', 'Empleado'),
+    ('2025-01-01', 0.25, 'Otras instituciones', 'Banco Popular (BPOP)', 'Empleador'),
+    ('2025-01-01', 5.00, 'Otras instituciones', 'Asignaciones familiares', 'Empleador'),
+    ('2025-01-01', 0.50, 'Otras instituciones', 'IMAS', 'Empleador'),
+    ('2025-01-01', 1.50, 'Otras instituciones', 'INA', 'Empleador'),
+    ('2025-01-01', 0.25, 'Ley de Protecci贸n al Trabajador (LPT)', 'Banco Popular (BPOP)', 'Empleador'),
+    ('2025-01-01', 1.00, 'Ley de Protecci贸n al Trabajador (LPT)', 'Banco Popular (BPOP)', 'Empleado'),
+    ('2025-01-01', 1.50, 'Ley de Protecci贸n al Trabajador (LPT)', 'Fondo de Capitalizaci贸n Laboral (FCL)', 'Empleador'),
+    ('2025-01-01', 2.00, 'Ley de Protecci贸n al Trabajador (LPT)', 'Operadora de pensiones complementaria (OPC)', 'Empleador'),
+    ('2025-01-01', 1.00, 'Ley de Protecci贸n al Trabajador (LPT)', 'INS', 'Empleador');
