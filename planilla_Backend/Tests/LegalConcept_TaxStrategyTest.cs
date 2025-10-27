@@ -122,7 +122,7 @@ namespace Tests
     [TestCase(3560000, 290478.5, 4)]
     [TestCase(4745000, 449268.5, 4)]
     [TestCase(4800000, 458481, 5)]
-    [TestCase(6200890.59, 693130.18, 5)]
+    [TestCase(6200890.59, 693130.17, 5)]
     public void Apply_ShouldReturnTheSameExpectedValueAndTaxId_Biweekly_TwoOfThreeWeeks(decimal baseSalary, decimal expected, int taxId)
     {
       var employeeId = 1;
@@ -132,7 +132,7 @@ namespace Tests
         Id = 1,
         CompanyPayrollId = 1,
         EmployeeId = employeeId,
-        Gross = Math.Round(baseSalary / 3 * 2, 2),
+        Gross = Math.Round(baseSalary * 0.67m, 2),
         BaseSalaryForPeriod = baseSalary
       };
 
@@ -146,6 +146,39 @@ namespace Tests
 
       Assert.That(detail.Amount, Is.EqualTo(expected));
       Assert.That(detail.IdTax, Is.EqualTo(taxId));
+      Assert.That(detail.EmployeePayrollId, Is.EqualTo(employeePayroll.Id));
+      Assert.That(detail.Description, Is.EqualTo("Impuesto sobre la renta"));
+      Assert.That(detail.Type, Is.EqualTo(PayrollItemType.EmployeeDeduction));
+      Assert.That(detail.IdCCSS, Is.Null);
+      Assert.That(detail.IdElement, Is.Null);
+    }
+
+    [Test]
+    public void Apply_ShouldReturnTheSameExpectedValueAndTaxId_Biweekly_TwoOfThreeWeeks()
+    {
+
+      var baseSalary = 1200000m;
+      var expected = 10425;
+      var employeeId = 1;
+
+      var employeePayroll = new EmployeePayrollModel
+      {
+        Id = 1,
+        CompanyPayrollId = 1,
+        EmployeeId = employeeId,
+        Gross = 450000m,
+        BaseSalaryForPeriod = baseSalary
+      };
+
+      _ctx.Company = new CompanyModel
+      {
+        Id = 1,
+        PaymentFrequency = PaymentFrequency.Biweekly
+      };
+
+      var detail = _sut.Apply(employeePayroll, _ctx).First();
+
+      Assert.That(detail.Amount, Is.EqualTo(expected));
       Assert.That(detail.EmployeePayrollId, Is.EqualTo(employeePayroll.Id));
       Assert.That(detail.Description, Is.EqualTo("Impuesto sobre la renta"));
       Assert.That(detail.Type, Is.EqualTo(PayrollItemType.EmployeeDeduction));

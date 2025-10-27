@@ -33,9 +33,7 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
 
       if (monthlyBase > 0)
       {
-        acumulatedTax = Math.Round(acumulatedTax, 2);
-
-        coverage = Math.Round(employeePayroll.Gross / monthlyBase, 2);
+        coverage = employeePayroll.Gross / monthlyBase;
         acumulatedTax = Math.Round(acumulatedTax * coverage, 2);
       }
 
