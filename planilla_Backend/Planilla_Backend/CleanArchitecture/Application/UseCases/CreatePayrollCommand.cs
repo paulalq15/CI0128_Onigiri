@@ -191,7 +191,7 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
         var t = kvp.Value;
 
         var net = t.Gross - t.EmpDed;
-        var cost = net + t.EmprDed + t.Benefits;
+        var cost = t.Gross + t.EmprDed + t.Benefits;
 
         var empModel = ctx.EmployeePayrollByEmployeeId.Values.FirstOrDefault(e => e.Id == employeePayrollId);
         if (empModel is null) continue;
