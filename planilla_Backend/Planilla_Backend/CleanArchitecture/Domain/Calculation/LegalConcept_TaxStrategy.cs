@@ -6,19 +6,45 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
   {
     public IEnumerable<PayrollDetailModel> Apply(EmployeePayrollModel employeePayroll, PayrollContext ctx)
     {
-      // TODO: implement the logic
-
-      // Dummy data for testing
+      if (employeePayroll == null) throw new ArgumentNullException("La planilla del empleado es requerida");
+      if (ctx == null) throw new ArgumentNullException("El contexto de planilla es requerido");
+      if (ctx.TaxBrackets == null || ctx.TaxBrackets.Count == 0) throw new InvalidOperationException("Se requieren tramos de impuesto en el contexto");
+      
       var detailList = new List<PayrollDetailModel>();
+      var monthlyBase = employeePayroll.BaseSalaryForPeriod;
+      var acumulatedTax = 0m;
+      var taxId = 0;
+      var coverage = 0m;
+
+      foreach (var bracket in ctx.TaxBrackets)
+      {
+        if (bracket.Max != null && monthlyBase > bracket.Max.Value)
+        {
+          acumulatedTax += (bracket.Max.Value - bracket.Min) * bracket.Rate / 100;
+          continue;
+        }
+        else if (bracket.Max == null || monthlyBase <= bracket.Max.Value)
+        {
+          acumulatedTax += (monthlyBase - bracket.Min) * bracket.Rate / 100;
+          taxId = bracket.Id;
+          break;
+        }
+      }
+
+      if (monthlyBase > 0)
+      {
+        coverage = employeePayroll.Gross / monthlyBase;
+        acumulatedTax = Math.Round(acumulatedTax * coverage, 2);
+      }
 
       var line = new PayrollDetailModel
       {
         EmployeePayrollId = employeePayroll.Id,
         Description = "Impuesto sobre la renta",
         Type = PayrollItemType.EmployeeDeduction,
-        Amount = employeePayroll.BaseSalaryForPeriod * 0.1m,
+        Amount = acumulatedTax,
         IdCCSS = null,
-        IdTax = 2,
+        IdTax = taxId,
         IdElement = null,
       };
       detailList.Add(line);

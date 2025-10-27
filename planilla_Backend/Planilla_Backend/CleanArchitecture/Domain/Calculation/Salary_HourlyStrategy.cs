@@ -20,7 +20,7 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
 
       decimal totalHours;
       if (!ctx.HoursByEmployee.TryGetValue(employeeId, out totalHours)) throw new InvalidOperationException("No se encontraron horas para el empleado con Id " + employeeId);
-      decimal amount = totalHours * contract.Salary;
+      decimal amount = Math.Round(totalHours * contract.Salary, 2);
 
       employeePayroll.Gross = amount;
       return new PayrollDetailModel
