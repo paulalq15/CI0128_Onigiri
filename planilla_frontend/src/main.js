@@ -30,6 +30,7 @@ import ActivationAccountPage from './components/ActivationAccountpage.vue';
 import ResendActivationAccountPage from './components/ResendActivationAccountPage.vue';
 import ForbiddenPage from './components/ForbiddenPage.vue';
 import EmployeeActivation from './components/EmployeeActivation.vue';
+import ModifyProfile from './components/ModifyProfile.vue';
 
 const employerOnly = { requiresAuth: true, roles: ['Empleador'] }
 const employeeOnly = { requiresAuth: true, roles: ['Empleado'] }
@@ -65,7 +66,8 @@ const router = createRouter({
         { path: 'Empresas/ModificarEmpresa', name: 'Modificar Empresa', component: ModifyCompany, meta: employerOnly },
         { path: 'Empleados/VerEmpleados', name: 'Ver Empleados', component: ViewEmployees, meta: employerOrApprover},
         { path: 'Empleados/CrearEmpleado', name: 'Crear Empleado', component: CreateEmployee, meta: employerOnly },
-        { path: 'Empleados/ModificarEmpleado', name: 'Modificar Empleado', component: ModifyEmployees, meta: employerApproverEmployee },
+        { path: 'Empleados/ModificarEmpleado', name: 'ModifyEmployees', component: ModifyEmployees, meta: employerApproverEmployee},
+        { path: 'Empleados/ModificarPerfil', name: 'Modificar Datos', component: ModifyProfile, meta: employerApproverEmployee},
         { path: 'Timesheets/CrearTimesheets', name: 'Crear Timesheets', component: CreateTimesheets, meta: employeeOnly },
         { path: 'Planilla/CrearPlanilla', name: 'Crear Planilla', component: CreatePayroll, meta: employerOrAdmin },
         { path: 'Planilla/VerBeneficiosDeducciones', name: 'Ver Beneficios y Deducciones', component: ViewPayrollElement},

@@ -22,7 +22,7 @@ public class EmployeeController : ControllerBase
   }
 
   [HttpPost]
-  public ActionResult RegisterEmployee([FromBody] RegisterEmployee employee)
+  public ActionResult RegisterEmployee([FromBody] EmployeeModel employee)
   {
     // Front-end already validated; here we just call the service
     int personId = _employeeService.RegisterEmployee(employee);
@@ -50,5 +50,27 @@ public class EmployeeController : ControllerBase
       return Ok(new { success = true, personId });
     }
     return BadRequest("Error al registrar al empleado");
+  }
+
+  [HttpGet("{personId:int}")]
+  public async Task<ActionResult<EmployeeModel>> GetEmployee(int personId)
+  {
+    var data = await _employeeService.GetEmployeeByPersonId(personId);
+    if (data is null) return NotFound();
+    return Ok(data);
+  }
+
+  [HttpPut("me/{personId:int}")]
+  public async Task<IActionResult> UpdateMyProfile(int personId, [FromBody] EmployeeModel body, CancellationToken ct)
+  {
+    var ok = await _employeeService.UpdateSelf(personId, body, ct);
+    return ok ? NoContent() : BadRequest("No se pudo actualizar.");
+  }
+
+  [HttpPut("emp/{employerId:int}/employee/{personId:int}")]
+  public async Task<IActionResult> UpdateEmployeeByEmployer(int employerId, int personId, [FromBody] EmployeeModel body, CancellationToken ct)
+  {
+    var ok = await _employeeService.UpdateAsEmployer(employerId, personId, body, ct);
+    return ok ? NoContent() : BadRequest("No se pudo actualizar.");
   }
 }
