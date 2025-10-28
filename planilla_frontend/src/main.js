@@ -36,6 +36,7 @@ import ResendActivationAccountPage from './components/ResendActivationAccountPag
 import ForbiddenPage from './components/ForbiddenPage.vue';
 import EmployeeActivation from './components/EmployeeActivation.vue';
 import ModifyPayrollElement from './components/ModifyPayrollElement.vue';
+import ModifyProfile from './components/ModifyProfile.vue';
 
 const employerOnly = { requiresAuth: true, roles: ['Empleador'] }
 const employerOrAdmin = { requiresAuth: true, roles: ['Empleador','Administrador'] }
@@ -70,7 +71,8 @@ const router = createRouter({
         { path: 'Empresas/ModificarEmpresa', name: 'Modificar Empresa', component: ModifyCompany, meta: employerOnly },
         { path: 'Empleados/VerEmpleados', name: 'Ver Empleados', component: ViewEmployees, meta: employerOrApprover},
         { path: 'Empleados/CrearEmpleado', name: 'Crear Empleado', component: CreateEmployee, meta: employerOnly },
-        { path: 'Empleados/ModificarEmpleado', name: 'Modificar Empleado', component: ModifyEmployees, meta: employerApproverEmployee},
+        { path: 'Empleados/ModificarEmpleado', name: 'ModifyEmployees', component: ModifyEmployees, meta: employerApproverEmployee},
+        { path: 'Empleados/ModificarPerfil', name: 'Modificar Datos', component: ModifyProfile, meta: employerApproverEmployee},
         { path: 'Timesheets/VerTimesheets', name: 'Ver Timesheets', component: ViewTimesheets, meta: employerApproverEmployee},
         { path: 'Timesheets/AprobarTimesheets', name: 'Aprobar Timesheets', component: ApproveTimesheets, meta: employerOrApprover },
         { path: 'Timesheets/CrearTimesheets', name: 'Crear Timesheets', component: CreateTimesheets, meta: employerApproverEmployee},
