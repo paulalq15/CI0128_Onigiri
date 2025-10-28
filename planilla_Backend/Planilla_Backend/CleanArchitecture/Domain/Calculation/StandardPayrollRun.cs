@@ -111,7 +111,7 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
         if (element == null) continue;
         var strategy = _factory.CreateConceptStrategies(element);
         if (strategy == null) continue;
-        var resultLines = strategy.Apply(employeePayroll, element, ctx);
+        var resultLines = strategy.Apply(employeePayroll, element);
         if (resultLines == null) continue;
         foreach (var line in resultLines)
         {
