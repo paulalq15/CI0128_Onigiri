@@ -31,7 +31,6 @@ namespace Planilla_Backend.LayeredArchitecture.Services
 
     public Task<bool> UpdateSelf(int employeeId, EmployeeModel employeeModel, CancellationToken ct = default)
     {
-      // Aquí podrías validar IBAN, longitud de teléfono, etc.
       return _employeeRepo.UpdateByEmployee(employeeId, employeeModel, ct);
     }
 

@@ -10,17 +10,6 @@
         novalidate
         style="width: 900px"
       >
-        <!-- Selector empleado -->
-        <div class="mb-3 col-12 d-flex align-items-end gap-2">
-          <div class="flex-grow-1">
-            <label for="pId" class="form-label required">Id Persona</label>
-            <input type="number" class="form-control" id="pId" required v-model.number="targetPersonId" />
-            <div class="invalid-feedback">Ingrese el IdPersona</div>
-          </div>
-          <div class="mb-3">
-            <LinkButton @click="loadById" text="Cargar" />
-          </div>
-        </div>
 
         <!-- Datos personales -->
         <h5 class="mt-2">Datos personales</h5>
@@ -117,15 +106,14 @@ import { useRoute } from 'vue-router'
 import URLBaseAPI from '../axiosAPIInstances.js'
 import { useSession } from '../utils/useSession.js'
 import { useGlobalAlert } from '@/utils/alerts.js'
-import LinkButton from './LinkButton.vue' // si lo usas en el template
+import LinkButton from './LinkButton.vue'
 
-// ---------- refs / state ----------
 const route = useRoute()
 
 const employerId = ref(null)
 const targetPersonId = ref('')
 
-const provinces = ref([])   // <- usa estos nombres en el template
+const provinces = ref([])
 const counties  = ref([])
 const districts = ref([])
 
@@ -166,16 +154,13 @@ const model = reactive({
   }
 })
 
-// Para validación Bootstrap
 const employeeForm = ref(null)
 
-// ---------- computed ----------
 const ibanPattern = computed(() => 'CR\\d{20}')
 const zipCodeValue = computed(() =>
   model?.direction?.zipCode ?? ''
 )
 
-// ---------- helpers ----------
 function initBootstrapValidation() {
   const form = employeeForm.value
   if (!form) return
@@ -189,11 +174,9 @@ function initBootstrapValidation() {
 function parseSession() {
   const { user } = useSession()
   if (!user) throw new Error('Sesión inválida')
-  // normalmente employerId = userId del empleador
   employerId.value = user.userId ?? user.personId ?? null
 }
 
-// Normaliza a { value: 'Texto' }
 const toValueArray = (arr, keyCandidates = []) => {
   return (Array.isArray(arr) ? arr : []).map(x => {
     if (typeof x === 'string') return { value: x }
@@ -204,7 +187,6 @@ const toValueArray = (arr, keyCandidates = []) => {
   }).filter(x => x.value)
 }
 
-// ---------- API calls ----------
 async function GetProvince() {
   const { data } = await URLBaseAPI.get('/api/CountryDivision/Provinces')
   provinces.value = toValueArray(data, ['value', 'provincia', 'Province'])
@@ -240,7 +222,6 @@ async function getZipCode() {
   model.direction.zipCode = data?.value ?? data
 }
 
-// ---------- hydrate / load ----------
 async function hydrateAddress(dr) {
   await GetProvince()
   if (!dr) {
@@ -273,7 +254,6 @@ async function loadById() {
   }
 }
 
-// ---------- submit ----------
 function buildPayload() {
   const hasDir =
     Direccion.selectedProvince ||
@@ -318,7 +298,6 @@ function goBack() {
   window.history.back()
 }
 
-// ---------- lifecycle ----------
 onMounted(async () => {
   const p = route.query?.personId
   if (p !== undefined) {

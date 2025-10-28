@@ -100,11 +100,6 @@
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas">Crear Empleados</span>
                 </RouterLink>
               </li>
-              <li v-if="session.user?.typeUser === 'Empleador'">
-                <RouterLink class="nav-link my-3" to="/app/Empleados/ModificarEmpleado">
-                  <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas">Modificar Empleado</span>
-                </RouterLink>
-              </li>
               <li>
                 <RouterLink class="nav-link my-3" to="/app/Empleados/ModificarPerfil">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas">Modificar Mi Perfil</span>
