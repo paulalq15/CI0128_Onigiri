@@ -4,7 +4,7 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
 {
   public class Concept_ApiStrategy : IConceptStrategy
   {
-    public IEnumerable<PayrollDetailModel> Apply(EmployeePayrollModel employeePayroll, ElementModel concept, PayrollContext ctx)
+    public IEnumerable<PayrollDetailModel> Apply(EmployeePayrollModel employeePayroll, ElementModel concept)
     {
       // TODO: implement the logic
 
