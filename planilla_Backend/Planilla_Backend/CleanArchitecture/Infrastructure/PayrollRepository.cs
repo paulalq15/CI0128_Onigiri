@@ -221,74 +221,6 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       }
     }
 
-    public async Task<CompanyPayrollModel?> GetLatestOpenCompanyPayroll(int companyId)
-    {
-      try
-      {
-        using var connection = new SqlConnection(_connectionString);
-        const string query =
-          @"SELECT TOP 1 IdNominaEmpresa AS Id, IdEmpresa AS CompanyId, FechaInicio AS DateFrom,
-              FechaFin AS DateTo, Estado AS PayrollStatus, MontoBruto AS Gross,
-              DeduccionesEmpleado AS EmployeeDeductions, DeduccionesEmpleador AS EmployerDeductions,
-              Beneficios AS Benefits, MontoNeto AS Net, Costo AS Cost, CreadoPor AS CreatedBy
-            FROM NominaEmpresa
-            WHERE Estado = 'Creado' AND IdEmpresa = @companyId
-            ORDER BY FechaCreacion DESC";
-
-        var companyPayroll = await connection.QuerySingleOrDefaultAsync<CompanyPayrollModel>(query, new { companyId });
-        return companyPayroll;
-      }
-      catch (Exception ex)
-      {
-        _logger.LogError(ex, "GetLatestOpenCompanyPayroll failed. companyId: {CompanyId}", companyId);
-        throw;
-      }
-    }
-
-    public async Task<CompanyPayrollModel?> GetCompanyPayrollById(int companyPayrollId)
-    {
-      try
-      {
-        using var connection = new SqlConnection(_connectionString);
-        const string query =
-          @"SELECT IdNominaEmpresa AS Id, IdEmpresa AS CompanyId, FechaInicio AS DateFrom,
-              FechaFin AS DateTo, Estado AS PayrollStatus, MontoBruto AS Gross,
-              DeduccionesEmpleado AS EmployeeDeductions, DeduccionesEmpleador AS EmployerDeductions,
-              Beneficios AS Benefits, MontoNeto AS Net, Costo AS Cost, CreadoPor AS CreatedBy
-            FROM NominaEmpresa
-            WHERE IdNominaEmpresa = @companyPayrollId";
-
-        var companyPayroll = await connection.QuerySingleOrDefaultAsync<CompanyPayrollModel>(query, new { companyPayrollId });
-        return companyPayroll;
-      }
-      catch (Exception ex)
-      {
-        _logger.LogError(ex, "GetCompanyPayrollById failed. companyPayrollId: {CompanyPayrollId}", companyPayrollId);
-        throw;
-      }
-    }
-
-    public async Task<IEnumerable<EmployeePayrollModel>> GetUnpaidEmployeePayrolls(int companyPayrollId)
-    {
-      try
-      {
-        using var connection = new SqlConnection(_connectionString);
-        const string query =
-          @"SELECT ne.IdNominaEmpleado AS Id, ne.MontoNeto AS Net
-            FROM NominaEmpleado AS ne
-            LEFT JOIN ComprobantePago AS cp ON cp.IdNominaEmpleado = ne.IdNominaEmpleado
-            WHERE ne.IdNominaEmpresa = @companyPayrollId AND cp.IdPago IS NULL";
-
-        var employeePayrolls = await connection.QueryAsync<EmployeePayrollModel>(query, new { companyPayrollId });
-        return employeePayrolls;
-      }
-      catch (Exception ex)
-      {
-        _logger.LogError(ex, "GetUnpaidEmployeePayrolls failed. companyPayrollId: {CompanyPayrollId}", companyPayrollId);
-        throw;
-      }
-    }
-
     public async Task<bool> ExistsPayrollForPeriod(int companyId, DateTime dateFrom, DateTime dateTo)
     {
       using var connection = new SqlConnection(_connectionString);
@@ -443,7 +375,8 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
                               DeduccionesEmpleador = @EmployerDeductions,
                               Beneficios = @Benefits,
                               MontoNeto = @Net,
-                              Costo = @Cost
+                              Costo = @Cost,
+                              Estado = 'Pagado'
                             WHERE IdNominaEmpresa = @CompanyPayrollId;";
       var affected = await connection.ExecuteAsync(sql, new
       {
@@ -482,28 +415,5 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         throw;
       }
     }
-
-    public async Task UpdatePaidCompanyPayroll(int companyPayrollId)
-    {
-      try
-      {
-        using var connection = new SqlConnection(_connectionString);
-        const string sql =
-          @"UPDATE NominaEmpresa
-            SET Estado = 'Pagado'
-            WHERE IdNominaEmpresa = @CompanyPayrollId;";
-
-        await connection.ExecuteAsync(sql, new
-        {
-          CompanyPayrollId = companyPayrollId,
-        });
-      }
-      catch (Exception ex)
-      {
-        _logger.LogError(ex, "UpdatePaidCompanyPayroll failed");
-        throw;
-      }
-    }
-
   }
 }

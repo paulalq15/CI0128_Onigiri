@@ -10,14 +10,10 @@ namespace Planilla_Backend.CleanArchitecture.API
   public class PayrollController : ControllerBase
   {
     private readonly ICreatePayrollCommand _create;
-    private readonly IPayPayrollCommand _pay;
-    private readonly IGetPayrollSummaryQuery _get;
 
-    public PayrollController(ICreatePayrollCommand create, IPayPayrollCommand pay, IGetPayrollSummaryQuery get)
+    public PayrollController(ICreatePayrollCommand create)
     {
       _create = create;
-      _pay = pay;
-      _get = get;
     }
 
     [HttpPost]
@@ -31,35 +27,6 @@ namespace Planilla_Backend.CleanArchitecture.API
       catch (Exception ex)
       {
         return Error.FromException(this, ex, "/api/Payroll");
-      }
-    }
-
-    [HttpPost("payment")]
-    public async Task<ActionResult<PayrollSummary>> Pay([FromQuery] int payrollId, [FromQuery] int personId)
-    {
-      try
-      {
-        var summary = await _pay.Execute(payrollId, personId);
-        return Ok(summary);
-      }
-      catch (Exception ex)
-      {
-        return Error.FromException(this, ex, "/api/Payroll/payment");
-      }
-    }
-
-    [HttpGet("summary")]
-    public async Task<ActionResult<PayrollSummary>> GetSummary([FromQuery] int companyId)
-    {
-      try
-      {
-        var result = await _get.Execute(companyId);
-        if (result == null) return NoContent();
-        return Ok(result);
-      }
-      catch (Exception ex)
-      {
-        return Error.FromException(this, ex, "/api/Payroll/summary");
       }
     }
   }

@@ -18,19 +18,14 @@ import ModifyCompany from './components/ModifyCompany.vue';
 import ViewEmployees from './components/ViewEmployees.vue';
 import CreateEmployee from './components/CreateEmployee.vue';
 import ModifyEmployees from './components/ModifyEmployees.vue';
-import ViewTimesheets from './components/ViewTimesheets.vue';
-import ApproveTimesheets from './components/ApproveTimesheets.vue';
 import CreateTimesheets from './components/CreateTimesheets.vue';
-import ViewPayroll from './components/ViewPayroll.vue';
 import CreatePayroll from './components/CreatePayroll.vue';
 import ViewPayrollElement from './components/ViewPayrollElement.vue';
+import ModifyPayrollElement from './components/ModifyPayrollElement.vue';
 import CreatePayrollElement from './components/CreatePayrollElement.vue';
 import AssignDeduction from './components/AssignDeduction.vue';
 import SelectBenefit from './components/SelectBenefit.vue';
-import ViewPayment from './components/ViewPayment.vue';
-import CreatePayment from './components/CreatePayment.vue';
 import ViewReports from './components/ViewReports.vue';
-import CreateReport from './components/CreateReport.vue';
 import ActivationAccountPage from './components/ActivationAccountpage.vue';
 import ResendActivationAccountPage from './components/ResendActivationAccountPage.vue';
 import ForbiddenPage from './components/ForbiddenPage.vue';
@@ -39,6 +34,7 @@ import ModifyPayrollElement from './components/ModifyPayrollElement.vue';
 import ModifyProfile from './components/ModifyProfile.vue';
 
 const employerOnly = { requiresAuth: true, roles: ['Empleador'] }
+const employeeOnly = { requiresAuth: true, roles: ['Empleado'] }
 const employerOrAdmin = { requiresAuth: true, roles: ['Empleador','Administrador'] }
 const employerOrApprover = { requiresAuth: true, roles: ['Empleador','Aprobador'] }
 const employerApproverEmployee = { requiresAuth: true, roles: ['Empleador','Aprobador','Empleado'] }
@@ -79,14 +75,11 @@ const router = createRouter({
         { path: 'Planilla/VerPlanilla', name: 'Ver Planilla', component: ViewPayroll, meta: employerApproverEmployee},
         { path: 'Planilla/CrearPlanilla', name: 'Crear Planilla', component: CreatePayroll, meta: employerOrApprover },
         { path: 'Planilla/VerBeneficiosDeducciones', name: 'Ver Beneficios y Deducciones', component: ViewPayrollElement},
-        { path: 'Planilla/CrearBeneficiosDeducciones', name: 'Crear Beneficios y Deducciones', component: CreatePayrollElement, meta: employerOnly},
-        { path: 'Planilla/EditarBeneficioDeduccion/:PEId', name: 'EditarBeneficioODeduccion', component: ModifyPayrollElement },
+        { path: 'Planilla/CrearBeneficiosDeducciones', name: 'Crear Beneficios y Deducciones', component: CreatePayrollElement, meta: employerOnly },
+        { path: 'Planilla/EditarBeneficioDeduccion/:PEId', name: 'EditarBeneficioODeduccion', component: ModifyPayrollElement, meta: employerOnly },
         { path: 'Planilla/AsignarDeducciones', name: 'Asignar Deducciones', component: AssignDeduction, meta: employerOrApprover },
-        { path: 'Planilla/SeleccionarBeneficios', name: 'Seleccionar Beneficios', component: SelectBenefit, meta: employerApproverEmployee},
-        { path: 'Pagos/VerPagos', name: 'Ver Pagos', component: ViewPayment, meta: employerApproverEmployee},
-        { path: 'Pagos/CrearPago', name: 'Crear Pago', component: CreatePayment, meta: employerOrApprover },
-        { path: 'Reportes/VerReportes', name: 'Ver Reportes', component: ViewReports, meta: employerOrApprover },
-        { path: 'Reportes/CrearReporte', name: 'Crear Reporte', component: CreateReport, meta: employerOrApprover },
+        { path: 'Planilla/SeleccionarBeneficios', name: 'Seleccionar Beneficios', component: SelectBenefit, meta: employerApproverEmployee },
+        { path: 'Reportes/VerReportes', name: 'Ver Reportes', component: ViewReports, meta: employerApproverEmployee },
         { path: 'AccesoRestringido', name: 'AccesoRestringido', component: ForbiddenPage },
       ]
     },
