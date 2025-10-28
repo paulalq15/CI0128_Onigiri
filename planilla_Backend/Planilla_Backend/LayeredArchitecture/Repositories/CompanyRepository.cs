@@ -324,7 +324,7 @@ namespace Planilla_Backend.LayeredArchitecture.Repositories
        const string query = @"
          SELECT IdEmpresa 
          FROM UsuariosPorEmpresa
-          WHERE IdUsuario = @userId;
+         WHERE IdUsuario = @userId;
        ";
 
        return connection.QuerySingle<int>(query, new { userId });

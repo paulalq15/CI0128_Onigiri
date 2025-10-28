@@ -72,7 +72,7 @@
 
           <tr>
             <td style="text-align: center; width: 50px; height: 50px; border: 1px solid #000; font-weight: bold; vertical-align: middle;">
-              Beneficios seleccionados: {{ this.getTotalActiveAppliedElements() }}
+              Beneficios activos: {{ this.getTotalActiveAppliedElements() }}
             </td>
             <td style="text-align: center; width: 50px; height: 50px; border: 1px solid #000; font-weight: bold; vertical-align: middle;">
               Beneficios restantes: {{ this.maxCompanyBenefits - this.getTotalActiveAppliedElements() }}
