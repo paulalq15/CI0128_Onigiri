@@ -30,7 +30,6 @@ import ActivationAccountPage from './components/ActivationAccountpage.vue';
 import ResendActivationAccountPage from './components/ResendActivationAccountPage.vue';
 import ForbiddenPage from './components/ForbiddenPage.vue';
 import EmployeeActivation from './components/EmployeeActivation.vue';
-import ModifyPayrollElement from './components/ModifyPayrollElement.vue';
 import ModifyProfile from './components/ModifyProfile.vue';
 
 const employerOnly = { requiresAuth: true, roles: ['Empleador'] }
@@ -69,11 +68,8 @@ const router = createRouter({
         { path: 'Empleados/CrearEmpleado', name: 'Crear Empleado', component: CreateEmployee, meta: employerOnly },
         { path: 'Empleados/ModificarEmpleado', name: 'ModifyEmployees', component: ModifyEmployees, meta: employerApproverEmployee},
         { path: 'Empleados/ModificarPerfil', name: 'Modificar Datos', component: ModifyProfile, meta: employerApproverEmployee},
-        { path: 'Timesheets/VerTimesheets', name: 'Ver Timesheets', component: ViewTimesheets, meta: employerApproverEmployee},
-        { path: 'Timesheets/AprobarTimesheets', name: 'Aprobar Timesheets', component: ApproveTimesheets, meta: employerOrApprover },
-        { path: 'Timesheets/CrearTimesheets', name: 'Crear Timesheets', component: CreateTimesheets, meta: employerApproverEmployee},
-        { path: 'Planilla/VerPlanilla', name: 'Ver Planilla', component: ViewPayroll, meta: employerApproverEmployee},
-        { path: 'Planilla/CrearPlanilla', name: 'Crear Planilla', component: CreatePayroll, meta: employerOrApprover },
+        { path: 'Timesheets/CrearTimesheets', name: 'Crear Timesheets', component: CreateTimesheets, meta: employeeOnly },
+        { path: 'Planilla/CrearPlanilla', name: 'Crear Planilla', component: CreatePayroll, meta: employerOrAdmin },
         { path: 'Planilla/VerBeneficiosDeducciones', name: 'Ver Beneficios y Deducciones', component: ViewPayrollElement},
         { path: 'Planilla/CrearBeneficiosDeducciones', name: 'Crear Beneficios y Deducciones', component: CreatePayrollElement, meta: employerOnly },
         { path: 'Planilla/EditarBeneficioDeduccion/:PEId', name: 'EditarBeneficioODeduccion', component: ModifyPayrollElement, meta: employerOnly },
