@@ -27,7 +27,7 @@
             <td>{{ benefit.elementName }}</td>
             <td>{{ benefit.calculationType }}</td>
             <td>{{ benefit.calculationValue }}</td>
-            <td><button class="btn btn-secondary btn-sm" @click="addAppliedElement(index, benefit.idElement)">Seleccionar</button></td>
+            <td><button class="btn btn-secondary btn-sm" @click="addAppliedElement(benefit.idElement, benefit.elementName)">Seleccionar</button></td>
           </tr>
 
           <tr>
@@ -201,7 +201,7 @@
         return this.filteredBenefits.filter(element => element.status === "Activo").length;
       },
 
-      addAppliedElement(index, elementId) {
+      addAppliedElement(elementId, elementName) {
         // Verify if the employee reached the max ammount of benefits:
         if ((this.maxCompanyBenefits - this.getTotalActiveAppliedBenefits()) == 0) {
           alert("ALERTA: Se llegó al máximo de beneficios activos disponibles.");
@@ -209,10 +209,8 @@
         }
 
         // Verify that the benefit hasn't been selected yet:
-        const selectedBenefitName = this.filteredBenefits[index].elementName;
-
         const alreadySelected = this.appliedElements.some(
-        (applied) => applied.elementName == selectedBenefitName && applied.elementStatus == "Activo");
+        (applied) => applied.elementName == elementName && applied.status == "Activo");
 
         if (alreadySelected) {
           alert("Este beneficio ya está seleccionado.");
