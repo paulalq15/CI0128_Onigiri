@@ -81,6 +81,15 @@ namespace Planilla_Backend.LayeredArchitecture.Repositories
           PersonID = idPerson,
         }, transaction);
 
+        // Insertar Dirección
+        const string insertAddress = @"INSERT INTO Direccion (IdDivision, OtrasSenas, IdPersona)
+          VALUES (1,NULL, @PersonID)";
+
+        connection.Execute(insertAddress, new
+        {
+          PersonID = idPerson,
+        }, transaction);
+
         transaction.Commit();
         return idPerson;
       }
@@ -91,5 +100,8 @@ namespace Planilla_Backend.LayeredArchitecture.Repositories
         throw new Exception("Error al registrar empleado: " + ex.Message);
       }
     }
+
+
+
   }
 }
