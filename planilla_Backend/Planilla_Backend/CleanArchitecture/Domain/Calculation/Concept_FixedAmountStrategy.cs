@@ -4,22 +4,22 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
 {
   public class Concept_FixedAmountStrategy : IConceptStrategy
   {
-    public IEnumerable<PayrollDetailModel> Apply(EmployeePayrollModel employeePayroll, ElementModel concept, PayrollContext ctx)
+    public IEnumerable<PayrollDetailModel> Apply(EmployeePayrollModel employeePayroll, ElementModel concept)
     {
-      // TODO: implement the logic
+      if (employeePayroll == null) throw new ArgumentNullException("La planilla del empleado es requerida");
+      if (concept == null) throw new ArgumentNullException("El elemento de planilla es requerido");
 
-      // Dummy data for testing
       var detailList = new List<PayrollDetailModel>();
 
       var line = new PayrollDetailModel
       {
         EmployeePayrollId = employeePayroll.Id,
-        Description = "Elemento de planilla",
-        Type = PayrollItemType.EmployeeDeduction,
-        Amount = 50000m,
+        Description = concept.Name,
+        Type = concept.ItemType,
+        Amount = concept.Value,
         IdCCSS = null,
         IdTax = null,
-        IdElement = 4,
+        IdElement = concept.Id,
       };
       detailList.Add(line);
 
