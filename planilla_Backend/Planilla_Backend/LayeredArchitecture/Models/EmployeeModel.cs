@@ -1,4 +1,4 @@
-using Planilla_Backend.Models;
+using Planilla_Backend.LayeredArchitecture.Models;
 
 namespace Planilla_Backend.LayeredArchitecture.Models
 {

@@ -1,4 +1,4 @@
-﻿namespace Planilla_Backend.Models
+﻿namespace Planilla_Backend.LayeredArchitecture.Models
 {
   public class DirectionsModel
   {
