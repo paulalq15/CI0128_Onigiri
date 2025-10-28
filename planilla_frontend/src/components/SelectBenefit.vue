@@ -27,7 +27,7 @@
             <td>{{ benefit.elementName }}</td>
             <td>{{ benefit.calculationType }}</td>
             <td>{{ benefit.calculationValue }}</td>
-            <td><button class="btn btn-secondary btn-sm" @click="addAppliedElement(index, benefit.elementId)">Seleccionar</button></td>
+            <td><button class="btn btn-secondary btn-sm" @click="addAppliedElement(index, benefit.idElement)">Seleccionar</button></td>
           </tr>
 
           <tr>
@@ -62,20 +62,21 @@
         </thead>
 
         <tbody>
-          <tr v-for="(appliedElement, index) of appliedElements" :key="index">
+          <tr v-for="(appliedElement, index) of this.filterAppliedElements" :key="index">
             <td>{{ appliedElement.elementName }}</td>
             <td>{{ this.formatDate(appliedElement.startDate) }}</td>
             <td>{{ this.formatDate(appliedElement.endDate) }}</td>
             <td>{{ appliedElement.status }}</td>
-            <td><button class="btn btn-danger btn-sm" @click="this.deactivateAppliedElement(this.appliedElements[index].elementId, appliedElement.status)">Desactivar</button></td>
+            <td><button class="btn btn-danger btn-sm" @click="this.deactivateAppliedElement(appliedElement.elementId, appliedElement.status)">Desactivar</button></td>
           </tr>
 
           <tr>
             <td style="text-align: center; width: 50px; height: 50px; border: 1px solid #000; font-weight: bold; vertical-align: middle;">
-              Beneficios activos: {{ this.getTotalActiveAppliedElements() }}
+              Beneficios activos: {{ getTotalActiveAppliedBenefits() }}
             </td>
+
             <td style="text-align: center; width: 50px; height: 50px; border: 1px solid #000; font-weight: bold; vertical-align: middle;">
-              Beneficios restantes: {{ this.maxCompanyBenefits - this.getTotalActiveAppliedElements() }}
+              Beneficios restantes: {{ maxCompanyBenefits - getTotalActiveAppliedBenefits() }}
             </td>
           </tr>
         </tbody>
@@ -103,6 +104,7 @@
       return {
         benefits: [],
         appliedElements: [],
+        filteredAppliedElements: [],
         totalCompanyBenefits: 0,
         maxCompanyBenefits: 0,
         companyId: null,
@@ -113,8 +115,18 @@
     computed: {
       filteredBenefits() {
         return this.benefits.filter(benefit => benefit.paidBy === "Empleador");
-      }
+      },
+
+      benefitElementIds() {
+        return new Set(this.filteredBenefits.map(d => d.idElement));
+      },
+
+      filterAppliedElements() {
+        return this.appliedElements.filter(applied =>
+        this.benefitElementIds.has(applied.elementId)
+      );
     },
+  },
 
     methods: {
       async getCompanyIdByUserId() {
@@ -180,8 +192,13 @@
         return date.toLocaleDateString();
       },
 
-      getTotalActiveAppliedElements() {
-        return this.appliedElements.filter(element => element.status === "Activo").length;
+      getTotalActiveAppliedBenefits() {
+        const benefitIds = new Set(this.filteredBenefits.map(b => b.idElement));
+        return this.appliedElements.filter(el => el.status === "Activo" && benefitIds.has(el.elementId)).length;
+      },
+
+      getTotalActiveBenefits() {
+        return this.filteredBenefits.filter(element => element.status === "Activo").length;
       },
 
       addAppliedElement(index, elementId) {
@@ -195,7 +212,7 @@
         const selectedBenefitName = this.filteredBenefits[index].elementName;
 
         const alreadySelected = this.appliedElements.some(
-        (applied) => applied.elementName == selectedBenefitName);
+        (applied) => applied.elementName == selectedBenefitName && applied.elementStatus == "Activo");
 
         if (alreadySelected) {
           alert("Este beneficio ya está seleccionado.");
