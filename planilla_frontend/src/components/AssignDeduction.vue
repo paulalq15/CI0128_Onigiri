@@ -299,10 +299,8 @@ import axios from "axios";
         const employee = this.employees.find(e => e.idUser === this.selectedEmployee.id);
 
         if (employee) {
-          // Update selectedEmployee name
+          // Update selectedEmployee name:
           this.selectedEmployee.name = employee.name1 + ' ' + (employee.name2 || '') + ' ' + employee.surname1 + ' ' + (employee.surname2 || '');
-
-          alert(`Empleado seleccionado: ${this.selectedEmployee.name}`);
 
           // Fetch applied elements for selected employee:
           this.getAppliedElements();

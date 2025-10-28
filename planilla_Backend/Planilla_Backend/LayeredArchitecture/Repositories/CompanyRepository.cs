@@ -327,7 +327,7 @@ namespace Planilla_Backend.LayeredArchitecture.Repositories
          WHERE IdUsuario = @userId;
        ";
 
-       return connection.QuerySingle<int>(query, new { userId });
+       return connection.QueryFirst<int>(query, new { userId });
     }
 
     public int getCompanyTotalBenefitsByCompanyId(int companyId)

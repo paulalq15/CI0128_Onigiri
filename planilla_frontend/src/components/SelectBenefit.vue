@@ -72,11 +72,11 @@
 
           <tr>
             <td style="text-align: center; width: 50px; height: 50px; border: 1px solid #000; font-weight: bold; vertical-align: middle;">
-              Beneficios activos: {{ getTotalActiveAppliedBenefits() }}
+              Beneficios activos: {{ this.getTotalActiveAppliedBenefits() }}
             </td>
 
             <td style="text-align: center; width: 50px; height: 50px; border: 1px solid #000; font-weight: bold; vertical-align: middle;">
-              Beneficios restantes: {{ maxCompanyBenefits - getTotalActiveAppliedBenefits() }}
+              Beneficios restantes: {{ maxCompanyBenefits - this.getTotalActiveAppliedBenefits() }}
             </td>
           </tr>
         </tbody>
@@ -203,7 +203,7 @@
 
       addAppliedElement(index, elementId) {
         // Verify if the employee reached the max ammount of benefits:
-        if ((this.maxCompanyBenefits - this.getTotalActiveAppliedElements()) == 0) {
+        if ((this.maxCompanyBenefits - this.getTotalActiveAppliedBenefits()) == 0) {
           alert("ALERTA: Se llegó al máximo de beneficios activos disponibles.");
           return;
         }
