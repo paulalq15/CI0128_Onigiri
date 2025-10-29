@@ -21,15 +21,15 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
     
       ApiResponse? apiResponse = null;
 
-      switch (concept.Name)
+      switch (concept.Value)
       {
-        case "Asociación Solidarista":
+        case 1: //Asociación Solidarista
           apiResponse = _partners
             .GetAsociacionSolidaristaAsync(ctx.Company.LegalID!, employeePayroll.Gross, CancellationToken.None)
             .GetAwaiter().GetResult();
           break;
 
-        case "Seguro Privado":
+        case 2: //Seguro Privado
           if (employee.Age is null)
             throw new InvalidOperationException("La edad del empleado es requerida para Seguro Privado.");
           if (concept.NumberOfDependents is null)
@@ -39,7 +39,7 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
             .GetAwaiter().GetResult();
           break;
 
-        case "Pensión voluntaria":
+        case 3: //Pensión voluntaria
           apiResponse = _partners
             .GetPensionesVoluntariasAsync(concept.PensionType!, employeePayroll.Gross, CancellationToken.None)
             .GetAwaiter().GetResult();
