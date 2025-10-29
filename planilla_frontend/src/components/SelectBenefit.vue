@@ -27,7 +27,7 @@
             <td>{{ benefit.elementName }}</td>
             <td>{{ benefit.calculationType }}</td>
             <td>{{ benefit.calculationValue }}</td>
-            <td><button class="btn btn-secondary btn-sm" @click="addAppliedElement(benefit.idElement, benefit.elementName)">Seleccionar</button></td>
+            <td><button class="btn btn-secondary btn-sm" @click="addAppliedElement(benefit)">Seleccionar</button></td>
           </tr>
 
           <tr>
@@ -57,6 +57,8 @@
             <th>Fecha Inicio</th>
             <th>Fecha Fin</th>
             <th>Estado</th>
+            <th>Tipo Plan</th>
+            <th>Total Dependientes</th>
             <th>Acción</th>
           </tr>
         </thead>
@@ -67,6 +69,8 @@
             <td>{{ this.formatDate(appliedElement.startDate) }}</td>
             <td>{{ this.formatDate(appliedElement.endDate) }}</td>
             <td>{{ appliedElement.status }}</td>
+            <td>{{ appliedElement.planType }}</td>
+            <td>{{ appliedElement.amountDependents }}</td>
             <td><button class="btn btn-danger btn-sm" @click="this.deactivateAppliedElement(appliedElement.elementId, appliedElement.status)">Desactivar</button></td>
           </tr>
 
@@ -201,7 +205,7 @@
         return this.filteredBenefits.filter(element => element.status === "Activo").length;
       },
 
-      addAppliedElement(elementId, elementName) {
+      addAppliedElement(benefit) {
         // Verify if the employee reached the max ammount of benefits:
         if ((this.maxCompanyBenefits - this.getTotalActiveAppliedBenefits()) == 0) {
           alert("ALERTA: Se llegó al máximo de beneficios activos disponibles.");
@@ -210,7 +214,7 @@
 
         // Verify that the benefit hasn't been selected yet:
         const alreadySelected = this.appliedElements.some(
-        (applied) => applied.elementName == elementName && applied.status == "Activo");
+        (applied) => applied.elementName == benefit.elementName && applied.status == "Activo");
 
         if (alreadySelected) {
           alert("Este beneficio ya está seleccionado.");
@@ -222,16 +226,51 @@
           return;
         }
 
-        if (!elementId) {
-          alert("Element ID no está definido");
+        if (!benefit.idElement) {
+          alert("ERROR: benefit.idElement no está definido.");
           return;
+        }
+
+        let amountDependents = null;
+        let planType = null;
+
+        // Verify if the deduction is an API:
+        if (benefit.calculationType === "API") {
+          // Seguro Privado:
+          if (benefit.calculationValue === 2) {
+            amountDependents = prompt("Ingrese la cantidad de dependientes: ");
+
+            // if (!Number.isInteger(amountDependents)) {
+            if (amountDependents === parseInt(amountDependents, 10)) {
+              alert("ERROR: la cantidad de dependientes debe ser un número entero.");
+              return;
+            }
+
+            if (amountDependents <= 0) {
+              alert("ERROR: la cantidad de dependientes debe ser superior a 0.");
+              return;
+            } 
+          }
+
+          // Pensión Voluntaria:
+          if (benefit.calculationValue === 3) {
+            planType = prompt("Ingrese el tipo de plan:");
+
+            if (planType != 'A' && planType != 'B' && planType != 'C') {
+              alert("ERROR: el tipo de plan debe ser A, B o C.");
+              return;
+            }
+          }
         }
 
         // Make a POST request to add the new applied element:
         axios.post(`https://localhost:7071/api/AppliedElement/addAppliedElement`,
         {
           UserId: this.user.userId,
-          ElementId: elementId
+          ElementId: benefit.idElement,
+          ElementType: 'Beneficio',
+          AmountDependents: amountDependents,
+          PlanType: planType
         })
 
         .then(response => {

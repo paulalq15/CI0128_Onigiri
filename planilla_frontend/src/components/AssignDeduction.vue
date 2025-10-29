@@ -225,7 +225,8 @@ import axios from "axios";
       },
 
       getTotalActiveAppliedElements() {
-        return this.appliedElements.filter(element => element.status === "Activo").length;
+        // return this.appliedElements.filter(element => element.status === "Activo").length;
+        return this.filteredAppliedElements.filter(element => element.status === "Activo").length;
       },
 
       addAppliedElement(deduction) {
@@ -255,46 +256,14 @@ import axios from "axios";
           return;
         }
 
-        let amountDependents = null;
-        let planType = null;
-
-        // Verify if the deduction is an API:
-        if (deduction.calculationType === "API") {
-          // Seguro Privado:
-          if (deduction.calculationValue === 2) {
-            amountDependents = prompt("Ingrese la cantidad de dependientes: ");
-
-            // if (!Number.isInteger(amountDependents)) {
-            if (amountDependents === parseInt(amountDependents, 10)) {
-              alert("ERROR: la cantidad de dependientes debe ser un número entero.");
-              return;
-            }
-
-            if (amountDependents <= 0) {
-              alert("ERROR: la cantidad de dependientes debe ser superior a 0.");
-              return;
-            } 
-          }
-
-          // Pensión Voluntaria:
-          if (deduction.calculationValue === 3) {
-            planType = prompt("Ingrese el tipo de plan:");
-
-            if (planType != 'A' && planType != 'B' && planType != 'C') {
-              alert("ERROR: el tipo de plan debe ser A, B o C.");
-              return;
-            }
-          }
-        }
-
         // Make a POST request to add the new applied element:
         axios.post(`https://localhost:7071/api/AppliedElement/addAppliedElement`,
         {
           UserId: this.selectedEmployee.id,
           ElementId: deduction.idElement,
           ElementType: 'Deduccion',
-          amountDependents: amountDependents,
-          PlanType: planType
+          AmountDependents: null,
+          PlanType: null
         })
 
         .then(response => {
