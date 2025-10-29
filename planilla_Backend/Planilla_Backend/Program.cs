@@ -65,6 +65,7 @@ builder.Services.AddScoped<ITimesheetRepository, TimesheetRepository>();
 builder.Services.AddScoped<ITimesheetService, TimesheetService>();
 
 // External APIs (Asociación, Seguro, Pensiones)
+builder.Services.AddScoped<ExternalPartnersService>();
 builder.Services.AddExternalApis(builder.Configuration);
 
 builder.Services.AddControllers();
