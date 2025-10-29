@@ -1,7 +1,9 @@
 ﻿using Planilla_Backend.CleanArchitecture.Domain.Entities;
+using System.Text.Json;
 
 namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
 {
+  public readonly record struct APIAmounts(decimal EE, decimal ER);
   public class Concept_ApiStrategy : IConceptStrategy
   {
     public IEnumerable<PayrollDetailModel> Apply(EmployeePayrollModel employeePayroll, ElementModel concept, PayrollContext ctx, EmployeeModel employee)
@@ -42,8 +44,15 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
           throw new InvalidOperationException("Elemento API no reconocido");
       }
 
-      //Call external API to get values, and parse response
+      //Create URL with parameters
       //...
+
+      //Call external API to get values
+      //...
+
+      //Simulate API response
+      string jsonResponse = @"{""deductions"": [{ ""type"": ""EE"", ""amount"": 35},{ ""type"": ""ER"", ""amount"": 30}]}";
+      var apiAmounts = ParseAPIResponse(jsonResponse);
 
       //Dummy data for testing
       var detailList = new List<PayrollDetailModel>();
@@ -73,6 +82,23 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
       detailList.Add(line);
 
       return detailList;
+    }
+    private static APIAmounts ParseAPIResponse(string json)
+    {
+      using var doc = JsonDocument.Parse(json);
+      decimal ee = 0m, er = 0m;
+
+      if (doc.RootElement.TryGetProperty("deductions", out var arr) && arr.ValueKind == JsonValueKind.Array)
+      {
+        foreach (var item in arr.EnumerateArray())
+        {
+          var t = item.GetProperty("type").GetString();
+          var amount = item.TryGetProperty("amount", out var a) ? a.GetDecimal() : item.GetProperty("Amount").GetDecimal();
+          if (string.Equals(t, "EE", StringComparison.OrdinalIgnoreCase)) ee = amount;
+          else if (string.Equals(t, "ER", StringComparison.OrdinalIgnoreCase)) er = amount;
+        }
+      }
+      return new APIAmounts(ee, er);
     }
   }
 }
