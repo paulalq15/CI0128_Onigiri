@@ -44,7 +44,7 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
       var ccss = (await ccssTask).ToList();
       var hoursByEmployee = await hoursTask;
 
-      if (employees == null || employees.Count == 0) throw new InvalidOperationException("No hay empleados con contrato vigente en el periodo seleccionado");
+      if (employees == null || employees.Count == 0) throw new InvalidOperationException("No hay empleados con contrato vigente y horas registradas en el periodo seleccionado");
 
       var elementsByEmployee = await BuildElementsMapAsync(companyId, employees, dateFrom, dateTo);
 
