@@ -107,6 +107,7 @@ namespace Planilla_Backend.LayeredArchitecture.Repositories
             const string query = @"
               SELECT
                 u.IdUsuario AS IdUser,
+                p.IdPersona AS IdPerson,
                 p.Cedula AS IdCard,
                 p.Nombre1 AS Name1,
                 p.Nombre2 AS Name2,

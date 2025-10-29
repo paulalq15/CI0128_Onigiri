@@ -101,8 +101,8 @@
                 </RouterLink>
               </li>
               <li>
-                <RouterLink class="nav-link my-3" to="/app/Empleados/ModificarEmpleado">
-                  <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas">Modificar Empleado</span>
+                <RouterLink class="nav-link my-3" to="/app/Empleados/ModificarPerfil">
+                  <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas">Modificar Mi Perfil</span>
                 </RouterLink>
               </li>
             </ul>

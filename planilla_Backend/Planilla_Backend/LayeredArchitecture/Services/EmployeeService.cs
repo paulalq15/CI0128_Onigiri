@@ -12,7 +12,7 @@ namespace Planilla_Backend.LayeredArchitecture.Services
       _employeeRepo = employeeRepo;
     }
 
-    public int RegisterEmployee(RegisterEmployee employeeModel)
+    public int RegisterEmployee(EmployeeModel employeeModel)
     {
       try
       {
@@ -22,5 +22,26 @@ namespace Planilla_Backend.LayeredArchitecture.Services
         return -1;
       }
     }
+
+    public async Task<EmployeeModel?> GetEmployeeByPersonId(int personId)
+    {
+      return await _employeeRepo.GetByEmployeeId(personId);
+    }
+
+
+    public Task<bool> UpdateSelf(int employeeId, EmployeeModel employeeModel, CancellationToken ct = default)
+    {
+      return _employeeRepo.UpdateByEmployee(employeeId, employeeModel, ct);
+    }
+
+    public async Task<bool> UpdateAsEmployer(int employerId, int employeeId, EmployeeModel employeeModel, CancellationToken ct = default)
+    {
+      return await _employeeRepo.UpdateByEmployer(employerId, employeeId, employeeModel, ct);
+    }
+
+
+
+
+
   }
 }

@@ -13,7 +13,7 @@
         <home-page-card title="Empleados" icon="bi bi-people-fill" to="/app/Empleados/VerEmpleados" />
       </div>
       <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2" v-if="$session.user?.typeUser === 'Empleado'">
-        <home-page-card title="Empleados" icon="bi bi-people-fill" to="/app/Empleados/ModificarEmpleado" />
+        <home-page-card title="Empleados" icon="bi bi-people-fill" to="/app/Empleados/ModificarPerfil" />
       </div>
       <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2" v-if="$session.user?.typeUser === 'Empleado'">
         <home-page-card title="Timesheets" icon="bi bi-calendar-week-fill" to="/app/Timesheets/CrearTimesheets" />

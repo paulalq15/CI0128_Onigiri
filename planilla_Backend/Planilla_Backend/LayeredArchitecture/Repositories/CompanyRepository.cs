@@ -1,9 +1,8 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
-using Planilla_Backend.Models;
+using Planilla_Backend.LayeredArchitecture.Models;
 using System.ComponentModel.Design;
 using System.Data;
-using Planilla_Backend.LayeredArchitecture.Models;
 using System.Data.SqlClient;
 
 namespace Planilla_Backend.LayeredArchitecture.Repositories
