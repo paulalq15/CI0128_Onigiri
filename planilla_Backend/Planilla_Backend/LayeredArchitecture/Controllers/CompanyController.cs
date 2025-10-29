@@ -120,5 +120,17 @@ namespace Planilla_Backend.LayeredArchitecture.Controllers
       if (company == null) return NotFound("Company not found.");
       return Ok(company);
     }
+
+    [HttpGet("getCompanyIdByUserId")]
+    public int getCompanyIdByUserId(int userId)
+    {
+      return this.createCompanyService.getCompanyIdByUserId(userId);
+    }
+
+    [HttpGet("getCompanyTotalBenefitsByCompanyId")]
+    public int getCompanyTotalBenefitsByCompanyId(int companyId)
+    {
+      return this.createCompanyService.getCompanyTotalBenefitsByCompanyId(companyId);
+    }
   }
 }

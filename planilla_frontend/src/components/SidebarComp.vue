@@ -168,7 +168,7 @@
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas">Asignar deducciones</span>
                 </RouterLink>
               </li>
-              <li v-if="session.user?.typeUser !== 'Administrador'">
+              <li v-if="session.user?.typeUser === 'Empleado' || session.user?.typeUser === 'Aprobador'">
                 <RouterLink class="nav-link my-3" to="/app/Planilla/SeleccionarBeneficios">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas">Seleccionar beneficios</span>
                 </RouterLink>

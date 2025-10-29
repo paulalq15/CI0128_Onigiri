@@ -106,6 +106,7 @@ namespace Planilla_Backend.LayeredArchitecture.Repositories
     {
             const string query = @"
               SELECT
+                u.IdUsuario AS IdUser,
                 p.IdPersona AS IdPerson,
                 p.Cedula AS IdCard,
                 p.Nombre1 AS Name1,
@@ -125,6 +126,7 @@ namespace Planilla_Backend.LayeredArchitecture.Repositories
              ";
 
       using var connection = new SqlConnection(_connectionString);
+
       return connection.Query<PersonUser>(query, new { companyId }).ToList();
     }
 

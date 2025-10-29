@@ -315,5 +315,31 @@ namespace Planilla_Backend.LayeredArchitecture.Repositories
         throw;
       }
     }
+
+    public int getCompanyIdByUserId(int userId)
+    {
+      using var connection = new SqlConnection(_connectionString);
+
+       const string query = @"
+         SELECT IdEmpresa 
+         FROM UsuariosPorEmpresa
+         WHERE IdUsuario = @userId;
+       ";
+
+       return connection.QueryFirst<int>(query, new { userId });
+    }
+
+    public int getCompanyTotalBenefitsByCompanyId(int companyId)
+    {
+      using var connection = new SqlConnection(_connectionString);
+
+      const string query = @"
+        SELECT CantidadBeneficios
+        FROM Empresa
+        WHERE IdEmpresa = @companyId;
+      ";
+
+      return connection.QuerySingle<int>(query, new { companyId });
+    }
   }
 }
