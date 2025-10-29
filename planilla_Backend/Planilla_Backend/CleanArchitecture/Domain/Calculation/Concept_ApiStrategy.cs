@@ -51,35 +51,40 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
       //...
 
       //Simulate API response
-      string jsonResponse = @"{""deductions"": [{ ""type"": ""EE"", ""amount"": 35},{ ""type"": ""ER"", ""amount"": 30}]}";
+      string jsonResponse = @"{""deductions"": [{ ""type"": ""EE"", ""amount"": 27500},{ ""type"": ""ER"", ""amount"": 25000}]}";
       var apiAmounts = ParseAPIResponse(jsonResponse);
 
       //Dummy data for testing
       var detailList = new List<PayrollDetailModel>();
 
-      var line = new PayrollDetailModel
+      if (apiAmounts.EE > 0m)
       {
-        EmployeePayrollId = employeePayroll.Id,
-        Description = "Elemento de planilla API",
-        Type = PayrollItemType.EmployeeDeduction,
-        Amount = 25000m,
-        IdCCSS = null,
-        IdTax = null,
-        IdElement = 7,
-      };
-      detailList.Add(line);
-
-      line = new PayrollDetailModel
+        var lineEE = new PayrollDetailModel
+        {
+          EmployeePayrollId = employeePayroll.Id,
+          Description = concept.Name + " - Pago empleado",
+          Type = PayrollItemType.EmployeeDeduction,
+          Amount = apiAmounts.EE,
+          IdCCSS = null,
+          IdTax = null,
+          IdElement = concept.Id,
+        };
+        detailList.Add(lineEE);
+      }
+      if (apiAmounts.ER > 0m)
       {
-        EmployeePayrollId = employeePayroll.Id,
-        Description = "Elemento de planilla API",
-        Type = PayrollItemType.Benefit,
-        Amount = 50000m,
-        IdCCSS = null,
-        IdTax = null,
-        IdElement = 7,
-      };
-      detailList.Add(line);
+        var lineER = new PayrollDetailModel
+        {
+          EmployeePayrollId = employeePayroll.Id,
+          Description = concept.Name + " - Aporte empresa",
+          Type = PayrollItemType.Benefit,
+          Amount = apiAmounts.ER,
+          IdCCSS = null,
+          IdTax = null,
+          IdElement = concept.Id,
+        };
+        detailList.Add(lineER);
+      }
 
       return detailList;
     }
