@@ -4,6 +4,6 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
 {
   public interface IConceptStrategy
   {
-    IEnumerable<PayrollDetailModel> Apply(EmployeePayrollModel employeePayroll, ElementModel concept, PayrollContext ctx);
+    IEnumerable<PayrollDetailModel> Apply(EmployeePayrollModel employeePayroll, ElementModel concept, PayrollContext ctx, EmployeeModel employee);
   }
 }

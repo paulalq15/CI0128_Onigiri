@@ -10,5 +10,7 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Entities
     public decimal Value { get; set; }
     public int EmployeeId { get; set; }
     public PayrollItemType ItemType { get; set; }
+    public int? NumberOfDependents { get; set; }
+    public string? PensionType { get; set; }
   }
 }

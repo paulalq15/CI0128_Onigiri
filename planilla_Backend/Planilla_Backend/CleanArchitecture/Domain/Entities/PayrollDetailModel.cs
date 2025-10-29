@@ -12,7 +12,5 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Entities
     public int? IdCCSS { get; set; }
     public int? IdTax { get; set; }
     public int? IdElement { get; set; }
-    public int? NumberOfDependents { get; set; }
-    public string? PensionType { get; set; }
   }
 }

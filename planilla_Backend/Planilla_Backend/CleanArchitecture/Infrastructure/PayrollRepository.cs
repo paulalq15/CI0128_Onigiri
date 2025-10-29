@@ -124,7 +124,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       {
         using var connection = new SqlConnection(_connectionString);
         const string query =
-          @"SELECT ea.IdElementoAplicado AS Id, e.Nombre AS Name, e.Valor AS Value, p.IdPersona AS EmployeeId, ae.TipoPlan AS PensionType, ae.CantidadDependientes AS NumberOfDependents,
+          @"SELECT ea.IdElementoAplicado AS Id, e.Nombre AS Name, e.Valor AS Value, p.IdPersona AS EmployeeId, ea.TipoPlan AS PensionType, ea.CantidadDependientes AS NumberOfDependents,
               CASE 
                 WHEN e.Tipo = 'Monto' THEN 'FixedAmount'
                 WHEN e.Tipo = 'Porcentaje' THEN 'Percentage'
