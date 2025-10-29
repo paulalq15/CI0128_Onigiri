@@ -4,7 +4,7 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
 {
   public class Concept_FixedAmountStrategy : IConceptStrategy
   {
-    public IEnumerable<PayrollDetailModel> Apply(EmployeePayrollModel employeePayroll, ElementModel concept)
+    public IEnumerable<PayrollDetailModel> Apply(EmployeePayrollModel employeePayroll, ElementModel concept, PayrollContext ctx, EmployeeModel employee)
     {
       if (employeePayroll == null) throw new ArgumentNullException("La planilla del empleado es requerida");
       if (concept == null) throw new ArgumentNullException("El elemento de planilla es requerido");
