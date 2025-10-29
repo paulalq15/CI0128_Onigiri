@@ -26,7 +26,10 @@ namespace Planilla_Backend.Repositories
               ea.IdUsuario As UserId,
               ea.FechaInicio AS StartDate,
               ea.FechaFin AS EndDate,
-              ea.Estado AS Status
+              ea.Estado AS Status,
+              ea.TipoElemento AS ElementType,
+              ea.TipoPlan AS PlanType,
+              ea.CantidadDependientes AS AmountDependents
             FROM dbo.ElementoAplicado ea
             JOIN dbo.ElementoPlanilla ep ON ea.IdElemento = ep.IdElemento
             WHERE ea.IdUsuario = @employeeId;";
@@ -48,8 +51,8 @@ namespace Planilla_Backend.Repositories
                 throw new ArgumentException("ElementId no puede ser nulo.");
 
             const string query = @"
-              INSERT INTO dbo.ElementoAplicado (IdUsuario, IdElemento, FechaInicio, FechaFin)
-              VALUES (@IdUsuario, @IdElemento, GETDATE(), NULL);
+              INSERT INTO dbo.ElementoAplicado (IdUsuario, IdElemento, FechaInicio, FechaFin, TipoElemento, TipoPlan, CantidadDependientes)
+              VALUES (@IdUsuario, @IdElemento, GETDATE(), NULL, @TipoElemento, @TipoPlan, @CantidadDependientes);
             ";
 
             try
@@ -59,6 +62,9 @@ namespace Planilla_Backend.Repositories
 
                 command.Parameters.Add(new SqlParameter("@IdUsuario", newAppliedElement.UserId.Value));
                 command.Parameters.Add(new SqlParameter("@IdElemento", newAppliedElement.ElementId.Value));
+                command.Parameters.Add(new SqlParameter("@TipoElemento", newAppliedElement.ElementType));
+                command.Parameters.Add(new SqlParameter("@TipoPlan", (object?)newAppliedElement.PlanType ?? DBNull.Value));
+                command.Parameters.Add(new SqlParameter("@CantidadDependientes", (object?)newAppliedElement.AmountDependents ?? DBNull.Value));
 
                 await connection.OpenAsync();
                 await command.ExecuteNonQueryAsync();

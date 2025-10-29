@@ -29,7 +29,8 @@
     </div>
 
   <div class="container mt-5">
-    <h1 class="display-4 text-center">Deducciones Disponibles</h1>
+  <div v-if="selectedEmployee.id" class="container mt-5">
+    <h1 class="display-6 text-center">Deducciones Disponibles</h1>
     <div class="row justify-content-end">
       <div class="col-2"></div>
     </div>
@@ -52,7 +53,7 @@
           <td>
             <button
               class="btn btn-secondary btn-sm"
-              @click="addAppliedElement(index, deduction.idElement)">
+              @click="addAppliedElement(deduction)">
               Seleccionar
             </button>
           </td>
@@ -61,12 +62,13 @@
         <tr>
           <td
             style="text-align: center; width: 50px; height: 50px; border: 1px solid #000; font-weight: bold; vertical-align: middle;"
-            colspan="4">
+            colspan="6">
             Total de Deducciones: {{ filteredDeductions.length }}
           </td>
         </tr>
       </tbody>
     </table>
+  </div>
   </div>
 </div>
 
@@ -84,6 +86,8 @@
             <th>Fecha Inicio</th>
             <th>Fecha Fin</th>
             <th>Estado</th>
+            <th>Tipo Plan</th>
+            <th>Total Dependientes</th>
             <th>Acción</th>
           </tr>
         </thead>
@@ -94,6 +98,8 @@
             <td>{{ formatDate(appliedElement.startDate) }}</td>
             <td>{{ formatDate(appliedElement.endDate) }}</td>
             <td>{{ appliedElement.status }}</td>
+            <td>{{ appliedElement.planType }}</td>
+            <td>{{ appliedElement.amountDependents }}</td>
             <td><button class="btn btn-danger btn-sm" @click="deactivateAppliedElement(appliedElement.elementId, appliedElement.status)">
               Desactivar
             </button>
@@ -101,7 +107,7 @@
         </tr>
 
           <tr>
-            <td style="text-align: center; width: 50px; height: 50px; border: 1px solid #000; font-weight: bold; vertical-align: middle;" colspan="5">
+            <td style="text-align: center; width: 50px; height: 50px; border: 1px solid #000; font-weight: bold; vertical-align: middle;" colspan="7">
               Total Deducciones Activas: {{ this.getTotalActiveAppliedElements() }}
             </td>
           </tr>
@@ -222,7 +228,18 @@ import axios from "axios";
         return this.appliedElements.filter(element => element.status === "Activo").length;
       },
 
-      addAppliedElement(index, elementId) {
+      addAppliedElement(deduction) {
+        // Verify the parameters sent to the function: 
+        if (!this.user || !this.user.userId) {
+          alert("ERROR: User ID no está definido.");
+          return;
+        }
+
+        if (!deduction.idElement) {
+          alert("ERROR: idElement no está definido.");
+          return;
+        }
+
         // Verify that an employee was selected:
         if (!this.selectedEmployee || !this.selectedEmployee.id) {
           alert("Por favor, seleccione un empleado antes de seleccionar una deducción.");
@@ -230,31 +247,54 @@ import axios from "axios";
         }
 
         // Verify that the benefit hasn't been selected yet:
-        const selectedDeductionName = this.filteredDeductions[index].elementName;
-
         const alreadySelected = this.appliedElements.some(
-        (applied) => applied.elementName == selectedDeductionName && applied.elementStatus == "Activo");
+        (applied) => applied.elementName == deduction.elementName && applied.status == "Activo");
 
         if (alreadySelected) {
           alert("Esta deducción ya está seleccionada.");
           return;
         }
 
-        if (!this.user || !this.user.userId) {
-          alert("User ID no está definido");
-          return;
-        }
+        let amountDependents = null;
+        let planType = null;
 
-        if (!elementId) {
-          alert("Element ID no está definido");
-          return;
+        // Verify if the deduction is an API:
+        if (deduction.calculationType === "API") {
+          // Seguro Privado:
+          if (deduction.calculationValue === 2) {
+            amountDependents = prompt("Ingrese la cantidad de dependientes: ");
+
+            // if (!Number.isInteger(amountDependents)) {
+            if (amountDependents === parseInt(amountDependents, 10)) {
+              alert("ERROR: la cantidad de dependientes debe ser un número entero.");
+              return;
+            }
+
+            if (amountDependents <= 0) {
+              alert("ERROR: la cantidad de dependientes debe ser superior a 0.");
+              return;
+            } 
+          }
+
+          // Pensión Voluntaria:
+          if (deduction.calculationValue === 3) {
+            planType = prompt("Ingrese el tipo de plan:");
+
+            if (planType != 'A' && planType != 'B' && planType != 'C') {
+              alert("ERROR: el tipo de plan debe ser A, B o C.");
+              return;
+            }
+          }
         }
 
         // Make a POST request to add the new applied element:
         axios.post(`https://localhost:7071/api/AppliedElement/addAppliedElement`,
         {
           UserId: this.selectedEmployee.id,
-          ElementId: elementId
+          ElementId: deduction.idElement,
+          ElementType: 'Deduccion',
+          amountDependents: amountDependents,
+          PlanType: planType
         })
 
         .then(response => {
