@@ -23,7 +23,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       {
         using var connection = new SqlConnection(_connectionString);
         const string query =
-          @"SELECT IdEmpresa AS Id, DiaPago1 AS PayDay1, DiaPago2 AS PayDay2,
+          @"SELECT IdEmpresa AS Id, DiaPago1 AS PayDay1, DiaPago2 AS PayDay2, CedulaJuridica AS LegalID,
               CASE FrecuenciaPago
                 WHEN 'Quincenal' THEN 'Biweekly'
                 WHEN 'Mensual' THEN 'Monthly'
@@ -49,7 +49,11 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       {
         using var connection = new SqlConnection(_connectionString);
         const string query =
-          @"SELECT p.IdPersona AS Id, e.IdEmpresa AS CompanyId, p.TipoPersona AS PersonType
+          @"SELECT p.IdPersona AS Id, e.IdEmpresa AS CompanyId, p.TipoPersona AS PersonType, 
+            CASE 
+              WHEN DATEADD(YEAR, DATEDIFF(YEAR, FechaNacimiento, GETDATE()), FechaNacimiento) > GETDATE() THEN DATEDIFF(YEAR, FechaNacimiento, GETDATE()) - 1
+              ELSE DATEDIFF(YEAR, FechaNacimiento, GETDATE())
+          END AS Age
             FROM Persona AS p
               JOIN Usuario AS u ON p.IdPersona = u.IdPersona
               JOIN UsuariosPorEmpresa AS ue ON u.IdUsuario = ue.IdUsuario
@@ -120,7 +124,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       {
         using var connection = new SqlConnection(_connectionString);
         const string query =
-          @"SELECT ea.IdElementoAplicado AS Id, e.Nombre AS Name, e.Valor AS Value, p.IdPersona AS EmployeeId,
+          @"SELECT ea.IdElementoAplicado AS Id, e.Nombre AS Name, e.Valor AS Value, p.IdPersona AS EmployeeId, ae.TipoPlan AS PensionType, ae.CantidadDependientes AS NumberOfDependents,
               CASE 
                 WHEN e.Tipo = 'Monto' THEN 'FixedAmount'
                 WHEN e.Tipo = 'Porcentaje' THEN 'Percentage'
