@@ -212,7 +212,7 @@ namespace Tests
       };
 
       var expectedSalary = Math.Round(monthlySalary / 30 * (15 - 6 + 1), 2);
-      var expectedMonthlySalary = Math.Round(monthlySalary / 30 * (31 - 6 + 1), 2);
+      var expectedMonthlySalary = Math.Round(monthlySalary / 30 * (30 - 6 + 1), 2);
       var detail = _sut.CreateBaseLine(employeePayroll, contract, context);
 
       Assert.AreEqual(expectedSalary, employeePayroll.Gross);
