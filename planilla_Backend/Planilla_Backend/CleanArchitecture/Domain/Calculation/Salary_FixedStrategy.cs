@@ -66,7 +66,8 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
       var expectedMonthlySalary = 0m;
       if (ctx.Company.PaymentFrequency == PaymentFrequency.Biweekly) expectedMonthlySalary = amountForPeriod + amountForOtherPeriod;
       else expectedMonthlySalary = amountForPeriod;
-      
+      employeePayroll.BaseSalaryForPeriod = Math.Round(expectedMonthlySalary, 2);
+
       // Salary line for the period
       return new PayrollDetailModel
       {
