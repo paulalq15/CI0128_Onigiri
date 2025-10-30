@@ -31,10 +31,26 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
 
       var totalPayrollDays = 0;
       var amountForPeriod = 0m;
+      var amountForOtherPeriod = 0m;
+      var workedDaysInOtherPeriod = 0;
+      var halfMonthDays = 0;
       if (ctx.Company.PaymentFrequency == PaymentFrequency.Biweekly)
       {
         totalPayrollDays = (periodEndDate.DayNumber - periodStartDate.DayNumber) + 1;
         amountForPeriod = Math.Round(contract.Salary / 2, 2);
+        amountForOtherPeriod = Math.Round(contract.Salary / 2, 2);
+
+        if (periodStartDate.Day == 1)
+        {
+          workedDaysInOtherPeriod = OverlapInclusiveDays(periodStartDate.AddDays(15), monthEnd, contractStart, contractEnd);
+          halfMonthDays = OverlapInclusiveDays(monthStart.AddDays(15), monthEnd, periodStartDate.AddDays(15), monthEnd);
+        }
+        else
+        {
+          workedDaysInOtherPeriod = OverlapInclusiveDays(periodStartDate.AddDays(-15), periodStartDate.AddDays(-1), contractStart, contractEnd);
+          halfMonthDays = OverlapInclusiveDays(monthStart.AddDays(-15), monthStart.AddDays(-1), periodStartDate.AddDays(-15), periodStartDate.AddDays(-1));
+        }
+        if (workedDaysInOtherPeriod != halfMonthDays) amountForOtherPeriod = ComputeBase(contract.Salary, workedDaysInOtherPeriod, fixedMonthDays);
       }
       else
       {
@@ -47,9 +63,9 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
       employeePayroll.Gross = amountForPeriod;
 
       //adjust monthly base based on expected worked days
-      var expectedMonthlySalary = contract.Salary;
-      if (workedDaysInMonth != totalDaysInMonth) expectedMonthlySalary = ComputeBase(contract.Salary, workedDaysInMonth, fixedMonthDays);
-      employeePayroll.BaseSalaryForPeriod = expectedMonthlySalary;
+      var expectedMonthlySalary = 0m;
+      if (ctx.Company.PaymentFrequency == PaymentFrequency.Biweekly) expectedMonthlySalary = amountForPeriod + amountForOtherPeriod;
+      else expectedMonthlySalary = amountForPeriod;
       
       // Salary line for the period
       return new PayrollDetailModel
