@@ -10,13 +10,15 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
       if (concept == null) throw new ArgumentNullException("El elemento de planilla es requerido");
 
       var detailList = new List<PayrollDetailModel>();
+      var amount = concept.Value;
+      if (ctx.Company.PaymentFrequency == PaymentFrequency.Biweekly) amount = Math.Round(concept.Value / 2, 2);
 
       var line = new PayrollDetailModel
       {
         EmployeePayrollId = employeePayroll.Id,
         Description = concept.Name,
         Type = concept.ItemType,
-        Amount = concept.Value,
+        Amount = amount,
         IdCCSS = null,
         IdTax = null,
         IdElement = concept.Id,

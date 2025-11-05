@@ -55,6 +55,10 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
 
       if (apiAmounts.EE > 0)
       {
+        if (concept.Value == 2 && ctx.Company.PaymentFrequency == PaymentFrequency.Biweekly)
+        {
+          apiAmounts = apiAmounts with { EE = Math.Round(apiAmounts.EE / 2, 2) };
+        }
         detailList.Add(new PayrollDetailModel
         {
           EmployeePayrollId = employeePayroll.Id,
@@ -67,6 +71,10 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
 
       if (apiAmounts.ER > 0)
       {
+        if (concept.Value == 2 && ctx.Company.PaymentFrequency == PaymentFrequency.Biweekly)
+        {
+          apiAmounts = apiAmounts with { ER = Math.Round(apiAmounts.ER / 2, 2) };
+        }
         detailList.Add(new PayrollDetailModel
         {
           EmployeePayrollId = employeePayroll.Id,
