@@ -1,0 +1,10 @@
+﻿namespace Planilla_Backend.CleanArchitecture.Domain.Entities
+{
+  public class EmployeeModel
+  {
+    public int Id { get; set; }
+    public int CompanyId { get; set; }
+    required public string PersonType { get; set; }
+    public int? Age { get; set; }
+  }
+}

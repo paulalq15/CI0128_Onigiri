@@ -3,10 +3,6 @@
     <div class="container mt-5">
       <h1 class="display-4 text-center">Lista de Empleados</h1>
 
-      <div class="row justify-content-end">
-        <div class="col-2"></div>
-      </div>
-
       <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
         <thead>
           <tr>
@@ -20,6 +16,7 @@
             <th>Tipo Contrato</th>
             <th>Puesto</th>
             <th>Departamento</th>
+            <th>Acciones</th>
           </tr>
         </thead>
 
@@ -30,11 +27,16 @@
             <td>{{ employee.name2 }}</td>
             <td>{{ employee.surname1 }}</td>
             <td>{{ employee.surname2 }}</td>
-            <td>{{ this.formatDate(employee.birthdayDate) }}</td>
+            <td>{{ formatDate(employee.birthdayDate) }}</td>
             <td>{{ employee.email }}</td>
             <td>{{ employee.contractType }}</td>
             <td>{{ employee.jobPosition }}</td>
             <td>{{ employee.department }}</td>
+            <td>
+              <button class="btn btn-sm btn-primary" @click="goEdit(employee)">
+                Editar
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -42,48 +44,43 @@
   </div>
 </template>
 
-<script>
-import axios from "axios";
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import URLBaseAPI from '../axiosAPIInstances.js';
 import { getUser } from '../session.js';
 
-export default {
-  name: "EmployeesList",
+const router = useRouter();
+const employees = ref([]);
+const user = ref(null);
 
-  data() {
-    return {
-      employees: [],
-      user: null,
-    };
-  },
+function formatDate(d) { return new Date(d).toLocaleDateString(); }
 
-  methods: {
-    getEmployees() {
-      const user = getUser();
+async function getEmployees() {
+  const u = getUser();
+  if (!u) return;
+  user.value = u;
 
-      if (!user) {
-        return;
-      }
+  try {
+    const { data } = await URLBaseAPI.get('/api/PersonUser/getEmployeesByCompanyId', {
+      params: { companyId: u.companyUniqueId }
+    });
+    employees.value = data;
+  } catch (e) {
+    console.error('Error al cargar empleados:', e);
+    employees.value = [];
+  }
+}
 
-      this.user = user;
-      const companyId = user.companyUniqueId;
-      const url = `https://localhost:7071/api/PersonUser/getEmployeesByCompanyId?companyId=${companyId}`;
+function goEdit(emp) {
+  const personId = emp.idPerson
+  if (!personId && personId !== 0) {
+    console.warn('No se encontró personId', emp);
+    return;
+  }
 
-      axios.get(url).then((response) => {
-        this.employees = response.data;
-      });
-    },
+  router.push({ name: 'ModifyEmployees', query: { personId } });
+}
 
-    formatDate(dateString) {
-      const date = new Date(dateString);
-      return date.toLocaleDateString();
-    }
-  },
-
-  created: function () {
-    this.getEmployees();
-  },
-};
-
+onMounted(getEmployees);
 </script>
-
-<style lang="scss" scoped></style>

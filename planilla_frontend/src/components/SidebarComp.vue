@@ -101,8 +101,8 @@
                 </RouterLink>
               </li>
               <li>
-                <RouterLink class="nav-link my-3" to="/app/Empleados/ModificarEmpleado">
-                  <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas">Modificar Empleado</span>
+                <RouterLink class="nav-link my-3" to="/app/Empleados/ModificarPerfil">
+                  <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas">Modificar Mi Perfil</span>
                 </RouterLink>
               </li>
             </ul>
@@ -110,7 +110,7 @@
         </li>
 
         <!--Timesheets menu-->
-        <li class="my-3" v-if="session.user?.typeUser !== 'Administrador'">
+        <li class="my-3" v-if="session.user?.typeUser === 'Empleado'">
           <button
             class="nav-link d-flex w-100 gap-2 px-2 py-2 sidebar-item collapsed"
             data-bs-toggle="collapse"
@@ -124,16 +124,6 @@
           </button>
           <div class="collapse" id="timesheet-collapse" data-bs-parent="#sidebar-accordion">
             <ul class="list-unstyled ms-4 ps-2 small">
-              <li>
-                <RouterLink class="nav-link my-3" to="/app/Timesheets/VerTimesheets">
-                  <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas">Ver Timesheets</span>
-                </RouterLink>
-              </li>
-              <li v-if="session.user?.typeUser !== 'Empleado'">
-                <RouterLink class="nav-link my-3" to="/app/Timesheets/AprobarTimesheets">
-                  <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas">Aprobar Timesheets</span>
-                </RouterLink>
-              </li>
               <li>
                 <RouterLink class="nav-link my-3" to="/app/Timesheets/CrearTimesheets">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas">Crear Timesheet</span>
@@ -158,11 +148,6 @@
           </button>
           <div class="collapse" id="payroll-collapse" data-bs-parent="#sidebar-accordion">
             <ul class="list-unstyled ms-4 ps-2 small">
-              <li v-if="session.user?.typeUser !== 'Administrador'">
-                <RouterLink class="nav-link my-3" to="/app/Planilla/VerPlanilla">
-                  <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas">Historial de planillas</span>
-                </RouterLink>
-              </li>
               <li v-if="session.user?.typeUser === 'Empleador' || session.user?.typeUser === 'Aprobador'">
                 <RouterLink class="nav-link my-3" to="/app/Planilla/CrearPlanilla">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas">Crear planilla</span>
@@ -183,38 +168,9 @@
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas">Asignar deducciones</span>
                 </RouterLink>
               </li>
-              <li v-if="session.user?.typeUser !== 'Administrador'">
+              <li v-if="session.user?.typeUser === 'Empleado' || session.user?.typeUser === 'Aprobador'">
                 <RouterLink class="nav-link my-3" to="/app/Planilla/SeleccionarBeneficios">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas">Seleccionar beneficios</span>
-                </RouterLink>
-              </li>
-            </ul>
-          </div>
-        </li>
-
-        <!--Payment options-->
-        <li class="my-3" v-if="session.user?.typeUser !== 'Administrador'">
-          <button
-            class="nav-link d-flex w-100 gap-2 px-2 py-2 sidebar-item collapsed"
-            data-bs-toggle="collapse"
-            data-bs-target="#payment-collapse"
-            aria-expanded="false"
-            aria-controls="payment-collapse"
-          >
-            <i class="bi bi-credit-card me-3"></i>
-            <span class="flex-grow-1 text-start">Pagos</span>
-            <i class="bi bi-chevron-right caret"></i>
-          </button>
-          <div class="collapse" id="payment-collapse" data-bs-parent="#sidebar-accordion">
-            <ul class="list-unstyled ms-4 ps-2 small">
-              <li>
-                <RouterLink class="nav-link my-3" to="/app/Pagos/VerPagos">
-                  <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas">Historial de pagos</span>
-                </RouterLink>
-              </li>
-              <li v-if="session.user?.typeUser !== 'Empleado'">
-                <RouterLink class="nav-link my-3" to="/app/Pagos/CrearPago">
-                  <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas">Crear pago</span>
                 </RouterLink>
               </li>
             </ul>
@@ -239,11 +195,6 @@
               <li>
                 <RouterLink class="nav-link my-3" to="/app/Reportes/VerReportes">
                   <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas">Ver Reportes</span>
-                </RouterLink>
-              </li>
-              <li>
-                <RouterLink class="nav-link my-3" to="/app/Reportes/CrearReporte">
-                  <span class="px-2 py-2 sidebar-item" data-bs-dismiss="offcanvas">Crear Reporte</span>
                 </RouterLink>
               </li>
             </ul>
