@@ -26,6 +26,7 @@ export default {
     background-color: #1C4532;
     border-color: #1C4532;
     color: white;
+    text-align: center;
   }
 
   button:hover {
