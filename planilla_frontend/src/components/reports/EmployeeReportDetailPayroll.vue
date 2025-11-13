@@ -1,6 +1,6 @@
 <template>
   <div>
-    
+    Reporte detallado del pago de planilla (Empleado, PLAN-106)
   </div>
 </template>
 
