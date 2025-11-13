@@ -75,7 +75,7 @@
   import * as XLSX from "xlsx";
   import { saveAs } from "file-saver";
 
-  import LinkButton from './LinkButton.vue';
+  import LinkButton from '../LinkButton.vue';
 
   const companyName = ref("ABC");
   const employeeName = ref("Josué Badilla");
@@ -147,7 +147,7 @@
   }
 
   h4, p {
-    color: rgb(114, 142, 234);
+    color: #000;
   }
 
   #reportTable {
@@ -161,6 +161,8 @@
   }
 
   #reportTable th {
-    background-color: rgb(112, 136, 213);
+    background-color: #1C4532;
+    color: white;
+    font-weight: normal;
   }
 </style>
