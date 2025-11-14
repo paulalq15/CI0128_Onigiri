@@ -1,15 +1,15 @@
 using Planilla_Backend.CleanArchitecture.Application;
+using Planilla_Backend.CleanArchitecture.Application.Ports;
+using Planilla_Backend.CleanArchitecture.Application.Reports;
+using Planilla_Backend.CleanArchitecture.Application.Services;
+using Planilla_Backend.CleanArchitecture.Application.UseCases;
+using Planilla_Backend.CleanArchitecture.Domain.Calculation;
 using Planilla_Backend.CleanArchitecture.Infrastructure;
+using Planilla_Backend.CleanArchitecture.Infrastructure.External;
 using Planilla_Backend.LayeredArchitecture.Repositories;
 using Planilla_Backend.LayeredArchitecture.Services;
 using Planilla_Backend.LayeredArchitecture.Services.EmailService;
 using Planilla_Backend.LayeredArchitecture.Services.Utils;
-
-using Planilla_Backend.CleanArchitecture.Application.Ports;
-using Planilla_Backend.CleanArchitecture.Application.Services;
-using Planilla_Backend.CleanArchitecture.Application.UseCases;
-using Planilla_Backend.CleanArchitecture.Domain.Calculation;
-using Planilla_Backend.CleanArchitecture.Infrastructure.External;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
@@ -67,6 +67,9 @@ builder.Services.AddScoped<ITimesheetService, TimesheetService>();
 // External APIs (Asociación, Seguro, Pensiones)
 builder.Services.AddScoped<ExternalPartnersService>();
 builder.Services.AddExternalApis(builder.Configuration);
+
+// Reports
+builder.Services.AddScoped<IGenerateReportDataQuery, GenerateReportDataQuery>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
