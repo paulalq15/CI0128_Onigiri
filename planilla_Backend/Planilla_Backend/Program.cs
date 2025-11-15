@@ -70,6 +70,8 @@ builder.Services.AddExternalApis(builder.Configuration);
 
 // Reports
 builder.Services.AddScoped<IGenerateReportDataQuery, GenerateReportDataQuery>();
+builder.Services.AddScoped<IReportFactory, ReportFactory>();
+builder.Services.AddScoped<IReportRepository, ReportRepository>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
