@@ -32,7 +32,7 @@ export function getReportsByUserType(typeUser) {
     },
     {
       id: 'employee-payroll',
-      description: 'Pago de planilla de empleados',
+      description: 'Detalle de Planilla Por Empleado',
       component: EmployerReportDetailEmployeePayroll,
     },
   ];
