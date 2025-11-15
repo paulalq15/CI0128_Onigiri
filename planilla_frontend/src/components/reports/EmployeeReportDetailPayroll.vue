@@ -254,27 +254,26 @@ export default {
 <style lang="scss" scoped>
 #reportFilters {
   display: flex;
-  align-items: flex-end;
-  gap: 20px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
   margin-bottom: 20px;
 }
 
-#reportFilters > div:first-child {
+#reportFilters > div {
   flex: 1;
   text-align: left;
 }
 
 #buttons {
-  width: auto;
-  margin-bottom: 0;
-  text-align: right;
+  margin-top: 4px;
 }
 
 #buttons :deep(button),
 #buttons button {
   width: auto;
+  padding: 6px 18px;
   white-space: nowrap;
-  padding-inline: 20px;
 }
 
 .report-wrapper {
