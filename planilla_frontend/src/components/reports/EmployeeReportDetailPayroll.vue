@@ -1,5 +1,5 @@
 <template>
-  <div id="reportFilters" class="w-50">
+  <div id="reportFilters">
     <div>
       <label for="selectPeriod" class="form-label fw-bold">Periodo</label>
       <select id="selectPeriod" class="form-select" v-model="selectedPayrollId">
@@ -8,12 +8,16 @@
         </option>
       </select>
     </div>
+
+    <div id="buttons" v-if="reportResult && !isLoading">
+      <LinkButton text="Descargar PDF" @click="downloadPDF" />
+    </div>
   </div>
 
   <div id="reportContent" class="report-wrapper">
     <div v-if="isLoading" class="text-muted text-end">Cargando reporte</div>
 
-    <div v-else-if="reportResult" class="report-card">
+    <div v-else-if="reportResult" class="report-card" ref="reportContainer">
       <div class="report-header mb-4">
         <div class="row">
           <div class="col-md-6 mb-2">
@@ -60,9 +64,15 @@
 </template>
 
 <script>
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import URLBaseAPI from '../../axiosAPIInstances.js';
+import LinkButton from '../LinkButton.vue';
 
 export default {
+  components: {
+    LinkButton,
+  },
   data() {
     return {
       payrollList: [],
@@ -173,6 +183,56 @@ export default {
         'line-net': desc === 'pago neto',
       };
     },
+    async downloadPDF() {
+      const element = this.$refs.reportContainer;
+      if (!element || !this.reportResult) return;
+
+      const payment = this.reportResult.reportInfo?.PaymentDate;
+      let fileDate = '';
+
+      if (payment) {
+        const d = new Date(payment);
+        if (!isNaN(d)) {
+          const yyyy = d.getFullYear();
+          const mm = String(d.getMonth() + 1).padStart(2, '0');
+          const dd = String(d.getDate()).padStart(2, '0');
+          fileDate = `${yyyy}${mm}${dd}`;
+        }
+      }
+      const fileName = fileDate ? `Detalle_planilla_${fileDate}.pdf` : 'Detalle_planilla.pdf';
+      
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+
+      const pageWidth  = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 10;
+
+      const imgWidth  = pageWidth - margin * 2;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      let finalWidth  = imgWidth;
+      let finalHeight = imgHeight;
+
+      const availableHeight = pageHeight - margin * 2;
+      if (imgHeight > availableHeight) {
+        const ratio = availableHeight / imgHeight;
+        finalWidth  = imgWidth * ratio;
+        finalHeight = imgHeight * ratio;
+      }
+
+      const x = (pageWidth - finalWidth) / 2;
+      const y = margin;
+
+      pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight);
+      pdf.save(fileName);
+    },
   },
   watch: {
     selectedPayrollId() {
@@ -188,13 +248,27 @@ export default {
 <style lang="scss" scoped>
 #reportFilters {
   display: flex;
+  align-items: flex-end;
   gap: 20px;
   margin-bottom: 20px;
 }
 
-#reportFilters > div {
-  width: 100%;
+#reportFilters > div:first-child {
+  flex: 1;
   text-align: left;
+}
+
+#buttons {
+  width: auto;
+  margin-bottom: 0;
+  text-align: right;
+}
+
+#buttons :deep(button),
+#buttons button {
+  width: auto;
+  white-space: nowrap;
+  padding-inline: 20px;
 }
 
 .report-wrapper {
