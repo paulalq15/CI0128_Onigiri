@@ -72,14 +72,18 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         const string detailsQuery =
           @"SELECT
             dn.Descripcion AS Description,
-            CASE 
+            CASE
               WHEN dn.Tipo = 'Salario' THEN 'Salario'
               WHEN dn.Tipo = 'Beneficio Empleado' THEN 'Beneficio'
               WHEN dn.Tipo = 'Deduccion Empleado' AND dn.IdElementoAplicado IS NOT NULL THEN 'Deduccion voluntaria'
               WHEN dn.Tipo = 'Deduccion Empleado' AND (dn.IdCCSS IS NOT NULL OR dn.IdImpuestoRenta IS NOT NULL) THEN 'Deduccion obligatoria'
               ELSE dn.Tipo
             END AS Category,
-            dn.Monto AS Amount
+            CASE
+              WHEN dn.Tipo = 'Deduccion Empleado'
+                THEN -dn.Monto
+              ELSE dn.Monto
+            END AS Amount
           FROM DetalleNomina AS dn
           WHERE dn.IdNominaEmpleado = @payrollId AND dn.Tipo <> 'Deduccion Empleador'
           ORDER BY dn.IdDetalleNomina;";

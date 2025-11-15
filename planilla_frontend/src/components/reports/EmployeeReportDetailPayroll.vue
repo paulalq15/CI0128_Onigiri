@@ -39,7 +39,7 @@
       </div>
 
       <div class="report-lines">
-        <div v-for="(row, index) in reportResult.rows" :key="index" class="report-line">
+        <div v-for="(row, index) in reportResult.rows" :key="index" class="report-line" :class="lineClasses(row)">
           <div class="description">
             {{ row['Descripción'] }}
           </div>
@@ -160,6 +160,14 @@ export default {
             year: 'numeric',
           }).format(date);
     },
+    lineClasses(row) {
+      const desc = (row['Descripción'] || '').toString().toLowerCase();
+      return {
+        'line-gross': desc === 'salario bruto',
+        'line-total': desc.includes('total'),
+        'line-net': desc === 'pago neto',
+      };
+    },
   },
   watch: {
     selectedPayrollId() {
@@ -221,6 +229,17 @@ export default {
 .report-line .description {
   flex: 1;
   text-align: left;
+}
+
+.report-line.line-gross, .report-line.line-total {
+  font-weight: 600;
+}
+
+.report-line.line-net {
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin-top: 8px;
+  padding-top: 8px;
 }
 
 .report-line .amount {

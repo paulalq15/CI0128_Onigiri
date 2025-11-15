@@ -1,4 +1,5 @@
 ﻿using Planilla_Backend.CleanArchitecture.Application.Ports;
+using Planilla_Backend.CleanArchitecture.Domain.Reports;
 
 namespace Planilla_Backend.CleanArchitecture.Application.Reports
 {
@@ -21,19 +22,7 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
       if (report.CompanyId != request.CompanyId.Value) throw new KeyNotFoundException("La empresa solicitante no coincide con la empresa registrada en la planilla");
       if (report.EmployeeId != request.EmployeeId.Value) throw new KeyNotFoundException("El empleado solicitante no coincide con el empleado registrado en la planilla");
 
-      var rows = new List<Dictionary<string, object?>>();
-
-      foreach (var line in report.Lines)
-      {
-        var row = new Dictionary<string, object?>
-        {
-          ["Descripción"] = line.Description,
-          ["Categoría"] = line.Category,
-          ["Monto"] = line.Amount
-        };
-
-        rows.Add(row);
-      }
+      var rows = BuildRows(report);
 
       var result = new ReportResultDto
       {
@@ -51,6 +40,74 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
       };
 
       return result;
+    }
+
+    private static List<Dictionary<string, object?>> BuildRows(EmployeePayrollReport report)
+    {
+      var rows = new List<Dictionary<string, object?>>();
+
+      var salaryLines = report.Lines.Where(l => l.Category == "Salario").ToList();
+      var mandatoryLines = report.Lines.Where(l => l.Category == "Deduccion obligatoria").ToList();
+      var voluntaryLines = report.Lines.Where(l => l.Category == "Deduccion voluntaria").ToList();
+      var benefitLines = report.Lines.Where(l => l.Category == "Beneficio").ToList();
+
+      AddLines(rows, salaryLines);
+
+      if (mandatoryLines.Any())
+      {
+        AddLines(rows, mandatoryLines);
+        AddTotalRow(rows, "Total deducciones obligatorias", "Deduccion obligatoria", mandatoryLines);
+      }
+
+      if (voluntaryLines.Any())
+      {
+        AddLines(rows, voluntaryLines);
+        AddTotalRow(rows, "Total deducciones voluntarias", "Deduccion voluntaria", voluntaryLines);
+      }
+
+      if (benefitLines.Any())
+      {
+        AddLines(rows, benefitLines);
+        AddTotalRow(rows, "Total beneficios", "Beneficio", benefitLines);
+      }
+
+      rows.Add(new Dictionary<string, object?>
+      {
+        ["Descripción"] = "Pago Neto",
+        ["Categoría"] = "Resumen",
+        ["Monto"] = report.NetAmount
+      });
+
+      return rows;
+    }
+
+    private static void AddLines(
+      List<Dictionary<string, object?>> rows,
+      IEnumerable<PayrollDetailLine> lines)
+    {
+      foreach (var line in lines)
+      {
+        rows.Add(new Dictionary<string, object?>
+        {
+          ["Descripción"] = line.Description,
+          ["Categoría"] = line.Category,
+          ["Monto"] = line.Amount
+        });
+      }
+    }
+
+    private static void AddTotalRow(
+      List<Dictionary<string, object?>> rows,
+      string description,
+      string category,
+      IEnumerable<PayrollDetailLine> lines)
+    {
+      rows.Add(new Dictionary<string, object?>
+      {
+        ["Descripción"] = description,
+        ["Categoría"] = category,
+        ["Monto"] = lines.Sum(l => l.Amount)
+      });
     }
   }
 }
