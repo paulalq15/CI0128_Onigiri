@@ -212,23 +212,29 @@ export default {
 
       const pageWidth  = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
-      const margin = 10;
+      
+      const sideMargin = 10;
+      const topAfterTitle = 25;
 
-      const imgWidth  = pageWidth - margin * 2;
+      pdf.setFontSize(14);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('Reporte - Detalle de pago de planilla', pageWidth / 2, 15, { align: 'center' });
+
+      const imgWidth = pageWidth - sideMargin * 2;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-      let finalWidth  = imgWidth;
+      let finalWidth = imgWidth;
       let finalHeight = imgHeight;
 
-      const availableHeight = pageHeight - margin * 2;
+      const availableHeight = pageHeight - topAfterTitle - sideMargin;
       if (imgHeight > availableHeight) {
         const ratio = availableHeight / imgHeight;
-        finalWidth  = imgWidth * ratio;
+        finalWidth = imgWidth * ratio;
         finalHeight = imgHeight * ratio;
       }
 
       const x = (pageWidth - finalWidth) / 2;
-      const y = margin;
+      const y = topAfterTitle;
 
       pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight);
       pdf.save(fileName);
