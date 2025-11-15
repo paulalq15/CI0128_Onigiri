@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
 using Planilla_Backend.CleanArchitecture.Application.Ports;
-using Planilla_Backend.CleanArchitecture.Domain.Entities;
+using Planilla_Backend.CleanArchitecture.Application.Reports;
 using Planilla_Backend.CleanArchitecture.Domain.Reports;
 
 namespace Planilla_Backend.CleanArchitecture.Infrastructure
@@ -9,11 +9,38 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
   public class ReportRepository: IReportRepository
   {
     private readonly string _connectionString;
-    private readonly ILogger<PayrollRepository> _logger;
-    public ReportRepository(IConfiguration config, ILogger<PayrollRepository> logger)
+    private readonly ILogger<ReportRepository> _logger;
+    public ReportRepository(IConfiguration config, ILogger<ReportRepository> logger)
     {
       _connectionString = config.GetConnectionString("OnigiriContext");
       _logger = logger;
+    }
+
+    public async Task<IEnumerable<ReportPayrollPeriodDto>> GetEmployeePayrollPeriodsAsync(int companyId, int employeeId, int top)
+    {
+      try
+      {
+        using var connection = new SqlConnection(_connectionString);
+        const string query =
+            @"SELECT TOP (@top)
+              ne.IdNominaEmpleado AS PayrollId,
+              nem.FechaInicio AS DateFrom,
+              nem.FechaFin AS DateTo, 
+              CONCAT(FORMAT(nem.FechaInicio, 'dd MMMM yyyy', 'es-ES'), ' - ', FORMAT(nem.FechaFin, 'dd MMMM yyyy', 'es-ES')) AS PeriodLabel 
+            FROM NominaEmpleado AS ne
+              JOIN NominaEmpresa AS nem ON ne.IdNominaEmpresa = nem.IdNominaEmpresa
+            WHERE nem.IdEmpresa = @companyId
+             AND ne.IdEmpleado = @employeeId
+            ORDER BY nem.FechaInicio DESC;";
+
+        var payrolls = await connection.QueryAsync<ReportPayrollPeriodDto>(query, new { companyId, employeeId, top });
+        return payrolls;
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, "GetEmployeePayrollPeriodsAsync failed. companyId: {CompanyId}", companyId);
+        throw;
+      }
     }
 
     public async Task<EmployeePayrollReport> GetEmployeePayrollReport(int payrollId, CancellationToken ct = default)

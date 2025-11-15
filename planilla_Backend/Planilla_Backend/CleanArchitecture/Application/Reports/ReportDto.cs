@@ -31,4 +31,12 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
     public IReadOnlyList<Dictionary<string, object?>> Rows { get; set; } = Array.Empty<Dictionary<string, object?>>();
     public Dictionary<string, object?> ReportInfo { get; set; } = new Dictionary<string, object?>();
   }
+
+  public class ReportPayrollPeriodDto
+  {
+    public int PayrollId { get; set; }
+    public DateTime DateFrom { get; set; }
+    public DateTime DateTo { get; set; }
+    public string PeriodLabel { get; set; } = string.Empty;
+  }
 }
