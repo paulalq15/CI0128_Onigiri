@@ -1,4 +1,5 @@
-﻿using Planilla_Backend.CleanArchitecture.Application.Ports;
+﻿using Azure.Core;
+using Planilla_Backend.CleanArchitecture.Application.Ports;
 
 namespace Planilla_Backend.CleanArchitecture.Application.Reports
 {
@@ -13,7 +14,7 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
       _reportRepository = reportRepository;
     }
 
-    public Task<ReportResultDto> ExecuteAsync(ReportRequestDto request, CancellationToken ct = default)
+    public Task<ReportResultDto> GenerateReportAsync(ReportRequestDto request, CancellationToken ct = default)
     {
       if (request is null) throw new ArgumentNullException(nameof(request));
       if (string.IsNullOrWhiteSpace(request.ReportCode)) throw new ArgumentException("El código de reporte es requerido", nameof(request));
@@ -23,6 +24,14 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
       if (generator is null)throw new InvalidOperationException($"No existe un generador configurado para el reporte '{request.ReportCode}'");
 
       return generator.GenerateAsync(request, _reportRepository, ct);
+    }
+
+    public Task<IEnumerable<ReportPayrollPeriodDto>> GetEmployeePayrollPeriodsAsync(int companyId, int employeeId, int top)
+    {
+      if (companyId <= 0) throw new ArgumentException("El parámetro CompanyId es requerido y debe ser mayor que cero");
+      if (employeeId <= 0) throw new ArgumentException("El parámetro EmployeeId es requerido y debe ser mayor que cero");
+      if (top <= 0) throw new ArgumentException("El parámetro top es requerido y debe ser mayor que cero");
+      return _reportRepository.GetEmployeePayrollPeriodsAsync(companyId, employeeId, top);
     }
   }
 }

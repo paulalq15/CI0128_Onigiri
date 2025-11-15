@@ -2,6 +2,7 @@
 {
   public interface IGenerateReportDataQuery
   {
-      Task<ReportResultDto> ExecuteAsync(ReportRequestDto request, CancellationToken ct = default);
+      Task<ReportResultDto> GenerateReportAsync(ReportRequestDto request, CancellationToken ct = default);
+      Task<IEnumerable<ReportPayrollPeriodDto>> GetEmployeePayrollPeriodsAsync(int companyId, int employeeId, int top);
   }
 }
