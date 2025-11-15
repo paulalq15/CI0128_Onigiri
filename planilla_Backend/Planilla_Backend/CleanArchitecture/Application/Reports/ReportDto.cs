@@ -29,5 +29,6 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
     public string DisplayName { get; set; } = null!;
     public IReadOnlyList<string> Columns { get; set; } = Array.Empty<string>();
     public IReadOnlyList<Dictionary<string, object?>> Rows { get; set; } = Array.Empty<Dictionary<string, object?>>();
+    public Dictionary<string, object?> ReportInfo { get; set; } = new Dictionary<string, object?>();
   }
 }

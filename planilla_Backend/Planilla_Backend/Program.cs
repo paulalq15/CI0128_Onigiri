@@ -72,6 +72,11 @@ builder.Services.AddExternalApis(builder.Configuration);
 builder.Services.AddScoped<IGenerateReportDataQuery, GenerateReportDataQuery>();
 builder.Services.AddScoped<IReportFactory, ReportFactory>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
+builder.Services.AddScoped<IReportGenerator, ReportGenerator_EmployeePayrollDetail>();
+builder.Services.AddScoped<IReportGenerator, ReportGenerator_EmployeePayrollHistory>();
+builder.Services.AddScoped<IReportGenerator, ReportGenerator_EmployerPayrollDetail>();
+builder.Services.AddScoped<IReportGenerator, ReportGenerator_EmployerPayrollHistory>();
+builder.Services.AddScoped<IReportGenerator, ReportGenerator_EmployerPayrollByEmployee>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
