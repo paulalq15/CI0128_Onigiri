@@ -1,4 +1,5 @@
 ﻿using Planilla_Backend.CleanArchitecture.Application.Ports;
+using Planilla_Backend.CleanArchitecture.Domain.Entities;
 using Planilla_Backend.CleanArchitecture.Domain.Reports;
 
 namespace Planilla_Backend.CleanArchitecture.Application.Reports
@@ -34,7 +35,7 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
         {
           ["CompanyName"] = report.CompanyName,
           ["EmployeeName"] = report.EmployeeName,
-          ["EmployeeType"] = report.EmployeeType.ToString(),
+          ["EmployeeType"] = GetEmployeeTypeDisplayName(report.EmployeeType),
           ["PaymentDate"] = report.PaymentDate
         }
       };
@@ -109,5 +110,24 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
         ["Monto"] = lines.Sum(l => l.Amount)
       });
     }
+
+    private static string GetEmployeeTypeDisplayName(EmployeeType type)
+    {
+      switch (type)
+      {
+        case EmployeeType.FullTime:
+          return "Tiempo completo";
+
+        case EmployeeType.PartTime:
+          return "Medio tiempo";
+
+        case EmployeeType.ProfessionalServices:
+          return "Servicios profesionales";
+
+        default:
+          return type.ToString();
+      }
+    }
+
   }
 }

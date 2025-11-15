@@ -65,9 +65,11 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
             JOIN NominaEmpresa AS nem ON ne.IdNominaEmpresa = nem.IdNominaEmpresa
             JOIN Empresa AS e ON nem.IdEmpresa = e.IdEmpresa
             JOIN Persona AS p ON ne.IdEmpleado = p.IdPersona
-            JOIN Contrato AS c ON p.IdPersona = c.IdContrato
+            JOIN Contrato AS c ON p.IdPersona = c.IdPersona
             LEFT JOIN ComprobantePago AS cp ON cp.IdNominaEmpleado = ne.IdNominaEmpleado
-          WHERE ne.IdNominaEmpleado = @payrollId;";
+          WHERE ne.IdNominaEmpleado = @payrollId 
+            AND c.FechaInicio <= nem.FechaFin
+            AND (c.FechaFin IS NULL OR c.FechaFin >= nem.FechaFin);";
 
         const string detailsQuery =
           @"SELECT

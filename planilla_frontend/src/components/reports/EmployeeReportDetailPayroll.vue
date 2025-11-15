@@ -39,7 +39,12 @@
       </div>
 
       <div class="report-lines">
-        <div v-for="(row, index) in reportResult.rows" :key="index" class="report-line" :class="lineClasses(row)">
+        <div
+          v-for="(row, index) in reportResult.rows"
+          :key="index"
+          class="report-line"
+          :class="lineClasses(row)"
+        >
           <div class="description">
             {{ row['Descripción'] }}
           </div>
@@ -224,6 +229,7 @@ export default {
   align-items: baseline;
   padding: 4px 0;
   border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  font-weight: 400;
 }
 
 .report-line .description {
@@ -231,20 +237,24 @@ export default {
   text-align: left;
 }
 
-.report-line.line-gross, .report-line.line-total {
+.report-line .amount {
+  min-width: 180px;
+  text-align: right;
+  font-weight: 400;
+}
+
+.report-line.line-gross .description,
+.report-line.line-gross .amount,
+.report-line.line-total .description,
+.report-line.line-total .amount {
   font-weight: 600;
 }
 
-.report-line.line-net {
+.report-line.line-net .description,
+.report-line.line-net .amount {
   font-weight: 700;
   font-size: 1.05rem;
   margin-top: 8px;
   padding-top: 8px;
-}
-
-.report-line .amount {
-  min-width: 180px;
-  text-align: right;
-  font-weight: 500;
 }
 </style>
