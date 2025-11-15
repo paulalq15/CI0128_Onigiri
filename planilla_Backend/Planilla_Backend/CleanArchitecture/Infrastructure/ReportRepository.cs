@@ -81,6 +81,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         if (header == null) throw new KeyNotFoundException("No se encontró información de la planilla seleccionada");
         var detailLines = await connection.QueryAsync<PayrollDetailLine>(new CommandDefinition(detailsQuery, new { payrollId }, cancellationToken: ct));
 
+        header.Lines = detailLines.ToList();
         return header;
       }
       catch (Exception ex)
