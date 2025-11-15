@@ -59,7 +59,8 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
               WHEN 'Medio Tiempo' THEN 'PartTime'
               WHEN 'Servicios Profesionales' THEN 'ProfessionalServices'
             END AS EmployeeType,
-            cp.FechaPago AS PaymentDate
+            cp.FechaPago AS PaymentDate,
+            ne.MontoNeto AS NetAmount
           FROM NominaEmpleado AS ne
             JOIN NominaEmpresa AS nem ON ne.IdNominaEmpresa = nem.IdNominaEmpresa
             JOIN Empresa AS e ON nem.IdEmpresa = e.IdEmpresa
@@ -71,10 +72,16 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         const string detailsQuery =
           @"SELECT
             dn.Descripcion AS Description,
-            dn.Tipo AS Category,
+            CASE 
+              WHEN dn.Tipo = 'Salario' THEN 'Salario'
+              WHEN dn.Tipo = 'Beneficio Empleado' THEN 'Beneficio'
+              WHEN dn.Tipo = 'Deduccion Empleado' AND dn.IdElementoAplicado IS NOT NULL THEN 'Deduccion voluntaria'
+              WHEN dn.Tipo = 'Deduccion Empleado' AND (dn.IdCCSS IS NOT NULL OR dn.IdImpuestoRenta IS NOT NULL) THEN 'Deduccion obligatoria'
+              ELSE dn.Tipo
+            END AS Category,
             dn.Monto AS Amount
           FROM DetalleNomina AS dn
-          WHERE dn.IdNominaEmpleado = @payrollId
+          WHERE dn.IdNominaEmpleado = @payrollId AND dn.Tipo <> 'Deduccion Empleador'
           ORDER BY dn.IdDetalleNomina;";
 
         var header = await connection.QuerySingleOrDefaultAsync<EmployeePayrollReport>(new CommandDefinition(headerQuery, new { payrollId }, cancellationToken: ct));

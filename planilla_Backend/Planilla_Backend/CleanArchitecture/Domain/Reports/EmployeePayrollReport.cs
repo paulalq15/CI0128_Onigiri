@@ -10,6 +10,7 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Reports
     public int EmployeeId { get; set; }
     public EmployeeType EmployeeType { get; set; }
     public DateTime PaymentDate { get; set; }
+    public decimal NetAmount { get; set; }
 
     public IReadOnlyList<PayrollDetailLine> Lines { get; set; } = Array.Empty<PayrollDetailLine>();
   }
