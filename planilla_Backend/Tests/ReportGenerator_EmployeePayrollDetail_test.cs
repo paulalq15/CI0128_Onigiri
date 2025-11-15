@@ -92,5 +92,58 @@ namespace Tests
       Assert.That(Row(8)["Monto"], Is.EqualTo(860m));
     }
 
+    [Test]
+    public void GenerateAsync_ShouldThrow_WhenRequestIsNull()
+    {
+      Assert.ThrowsAsync<ArgumentNullException>(async () => await _sut.GenerateAsync(null!, _reportRepositoryMock.Object));
+    }
+
+    [Test]
+    public void GenerateAsync_ShouldThrow_WhenRepositoryIsNull()
+    {
+      Assert.ThrowsAsync<ArgumentNullException>(async () => await _sut.GenerateAsync(_request, null!));
+    }
+
+    [Test]
+    public void GenerateAsync_ShouldThrow_WhenCompanyIdIsInvalid()
+    {
+      var invalidRequest = new ReportRequestDto
+      {
+        ReportCode = ReportCodes.EmployeeDetailPayroll,
+        CompanyId = 0,
+        EmployeeId = 10,
+        PayrollId = 123
+      };
+
+      var ex = Assert.ThrowsAsync<ArgumentException>(async () => await _sut.GenerateAsync(invalidRequest, _reportRepositoryMock.Object));
+      StringAssert.Contains("CompanyId", ex!.Message);
+    }
+
+    [Test]
+    public void GenerateAsync_ShouldThrow_WhenCompanyDoesNotMatch()
+    {
+      var report = BuildSampleReport();
+      report.CompanyId = 999;
+
+      _reportRepositoryMock
+        .Setup(r => r.GetEmployeePayrollReport(123, It.IsAny<CancellationToken>()))
+        .ReturnsAsync(report);
+
+      Assert.ThrowsAsync<KeyNotFoundException>(async () => await _sut.GenerateAsync(_request, _reportRepositoryMock.Object));
+    }
+
+    [Test]
+    public void GenerateAsync_ShouldThrow_WhenEmployeeDoesNotMatch()
+    {
+      var report = BuildSampleReport();
+      report.EmployeeId = 999;
+
+      _reportRepositoryMock
+        .Setup(r => r.GetEmployeePayrollReport(123, It.IsAny<CancellationToken>()))
+        .ReturnsAsync(report);
+
+      Assert.ThrowsAsync<KeyNotFoundException>(async () => await _sut.GenerateAsync(_request, _reportRepositoryMock.Object));
+    }
+
   }
 }
