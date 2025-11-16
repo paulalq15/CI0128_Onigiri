@@ -95,9 +95,9 @@ export default {
         paymentFrequency: 'Mensual',
         period: 'Del 01/12/2025 al 31/12/2025',
         paymentDate: '29/12/2025',
-        grossSalary: '1200000',
+        grossSalary: '1200000.25',
         employerContributions: '150000',
-        employeeBenefits: '50000',
+        employeeBenefits: '50000.89',
         totalCost: '1000000',
       },
       ],
@@ -143,7 +143,33 @@ export default {
       const table = tableWrapper.querySelector('table');
       if (!table) return;
       
-      const wb = XLSX.utils.table_to_book(table, { sheet: 'Planilla' });
+      const exportTable = table.cloneNode(true);
+      const numericCols = [4, 5, 6, 7];
+      
+      const rows = exportTable.querySelectorAll('tbody tr');
+      rows.forEach(tr => {
+        const cells = tr.querySelectorAll('td');
+        
+        numericCols.forEach(idx => {
+          const cell = cells[idx];
+          if (!cell) return;
+          const raw = cell.textContent || '';
+          let txt = raw.replace(/[^\d.,-]/g, '');
+          const seps = txt.match(/[.,]/g);
+          if (seps && seps.length > 1) {
+            const lastSep = Math.max(txt.lastIndexOf(','), txt.lastIndexOf('.'));
+            const intPart = txt.slice(0, lastSep).replace(/[.,]/g, '');
+            const decPart = txt.slice(lastSep + 1).replace(/[.,]/g, '');
+            txt = intPart + '.' + decPart;
+          } else {
+            txt = txt.replace(/\./g, '').replace(',', '.');
+          }
+          
+          cell.textContent = txt;
+        });
+      });
+      
+      const wb = XLSX.utils.table_to_book(exportTable, { sheet: 'Planilla' });
       const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
       const blob = new Blob([wbout], { type: 'application/octet-stream' });
       saveAs(blob, 'Reporte_Planilla.xlsx');
@@ -201,7 +227,6 @@ export default {
   align-items: flex-start;
   
   padding: 20px;
-  gap: 20px;
 }
 
 h4, p {
