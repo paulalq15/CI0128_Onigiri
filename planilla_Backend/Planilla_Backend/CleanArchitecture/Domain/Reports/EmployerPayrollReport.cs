@@ -2,6 +2,7 @@
 {
   public class EmployerPayrollReport
   {
+    public int CompanyId { get; set; }
     public string CompanyName { get; set; } = null!;
     public string EmployerName { get; set; } = null!;
     public DateTime PaymentDate { get; set; }
