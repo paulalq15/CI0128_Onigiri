@@ -2,6 +2,7 @@
 using Microsoft.Data.SqlClient;
 using Planilla_Backend.CleanArchitecture.Application.Ports;
 using Planilla_Backend.CleanArchitecture.Application.Reports;
+using Planilla_Backend.CleanArchitecture.Domain.Entities;
 using Planilla_Backend.CleanArchitecture.Domain.Reports;
 
 namespace Planilla_Backend.CleanArchitecture.Infrastructure
@@ -112,7 +113,10 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         const string query =
             @"SELECT 
               e.Nombre AS CompanyName,
-              e.FrecuenciaPago AS PaymentFrequency,
+              CASE e.FrecuenciaPago
+                WHEN 'Quincenal' THEN 'Biweekly'
+                WHEN 'Mensual' THEN 'Monthly'
+              END AS PaymentFrequency,
               ne.FechaInicio AS DateFrom,
               ne.FechaFin AS DateTo,
               MAX(cp.FechaPago) AS PaymentDate,
