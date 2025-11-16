@@ -7,5 +7,6 @@ namespace Planilla_Backend.CleanArchitecture.Application.Ports
   {
     Task<EmployeePayrollReport> GetEmployeePayrollReport(int payrollId, CancellationToken ct = default);
     Task<IEnumerable<ReportPayrollPeriodDto>> GetEmployeePayrollPeriodsAsync(int companyId, int employeeId, int top);
+    Task<IEnumerable<EmployerHistoryRow>> GetEmployerHistoryCompaniesAsync(int? companyId, int employeeId, DateTime dateFrom, DateTime dateTo, CancellationToken ct = default);
   }
 }
