@@ -1,15 +1,15 @@
 using Planilla_Backend.CleanArchitecture.Application;
+using Planilla_Backend.CleanArchitecture.Application.Ports;
+using Planilla_Backend.CleanArchitecture.Application.Reports;
+using Planilla_Backend.CleanArchitecture.Application.Services;
+using Planilla_Backend.CleanArchitecture.Application.UseCases;
+using Planilla_Backend.CleanArchitecture.Domain.Calculation;
 using Planilla_Backend.CleanArchitecture.Infrastructure;
+using Planilla_Backend.CleanArchitecture.Infrastructure.External;
 using Planilla_Backend.LayeredArchitecture.Repositories;
 using Planilla_Backend.LayeredArchitecture.Services;
 using Planilla_Backend.LayeredArchitecture.Services.EmailService;
 using Planilla_Backend.LayeredArchitecture.Services.Utils;
-
-using Planilla_Backend.CleanArchitecture.Application.Ports;
-using Planilla_Backend.CleanArchitecture.Application.Services;
-using Planilla_Backend.CleanArchitecture.Application.UseCases;
-using Planilla_Backend.CleanArchitecture.Domain.Calculation;
-using Planilla_Backend.CleanArchitecture.Infrastructure.External;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
@@ -67,6 +67,16 @@ builder.Services.AddScoped<ITimesheetService, TimesheetService>();
 // External APIs (Asociación, Seguro, Pensiones)
 builder.Services.AddScoped<ExternalPartnersService>();
 builder.Services.AddExternalApis(builder.Configuration);
+
+// Reports
+builder.Services.AddScoped<IGenerateReportDataQuery, GenerateReportDataQuery>();
+builder.Services.AddScoped<IReportFactory, ReportFactory>();
+builder.Services.AddScoped<IReportRepository, ReportRepository>();
+builder.Services.AddScoped<IReportGenerator, ReportGenerator_EmployeePayrollDetail>();
+builder.Services.AddScoped<IReportGenerator, ReportGenerator_EmployeePayrollHistory>();
+builder.Services.AddScoped<IReportGenerator, ReportGenerator_EmployerPayrollDetail>();
+builder.Services.AddScoped<IReportGenerator, ReportGenerator_EmployerPayrollHistory>();
+builder.Services.AddScoped<IReportGenerator, ReportGenerator_EmployerPayrollByEmployee>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
