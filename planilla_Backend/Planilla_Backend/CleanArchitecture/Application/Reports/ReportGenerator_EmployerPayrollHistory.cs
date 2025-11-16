@@ -27,11 +27,12 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
 
       foreach (var item in items)
       {
+        var periodLabel = $"Del {item.DateFrom:dd/MM/yyyy} al {item.DateTo:dd/MM/yyyy}";
         rows.Add(new Dictionary<string, object?>
         {
           ["CompanyName"] = item.CompanyName,
           ["PaymentFrequency"] = GetFrequencyDisplayName(item.PaymentFrequency),
-          ["Period"] = new { item.DateFrom, item.DateTo },
+          ["Period"] = periodLabel,
           ["PaymentDate"] = item.PaymentDate,
           ["GrossSalary"] = item.GrossSalary,
           ["EmployerContributions"] = item.EmployerContributions,

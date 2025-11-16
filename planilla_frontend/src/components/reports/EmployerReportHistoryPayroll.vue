@@ -37,8 +37,10 @@
   <p>Empresa: {{ companyFilterLabel }}</p>
   <p>Fecha inicial: {{ dateFrom }}</p>
   <p>Fecha final: {{ dateTo }}</p>
+
+  <div v-if="isLoading" class="text-muted">Cargando reporte…</div>
   
-  <div id="reportTable" class="table-responsive">
+  <div v-else id="reportTable" class="table-responsive">
     <table class="table">
       <thead>
         <tr>
@@ -54,15 +56,20 @@
       </thead>
       <tbody>
         <tr v-for="(row, index) in payrollData" :key="index">
-          <td>{{ row.companyName }}</td>
-          <td>{{ row.paymentFrequency }}</td>
-          <td>{{ row.period }}</td>
-          <td>{{ row.paymentDate }}</td>
-          <td>{{ fmtCRC(row['grossSalary']) }}</td>
-          <td>{{ fmtCRC(row['employerContributions']) }}</td>
-          <td>{{ fmtCRC(row['employeeBenefits']) }}</td>
-          <td>{{ fmtCRC(row['totalCost']) }}</td>
+          <td>{{ row.CompanyName }}</td>
+          <td>{{ row.PaymentFrequency }}</td>
+          <td>{{ row.Period }}</td>
+          <td>{{ formatDate(row.PaymentDate) }}</td>
+          <td>{{ fmtCRC(row.GrossSalary) }}</td>
+          <td>{{ fmtCRC(row.EmployerContributions) }}</td>
+          <td>{{ fmtCRC(row.EmployeeBenefits) }}</td>
+          <td>{{ fmtCRC(row.EmployerCost) }}</td>
         </tr>
+        <tr v-if="!payrollData.length">
+            <td colspan="8" class="text-center text-muted">
+              No hay datos para mostrar.
+            </td>
+          </tr>
       </tbody>
     </table>
   </div>
@@ -86,21 +93,11 @@ export default {
       dateFrom: '',
       dateTo: '',
       loadingCompanies: false,
+      isLoading: false,
       showToast: false,
       toastMessage: '',
       toastType: '',
-      payrollData: [
-      {
-        companyName: 'Empresa PI',
-        paymentFrequency: 'Mensual',
-        period: 'Del 01/12/2025 al 31/12/2025',
-        paymentDate: '29/12/2025',
-        grossSalary: '1200000.25',
-        employerContributions: '150000',
-        employeeBenefits: '50000.89',
-        totalCost: '1000000',
-      },
-      ],
+      payrollData: [],
     };
   },
   computed: {
@@ -134,6 +131,40 @@ export default {
         this.showToast = true;
       } finally {
         this.loadingCompanies = false;
+      }
+    },
+    async loadReport() {
+      const employeeId = Number(this.$session.user?.personId);
+      const params = {
+        reportCode: 'EmployerHistoryPayroll',
+        companyId: this.selectedCompanyId || 0,
+        employeeId,
+        dateFrom: this.dateFrom,
+        dateTo: this.dateTo,
+      };
+
+      this.isLoading = true;
+      this.payrollData = [];
+      try {
+        const { data } = await URLBaseAPI.post('/api/Reports/data', params);
+        const rows = Array.isArray(data.rows) ? data.rows : [];
+        this.payrollData = rows;
+      } catch (error) {
+        const data = error && error.response && error.response.data ? error.response.data : null;
+        const msg =
+          typeof data === 'string'
+            ? data
+            : (data && (data.message || data.detail)) || 'Error cargando el reporte histórico de empresas';
+        this.toastMessage = msg;
+        this.toastType = 'bg-danger';
+        this.showToast = true;
+
+        setTimeout(function () {
+          this.showToast = false;
+        }, this.toastTimeout);
+        this.reportResult = null;
+      } finally {
+        this.isLoading = false;
       }
     },
     downloadExcel() {
@@ -183,6 +214,28 @@ export default {
         maximumFractionDigits: 2,
       }).format(Number(v ?? 0));
     },
+    formatDate(dateString) {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      return isNaN(date)
+        ? ''
+        : new Intl.DateTimeFormat('es-CR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+          }).format(date);
+    },
+  },
+  watch: {
+    selectedCompanyId() {
+      this.loadReport();
+    },
+    dateFrom() {
+      this.loadReport();
+    },
+    dateTo() {
+      this.loadReport();
+    },
   },
   mounted() {
     const today = new Date();
@@ -192,7 +245,9 @@ export default {
     this.dateFrom = first.toISOString().slice(0, 10);
     this.dateTo = last.toISOString().slice(0, 10);
     
-    this.fetchCompanies()
+    this.fetchCompanies().then(() => {
+      this.loadReport();
+    });
   },
 };
 </script>
