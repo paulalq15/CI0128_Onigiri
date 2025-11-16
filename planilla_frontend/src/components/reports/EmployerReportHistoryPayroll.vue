@@ -37,7 +37,7 @@
   <p>Empresa: {{ companyFilterLabel }}</p>
   <p>Fecha inicial: {{ dateFrom }}</p>
   <p>Fecha final: {{ dateTo }}</p>
-
+  
   <div v-if="isLoading" class="text-muted">Cargando reporte…</div>
   
   <div v-else id="reportTable" class="table-responsive">
@@ -66,11 +66,20 @@
           <td>{{ fmtCRC(row.EmployerCost) }}</td>
         </tr>
         <tr v-if="!payrollData.length">
-            <td colspan="8" class="text-center text-muted">
-              No hay datos para mostrar.
-            </td>
-          </tr>
+          <td colspan="8" class="text-center text-muted">
+            No hay datos para mostrar.
+          </td>
+        </tr>
       </tbody>
+      <tfoot v-if="payrollData.length">
+        <tr class="totals-row">
+          <td colspan="4" class="text-end fw-bold">Total</td>
+          <td>{{ fmtCRC(totals.gross) }}</td>
+          <td>{{ fmtCRC(totals.contrib) }}</td>
+          <td>{{ fmtCRC(totals.benefits) }}</td>
+          <td>{{ fmtCRC(totals.cost) }}</td>
+        </tr>
+      </tfoot>
     </table>
   </div>
 </div>
@@ -105,6 +114,16 @@ export default {
       if (!this.selectedCompanyId || this.selectedCompanyId === 0) return 'Todas';
       const match = this.companies.find(c => c.companyUniqueId === this.selectedCompanyId);
       return match?.companyName || '';
+    },
+    totals() {
+      const result = { gross: 0, contrib: 0, benefits: 0, cost: 0 };
+      for (const r of this.payrollData) {
+        result.gross += Number(r.GrossSalary ?? 0);
+        result.contrib += Number(r.EmployerContributions ?? 0);
+        result.benefits += Number(r.EmployeeBenefits ?? 0);
+        result.cost += Number(r.EmployerCost ?? 0);
+      }
+      return result;
     },
   },
   methods: {
@@ -142,7 +161,7 @@ export default {
         dateFrom: this.dateFrom,
         dateTo: this.dateTo,
       };
-
+      
       this.isLoading = true;
       this.payrollData = [];
       try {
@@ -152,13 +171,13 @@ export default {
       } catch (error) {
         const data = error && error.response && error.response.data ? error.response.data : null;
         const msg =
-          typeof data === 'string'
-            ? data
-            : (data && (data.message || data.detail)) || 'Error cargando el reporte histórico de empresas';
+        typeof data === 'string'
+        ? data
+        : (data && (data.message || data.detail)) || 'Error cargando el reporte histórico de empresas';
         this.toastMessage = msg;
         this.toastType = 'bg-danger';
         this.showToast = true;
-
+        
         setTimeout(function () {
           this.showToast = false;
         }, this.toastTimeout);
@@ -218,12 +237,12 @@ export default {
       if (!dateString) return '';
       const date = new Date(dateString);
       return isNaN(date)
-        ? ''
-        : new Intl.DateTimeFormat('es-CR', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-          }).format(date);
+      ? ''
+      : new Intl.DateTimeFormat('es-CR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      }).format(date);
     },
   },
   watch: {
