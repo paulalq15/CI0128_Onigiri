@@ -40,13 +40,6 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
         });
       }
 
-      var reportInfo = new Dictionary<string, object?>
-      {
-        ["CompanyName"] = companyId.HasValue ? (items.FirstOrDefault()?.CompanyName ?? string.Empty) : "Todas",
-        ["DateFrom"] = dateFrom,
-        ["DateTo"] = dateTo
-      };
-
       return new ReportResultDto
       {
         ReportCode = ReportCodes.EmployerHistoryPayroll,
@@ -63,7 +56,6 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
           "EmployerCost"
         },
         Rows = rows,
-        ReportInfo = reportInfo
       };
     }
 
