@@ -1,24 +1,52 @@
 <template>
   <div id="reportFilters">
     <!-- Empresa -->
-     <div>
-      <label for="Company" class="form-label fw-bold">Empresa</label>
-      <select
-        id="Company"
-        class="form-select"
-        v-model.number="selectedCompanyUniqueId"
-        @change="onFiltersChanged"
+    <div>
+    <label for="Company" class="form-label fw-bold">Empresa</label>
+    <select
+      id="Company"
+      class="form-select"
+      v-model.number="selectedCompanyUniqueId"
+      @change="onFiltersChanged"
+    >
+      <option :value="null">Seleccione una empresa</option>
+      <option
+        v-for="company in companies"
+        :key="company.companyUniqueId"
+        :value="company.companyUniqueId"
       >
-        <option :value="null">Seleccione una empresa</option>
-        <option
-          v-for="company in companies"
-          :key="company.companyUniqueId"
-          :value="company.companyUniqueId"
-        >
-          {{ company.companyName }}
-        </option>
-      </select>
-     </div>
+        {{ company.companyName }}
+      </option>
+    </select>
+    </div>
+
+    <!-- Tipo Empleado -->
+    <div>
+    <label for="EmployeeType" class="form-label fw-bold">Tipo de Empleado</label>
+    <select
+      id="EmployeeType"
+      class="form-select"
+      v-model="selectedEmployeeType"
+      @change="onFiltersChanged"
+    >
+      <option :value="null">Seleccione una empresa</option>
+      <option :value="fullTime">Tiempo Completo</option>
+      <option :value="partTime">Medio Tiempo</option>
+      <option :value="professionalServices">Servicios Profesionales</option>
+    </select>
+    </div>
+
+    <!-- Cedula Empleado -->
+    <div>
+    <label for="EmployeeCedula" class="form-label fw-bold">Tipo de Empleado</label>
+    <input
+      id="EmployeeCedula"
+      type="text"
+      class="form-control"
+      v-model="selectedEmployeeCedula"
+      @change="onFiltersChanged"
+    />
+    </div>
 
     <!-- Fecha inicial -->
     <div>
