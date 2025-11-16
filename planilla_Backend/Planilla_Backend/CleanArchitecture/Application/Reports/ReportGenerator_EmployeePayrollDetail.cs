@@ -50,7 +50,6 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
       var salaryLines = report.Lines.Where(l => l.Category == "Salario").ToList();
       var mandatoryLines = report.Lines.Where(l => l.Category == "Deduccion obligatoria").ToList();
       var voluntaryLines = report.Lines.Where(l => l.Category == "Deduccion voluntaria").ToList();
-      var benefitLines = report.Lines.Where(l => l.Category == "Beneficio").ToList();
 
       AddLines(rows, salaryLines);
 
@@ -64,12 +63,6 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
       {
         AddLines(rows, voluntaryLines);
         AddTotalRow(rows, "Total deducciones voluntarias", "Deduccion voluntaria", voluntaryLines);
-      }
-
-      if (benefitLines.Any())
-      {
-        AddLines(rows, benefitLines);
-        AddTotalRow(rows, "Total beneficios", "Beneficio", benefitLines);
       }
 
       rows.Add(new Dictionary<string, object?>

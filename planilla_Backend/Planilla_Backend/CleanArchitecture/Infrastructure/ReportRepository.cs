@@ -87,7 +87,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
               ELSE dn.Monto
             END AS Amount
           FROM DetalleNomina AS dn
-          WHERE dn.IdNominaEmpleado = @payrollId AND dn.Tipo <> 'Deduccion Empleador'
+          WHERE dn.IdNominaEmpleado = @payrollId AND dn.Tipo <> 'Deduccion Empleador' AND dn.Tipo <> 'Beneficio Empleado'
           ORDER BY dn.IdDetalleNomina;";
 
         var header = await connection.QuerySingleOrDefaultAsync<EmployeePayrollReport>(new CommandDefinition(headerQuery, new { payrollId }, cancellationToken: ct));
