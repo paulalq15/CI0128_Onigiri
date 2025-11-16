@@ -38,7 +38,7 @@
 
     <!-- Cedula Empleado -->
     <div>
-    <label for="EmployeeCedula" class="form-label fw-bold">Tipo de Empleado</label>
+    <label for="EmployeeCedula" class="form-label fw-bold">Cedula de Empleado</label>
     <input
       id="EmployeeCedula"
       type="text"
