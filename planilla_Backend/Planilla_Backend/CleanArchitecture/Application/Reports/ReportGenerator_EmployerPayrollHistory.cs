@@ -24,6 +24,10 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
 
       var items = await repository.GetEmployerHistoryCompaniesAsync(companyId, employeeId, dateFrom, dateTo, ct);
       var rows = new List<Dictionary<string, object?>>();
+      decimal totalGross = 0;
+      decimal totalEmployerContrib = 0;
+      decimal totalBenefits = 0;
+      decimal totalCost = 0;
 
       foreach (var item in items)
       {
@@ -38,6 +42,26 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
           ["EmployerContributions"] = item.EmployerContributions,
           ["EmployeeBenefits"] = item.EmployeeBenefits,
           ["EmployerCost"] = item.EmployerCost
+        });
+
+        totalGross += item.GrossSalary;
+        totalEmployerContrib += item.EmployerContributions;
+        totalBenefits += item.EmployeeBenefits;
+        totalCost += item.EmployerCost;
+      }
+
+      if (rows.Count > 0)
+      {
+        rows.Add(new Dictionary<string, object?>
+        {
+          ["CompanyName"] = "Total",
+          ["PaymentFrequency"] = string.Empty,
+          ["Period"] = string.Empty,
+          ["PaymentDate"] = null,
+          ["GrossSalary"] = totalGross,
+          ["EmployerContributions"] = totalEmployerContrib,
+          ["EmployeeBenefits"] = totalBenefits,
+          ["EmployerCost"] = totalCost
         });
       }
 

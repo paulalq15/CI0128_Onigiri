@@ -35,8 +35,8 @@
   <h4>Reporte histórico pago de planilla</h4>
   
   <p>Empresa: {{ companyFilterLabel }}</p>
-  <p>Fecha inicial: {{ dateFrom }}</p>
-  <p>Fecha final: {{ dateTo }}</p>
+  <p>Fecha inicial: {{ formatFilterDate(dateFrom) }}</p>
+  <p>Fecha final: {{ formatFilterDate(dateTo) }}</p>
   
   <div v-if="isLoading" class="text-muted">Cargando reporte</div>
   
@@ -55,7 +55,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(row, index) in payrollData" :key="index">
+        <tr v-for="(row, index) in payrollData" :key="index" :class="{ 'totals-row': row.CompanyName === 'Total' }">
           <td>{{ row.CompanyName }}</td>
           <td>{{ row.PaymentFrequency }}</td>
           <td>{{ row.Period }}</td>
@@ -71,18 +71,6 @@
           </td>
         </tr>
       </tbody>
-      <tfoot v-if="payrollData.length">
-        <tr class="totals-row">
-          <td class="fw-bold">Total</td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td>{{ fmtCRC(totals.gross) }}</td>
-          <td>{{ fmtCRC(totals.contrib) }}</td>
-          <td>{{ fmtCRC(totals.benefits) }}</td>
-          <td>{{ fmtCRC(totals.cost) }}</td>
-        </tr>
-      </tfoot>
     </table>
   </div>
 </div>
@@ -118,16 +106,6 @@ export default {
       const match = this.companies.find(c => c.companyUniqueId === this.selectedCompanyId);
       return match?.companyName || '';
     },
-    totals() {
-      const result = { gross: 0, contrib: 0, benefits: 0, cost: 0 };
-      for (const r of this.payrollData) {
-        result.gross += Number(r.GrossSalary ?? 0);
-        result.contrib += Number(r.EmployerContributions ?? 0);
-        result.benefits += Number(r.EmployeeBenefits ?? 0);
-        result.cost += Number(r.EmployerCost ?? 0);
-      }
-      return result;
-    },
   },
   methods: {
     async fetchCompanies() {
@@ -141,10 +119,7 @@ export default {
           return;
         }
         
-        const { data } = await URLBaseAPI.get(
-        `/api/Company/by-user/${userId}?onlyActive=false`
-        );
-        
+        const { data } = await URLBaseAPI.get(`/api/Company/by-user/${userId}?onlyActive=false`);
         const rows = Array.isArray(data) ? data.slice() : [];
         this.companies = rows;
       } catch (err) {
@@ -199,7 +174,7 @@ export default {
       const exportTable = table.cloneNode(true);
       const numericCols = [4, 5, 6, 7];
       
-      const rows = exportTable.querySelectorAll('tbody tr, tfoot tr');
+      const rows = exportTable.querySelectorAll('tbody tr');
       rows.forEach(tr => {
         const cells = tr.querySelectorAll('td');
         
@@ -235,6 +210,11 @@ export default {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       }).format(Number(v ?? 0));
+    },
+    formatFilterDate(value) {
+      if (!value) return '';
+      const [yyyy, mm, dd] = value.split('-');
+      return `${dd}/${mm}/${yyyy}`;
     },
     formatDate(dateString) {
       if (!dateString) return '';
@@ -325,4 +305,10 @@ h4, p {
   color: white;
   font-weight: normal;
 }
+
+.totals-row td {
+  font-weight: 600;
+  border-top: 2px solid #1C4532;
+}
+
 </style>

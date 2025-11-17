@@ -90,7 +90,7 @@ namespace Tests
         "EmployerCost"
       }));
 
-      Assert.That(result.Rows.Count, Is.EqualTo(2));
+      Assert.That(result.Rows.Count, Is.EqualTo(3));
 
       Dictionary<string, object?> Row(int i) => result.Rows[i];
 
@@ -107,6 +107,10 @@ namespace Tests
       var r1 = Row(1);
       Assert.That(r1["PaymentFrequency"], Is.EqualTo("Quincenal"));
       Assert.That(r1["Period"], Is.EqualTo("Del 01/03/2025 al 15/03/2025"));
+
+      var r2 = Row(2);
+      Assert.That(r2["CompanyName"], Is.EqualTo("Total"));
+      Assert.That(r2["GrossSalary"], Is.EqualTo(6500000m));
     }
 
     [Test]
