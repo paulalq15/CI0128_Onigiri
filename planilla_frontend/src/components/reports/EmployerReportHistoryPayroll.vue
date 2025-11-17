@@ -38,7 +38,7 @@
   <p>Fecha inicial: {{ dateFrom }}</p>
   <p>Fecha final: {{ dateTo }}</p>
   
-  <div v-if="isLoading" class="text-muted">Cargando reporte…</div>
+  <div v-if="isLoading" class="text-muted">Cargando reporte</div>
   
   <div v-else id="reportTable" class="table-responsive">
     <table class="table">
@@ -73,7 +73,10 @@
       </tbody>
       <tfoot v-if="payrollData.length">
         <tr class="totals-row">
-          <td colspan="4" class="text-end fw-bold">Total</td>
+          <td class="fw-bold">Total</td>
+          <td></td>
+          <td></td>
+          <td></td>
           <td>{{ fmtCRC(totals.gross) }}</td>
           <td>{{ fmtCRC(totals.contrib) }}</td>
           <td>{{ fmtCRC(totals.benefits) }}</td>
@@ -196,7 +199,7 @@ export default {
       const exportTable = table.cloneNode(true);
       const numericCols = [4, 5, 6, 7];
       
-      const rows = exportTable.querySelectorAll('tbody tr');
+      const rows = exportTable.querySelectorAll('tbody tr, tfoot tr');
       rows.forEach(tr => {
         const cells = tr.querySelectorAll('td');
         
