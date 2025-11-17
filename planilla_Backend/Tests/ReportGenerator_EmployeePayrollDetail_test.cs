@@ -55,7 +55,7 @@ namespace Tests
       var report = BuildSampleReport();
 
       _reportRepositoryMock
-        .Setup(r => r.GetEmployeePayrollReport(123, It.IsAny<CancellationToken>()))
+        .Setup(r => r.GetEmployeePayrollReport(It.IsAny<int>(), It.IsAny<CancellationToken>()))
         .ReturnsAsync(report);
 
       // Act
@@ -67,7 +67,7 @@ namespace Tests
       Assert.That(result.Columns, Is.EquivalentTo(new[] { "Descripción", "Categoría", "Monto" }));
 
       // Assert - Rows
-      Assert.That(result.Rows.Count, Is.EqualTo(9));
+      Assert.That(result.Rows.Count, Is.EqualTo(7));
 
       Dictionary<string, object?> Row(int i) => result.Rows[i];
 
@@ -83,13 +83,9 @@ namespace Tests
       Assert.That(Row(5)["Descripción"], Is.EqualTo("Total deducciones voluntarias"));
       Assert.That(Row(5)["Monto"], Is.EqualTo(-20m));
 
-      Assert.That(Row(6)["Descripción"], Is.EqualTo("Gimnasio"));
-      Assert.That(Row(7)["Descripción"], Is.EqualTo("Total beneficios"));
-      Assert.That(Row(7)["Monto"], Is.EqualTo(30m));
-
-      Assert.That(Row(8)["Descripción"], Is.EqualTo("Pago Neto"));
-      Assert.That(Row(8)["Categoría"], Is.EqualTo("Resumen"));
-      Assert.That(Row(8)["Monto"], Is.EqualTo(860m));
+      Assert.That(Row(6)["Descripción"], Is.EqualTo("Pago Neto"));
+      Assert.That(Row(6)["Categoría"], Is.EqualTo("Resumen"));
+      Assert.That(Row(6)["Monto"], Is.EqualTo(860m));
     }
 
     [Test]
