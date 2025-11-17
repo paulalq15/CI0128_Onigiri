@@ -50,7 +50,7 @@
           <th>Fecha de pago</th>
           <th>Salario bruto</th>
           <th>Cargas sociales empleador</th>
-          <th>Beneficios a empleados</th>
+          <th>Deducciones voluntarias</th>
           <th>Costo empleador</th>
         </tr>
       </thead>
