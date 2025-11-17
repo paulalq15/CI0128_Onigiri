@@ -27,4 +27,11 @@
     Percentage,
     ExternalAPI
   }
+
+  public enum EmployeeType
+  {
+    FullTime,
+    PartTime,
+    ProfessionalServices
+  }
 }
