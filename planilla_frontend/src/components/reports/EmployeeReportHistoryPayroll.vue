@@ -2,14 +2,14 @@
   <div id="reportFilters">
     <!-- Fecha inicial -->
     <div>
-      <label for="selectFechaInicial" class="form-label fw-bold">Fecha incial</label>
+      <label for="selectFechaInicial" class="form-label fw-bold">Fecha inicial</label>
       <select id="selectFechaInicial" class="form-select" v-model="selectedInitialDate">
         <option
           v-for="date in initialDatesList"
-          :key="date"
+          :key="date.payrollId"
           :value="date"
         >
-          {{ date }}
+          {{ date.periodLabel }}
         </option>
       </select>
     </div>
@@ -20,22 +20,25 @@
       <select id="selectFechaFinal" class="form-select" v-model="selectedFinalDate">
         <option
           v-for="date in finalDatesList"
-          :key="date"
+          :key="date.payrollId"
           :value="date"
         >
-          {{ date }}
+          {{ date.periodLabel }}
         </option>
       </select>
     </div>
   </div>
 
   <div>
-    <div id="buttons">
+    <div id="buttons" v-if="isReportLoaded">
       <LinkButton text="Descargar Excel" @click="downloadExcel()" />
     </div>
   </div>
 
-  <div id="reportContent">
+  <div v-if="!isReportLoaded">
+    Cargando reporte ...
+  </div>
+  <div id="reportContent" v-else>
     <h4>Reporte histórico pago de planilla</h4>
     
     <p>Empresa: {{ companyName }}</p>
@@ -71,37 +74,102 @@
 </template>
 
 <script setup>
-  import { ref, computed } from 'vue';
+  import { ref, computed, onMounted } from 'vue';
   import * as XLSX from "xlsx";
   import { saveAs } from "file-saver";
+  import { useSession } from '@/utils/useSession';
+  import { useGlobalAlert } from '@/utils/alerts.js';
 
+  import URLBaseAPI from '../../axiosAPIInstances.js';
   import LinkButton from '../LinkButton.vue';
 
-  const companyName = ref("ABC");
-  const employeeName = ref("Josué Badilla");
+  const { user } = useSession();
+
+  const companyName = ref("");
+  const employeeName = ref("");
   
-  const initialDatesList = ref(["09/2025", "10/2025", "11/2025", "12/2025"]);
-  const selectedInitialDate = ref("09/2025");
+  const initialDatesList = ref([]);
+  const selectedInitialDate = ref(null);
+  
   
   const finalDatesList = computed(() => {
-    // Obtenemos el inicio para la segunda lista desde la seleccionada en fecha inicial
-    const index = initialDatesList.value.indexOf(selectedInitialDate.value);
+    if (!selectedInitialDate.value) return [];
+
+    const index = initialDatesList.value.findIndex(
+      item => item.payrollId === selectedInitialDate.value.payrollId
+    );
+
     if (index === -1) return [];
+
     return initialDatesList.value.slice(index);
   });
-  const selectedFinalDate = ref("12/2025");
+  const selectedFinalDate = ref(null);
+  
+  const payrollData = ref([]);
 
-  const payrollData = [
-    {
-      contractType: 'Indefinido',
-      position: 'Desarrollador',
-      paymentDate: '2025-11-10',
-      grossSalary: '₡1,200,000',
-      mandatoryDeductions: '₡150,000',
-      voluntaryDeductions: '₡50,000',
-      netSalary: '₡1,000,000'
+  const isReportLoaded = ref(false);
+
+  async function getPayrollPeriodsList() {
+    const companyId = user?.companyUniqueId;
+    const employeeId = Number(user?.personId);
+
+    try {
+      const response = await URLBaseAPI.get('/api/Reports/employee/payroll-periods', {
+        params: { companyId, employeeId }
+      });
+
+      initialDatesList.value = response.data || [];
+
+      if (initialDatesList.value.length > 0) {
+        selectedInitialDate.value = initialDatesList.value[0];
+        selectedFinalDate.value = initialDatesList.value[initialDatesList.value.length - 1];
+      }
+    } catch (error) {
+      const data = error?.response?.data;
+      const msg =
+        typeof data === "string" ? data
+        : data?.message || data?.detail || "Error cargando las últimas planillas";
+
+      const alert = useGlobalAlert();
+      alert.show(msg, "warning");
     }
-  ]
+  }
+
+  async function loadReport() {
+    if (!selectedInitialDate.value  || !selectedFinalDate.value) return;
+
+    const companyId = user?.companyUniqueId;
+    const employeeId = Number(user?.personId);
+
+    const params = {
+      reportCode: 'EmployeeHistoryPayroll',
+      companyId,
+      employeeId,
+      DateFrom: selectedInitialDate.value.dateFrom,
+      DateTo: selectedFinalDate.value.dateTo
+    };
+
+    try {
+      const response = await URLBaseAPI.post('/api/Reports/data', params);
+
+      console.log(response.data);
+
+      companyName.value = response.data.reportInfo.CompanyName;
+      employeeName.value = response.data.reportInfo.EmployeeName;
+
+      payrollData.value = response.data.rows || null;
+
+      isReportLoaded.value = true;
+    } catch (error) {
+      const data = error?.response?.data;
+      const msg =
+        typeof data === 'string' ? data
+        : (data && (data.message || data.detail)) || 'Error cargando el detalle de planilla';
+
+      const alert = useGlobalAlert();
+      alert.show(msg, "warning");
+    }
+  }
 
   function downloadExcel() {
     const table = document.getElementById("reportTable").querySelector("table");
@@ -110,6 +178,11 @@
     const blob = new Blob([wbout], { type: "application/octet-stream" });
     saveAs(blob, "Reporte_Planilla.xlsx");
   }
+
+  onMounted(async () => {
+    await getPayrollPeriodsList();
+    await loadReport();
+  });
 
 </script>
 
