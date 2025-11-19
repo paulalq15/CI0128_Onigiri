@@ -131,13 +131,13 @@
   const payrollData = [
     {
       employeeName: 'Pedro Vargas Vargas',
-      cedula: '1-5270-0776',
-      contractType: 'Tiempo Completp',
+      nationalId: '1-5270-0776',
+      employeeType: 'Tiempo Completp',
       paymentPeriod: '2025-01-10 a 2025-10-31',
       paymentDate: '2025-11-10',
       grossSalary: '₡1,200,000',
-      employerDeductions: '₡150,000',
-      voluntaryDeductions: '₡50,000',
+      employerContributions: '₡150,000',
+      employeeBenefits: '₡50,000',
       employerCost: '₡1,000,000'
     }
   ]
