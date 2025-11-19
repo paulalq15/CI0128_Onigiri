@@ -161,8 +161,8 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
           companyId,
           start,
           end,
-          nationalId = string.IsNullOrWhiteSpace(nationalId) ? null : nationalId,
-          employeeType = string.IsNullOrWhiteSpace(employeeType) ? null : employeeType
+          employeeType = string.IsNullOrWhiteSpace(employeeType) ? null : employeeType,
+          nationalId = string.IsNullOrWhiteSpace(nationalId) ? null : nationalId
         };
 
         var reportRows = await connection.QueryAsync<EmployerReportByPersonRow>(storedProc, parameters, commandType: CommandType.StoredProcedure);
