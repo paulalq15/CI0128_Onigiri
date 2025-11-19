@@ -1,9 +1,14 @@
 <template>
-  <div id="reportFilters">
+  <div id="reportFilters" v-if="isReportLoaded">
     <!-- Fecha inicial -->
     <div>
       <label for="selectFechaInicial" class="form-label fw-bold">Fecha inicial</label>
-      <select id="selectFechaInicial" class="form-select" v-model="selectedInitialDate">
+      <select
+        id="selectFechaInicial"
+        class="form-select"
+        v-model="selectedInitialDate"
+        @change="loadReport()"
+      >
         <option
           v-for="date in initialDatesList"
           :key="date.payrollId"
@@ -17,7 +22,12 @@
     <!-- Fecha final -->
     <div>
       <label for="selectFechaFinal" class="form-label fw-bold">Fecha final</label>
-      <select id="selectFechaFinal" class="form-select" v-model="selectedFinalDate">
+      <select
+        id="selectFechaFinal"
+        class="form-select"
+        v-model="selectedFinalDate"
+        @change="loadReport()"
+      >
         <option
           v-for="date in finalDatesList"
           :key="date.payrollId"
@@ -36,7 +46,7 @@
   </div>
 
   <div v-if="!isReportLoaded">
-    Cargando reporte ...
+    {{ waitingMessage }}
   </div>
   <div id="reportContent" v-else>
     <h4>Reporte histórico pago de planilla</h4>
@@ -91,7 +101,8 @@
   const initialDatesList = ref([]);
   const selectedInitialDate = ref(null);
   
-  
+  const waitingMessage = ref("Cargando datos...");
+
   const finalDatesList = computed(() => {
     if (!selectedInitialDate.value) return [];
 
@@ -136,7 +147,10 @@
   }
 
   async function loadReport() {
-    if (!selectedInitialDate.value  || !selectedFinalDate.value) return;
+    if (!selectedInitialDate.value  || !selectedFinalDate.value) {
+      waitingMessage.value = "No hay datos que mostrar";
+      return;
+    }
 
     const companyId = user?.companyUniqueId;
     const employeeId = Number(user?.personId);
@@ -151,8 +165,6 @@
 
     try {
       const response = await URLBaseAPI.post('/api/Reports/data', params);
-
-      console.log(response.data);
 
       companyName.value = response.data.reportInfo.CompanyName;
       employeeName.value = response.data.reportInfo.EmployeeName;
