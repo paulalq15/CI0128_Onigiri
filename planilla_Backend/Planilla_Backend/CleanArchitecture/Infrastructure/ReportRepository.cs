@@ -130,7 +130,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
                 When 'Medio Tiempo' THEN 'PartTime'
                 When 'Servicios Profesionales' THEN 'ProfessionalServices'
               End As ContractType,
-              c.Puesto As Role,
+              ne.PuestoEnMomento As Role,
               cp.FechaPago As PaymentDate,
               ne.MontoBruto As GrossSalary,
               ne.DeduccionesEmpleado As LegalDeductions,
@@ -139,10 +139,11 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
             From Persona p
             Inner Join NominaEmpleado ne On ne.IdEmpleado = p.IdPersona
             Inner Join ComprobantePago cp On cp.IdNominaEmpleado = ne.IdNominaEmpleado
+            Inner Join NominaEmpresa nem On nem.IdNominaEmpresa = ne.IdNominaEmpresa
             Inner Join Contrato c On c.IdPersona = p.IdPersona
             Where p.IdPersona = @employeeId
-              And cp.FechaPago >= @startPayrollDate
-              And cp.FechaPago <= @finalPayrollDate;
+              And nem.FechaInicio >= @startPayrollDate
+              And nem.FechaFin <= @finalPayrollDate;
         ";
 
         var header = await connection.QuerySingleOrDefaultAsync<EmployeePayrollHistoryReport>(
