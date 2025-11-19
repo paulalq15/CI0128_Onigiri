@@ -16,16 +16,22 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
       if (!request.CompanyId.HasValue || request.CompanyId.Value <= 0) throw new ArgumentException("El parámetro CompanyId es requerido y debe ser mayor que cero", nameof(request));
       if (!request.DateFrom.HasValue) throw new ArgumentException("El parámetro de fecha de inicio es requerido", nameof(request));
       if (!request.DateTo.HasValue) throw new ArgumentException("El parámetro de fecha fin es requerido", nameof(request));
-      if (request.EmployeeNationalId is not null && request.EmployeeNationalId.Trim().Length >= 11) throw new ArgumentException("El parámetro Cedula debe ser de 11 caracteres", nameof(request));
+      if (request.EmployeeNationalId is not null && request.EmployeeNationalId.Trim().Length != 11) throw new ArgumentException("El parámetro Cedula debe ser de 11 caracteres", nameof(request));
       if (request.EmployeeType is not null && !Enum.IsDefined(typeof(EmployeeType), request.EmployeeType.Value)) throw new ArgumentException("El parámetro TipoEmpleado tiene un valor inválido", nameof(request));
 
       int companyId = request.CompanyId.Value;
       var dateFrom = request.DateFrom.Value;
       var dateTo = request.DateTo.Value;
       string? employeeNatId = request.EmployeeNationalId is not null ? request.EmployeeNationalId.Trim(): null;
-      string? employeeType = request.EmployeeType.HasValue ? request.EmployeeType.Value.ToString() : null;
+      string? employeeType = request.EmployeeType switch
+      { 
+        EmployeeType.FullTime => "FullTime",
+        EmployeeType.PartTime => "PartTime",
+        EmployeeType.ProfessionalServices => "ProfessionalServices",
+        _ => null
+      };
 
-      var items = await repository.GetEmployerPayrollByPersonAsync(companyId, dateFrom, dateTo, employeeNatId, employeeType, ct);
+    var items = await repository.GetEmployerPayrollByPersonAsync(companyId, dateFrom, dateTo, employeeType, employeeNatId, ct);
 
       var rows = new List<Dictionary<string, object?>>();
       decimal totalGross = 0;
@@ -39,7 +45,7 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
         {
           ["EmployeeName"] = item.EmployeeName,
           ["NationalId"] = item.NationalId,
-          ["EmployeeType"] = item.EmployeeType.ToString(),
+          ["EmployeeType"] = item.EmployeeType,
           ["PaymentPeriod"] = item.PaymentPeriod,
           ["PaymentDate"] = item.PaymentDate.ToString("dd-MM-yyyy"),
           ["GrossSalary"] = item.GrossSalary,
