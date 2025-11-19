@@ -8,6 +8,7 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
     {
       get { return ReportCodes.EmployerDetailPayroll; }
     }
+
     public async Task<ReportResultDto> GenerateAsync(ReportRequestDto request, IReportRepository repository, CancellationToken ct = default)
     {
       throw new NotImplementedException("ReportGenerator_EmployerPayrollDetail aún no está implementado");

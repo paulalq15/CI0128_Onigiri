@@ -3,6 +3,7 @@ using Microsoft.Data.SqlClient;
 using Planilla_Backend.CleanArchitecture.Application.Ports;
 using Planilla_Backend.CleanArchitecture.Application.Reports;
 using Planilla_Backend.CleanArchitecture.Domain.Reports;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Planilla_Backend.CleanArchitecture.Infrastructure
 {
@@ -39,6 +40,32 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       catch (Exception ex)
       {
         _logger.LogError(ex, "GetEmployeePayrollPeriodsAsync failed. companyId: {CompanyId}", companyId);
+        throw;
+      }
+    }
+
+    public async Task<IEnumerable<ReportPayrollPeriodDto>> GetEmployerPayrollPeriodsAsync(int companyId, int top)
+    {
+      try
+      {
+        using var connection = new SqlConnection(_connectionString);
+        const string query =
+          @"SELECT TOP(@top)
+            IdNominaEmpresa AS PayrollId,
+            FechaInicio AS DateFrom,
+            FechaFin AS DateTo,
+            FORMAT(FechaInicio, 'dd/MM/yyyy') + ' - ' + FORMAT(FechaFin, 'dd/MM/yyyy') AS PeriodLabel
+          FROM NominaEmpresa
+          WHERE IdEmpresa = @companyId
+          ORDER BY FechaInicio DESC;";
+
+        var payrolls = await connection.QueryAsync<ReportPayrollPeriodDto>(query, new { companyId, top });
+        return payrolls;
+      }
+
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, "GetEmployerPayrollPeriodsAsync failed. companyId: {CompanyId}", companyId);
         throw;
       }
     }

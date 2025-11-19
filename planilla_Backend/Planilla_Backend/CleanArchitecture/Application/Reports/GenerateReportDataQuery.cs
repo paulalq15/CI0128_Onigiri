@@ -33,5 +33,12 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
       if (top <= 0) throw new ArgumentException("El parámetro top es requerido y debe ser mayor que cero");
       return _reportRepository.GetEmployeePayrollPeriodsAsync(companyId, employeeId, top);
     }
+
+    public Task<IEnumerable<ReportPayrollPeriodDto>> GetEmployerPayrollPeriodsAsync(int companyId, int top)
+    {
+      if (companyId <= 0) throw new ArgumentException("El parámetro CompanyId es requerido y debe ser mayor que cero");
+      if (top <= 0) throw new ArgumentException("El parámetro top es requerido y debe ser mayor que cero");
+      return _reportRepository.GetEmployerPayrollPeriodsAsync(companyId, top);
+    }
   }
 }
