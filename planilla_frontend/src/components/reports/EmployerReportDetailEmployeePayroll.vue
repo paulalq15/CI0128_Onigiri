@@ -6,7 +6,7 @@
     <select
       id="Company"
       class="form-select"
-      v-model.number="selectedCompanyUniqueId"
+      v-model="selectedCompanyUniqueId"
       @change="onFiltersChanged"
     >
       <option :value="null">Seleccione una empresa</option>
@@ -29,21 +29,21 @@
       v-model="selectedEmployeeType"
       @change="onFiltersChanged"
     >
-      <option :value="null">Seleccione una empresa</option>
-      <option :value="fullTime">Tiempo Completo</option>
-      <option :value="partTime">Medio Tiempo</option>
-      <option :value="professionalServices">Servicios Profesionales</option>
+      <option :value="null">Seleccione un tipo</option>
+      <option value="FullTime">Tiempo Completo</option>
+      <option value="PartTime">Medio Tiempo</option>
+      <option value="ProfessionalServices">Servicios Profesionales</option>
     </select>
     </div>
 
     <!-- Cedula Empleado -->
     <div>
-    <label for="EmployeeCedula" class="form-label fw-bold">Cedula de Empleado</label>
+    <label for="EmployeeNationalId" class="form-label fw-bold">Cedula de Empleado</label>
     <input
-      id="EmployeeCedula"
+      id="EmployeeNationalId"
       type="text"
       class="form-control"
-      v-model="selectedEmployeeCedula"
+      v-model="selectedEmployeeNationalId"
       @change="onFiltersChanged"
     />
     </div>
@@ -100,15 +100,15 @@
         </thead>
         <tbody>
           <tr v-for="(row, index) in payrollData" :key="index">
-              <td>{{ row.employeeName }}</td>
-              <td>{{ row.cedula }}</td>
-              <td>{{ row.contractType }}</td>
-              <td>{{ row.paymentPeriod }}</td>
-              <td>{{ row.paymentDate }}</td>
-              <td>{{ row.grossSalary }}</td>
-              <td>{{ row.employerDeductions }}</td>
-              <td>{{ row.voluntaryDeductions }}</td>
-              <td>{{ row.employerCost }}</td>
+              <td>{{ row.EmployeeName }}</td>
+              <td>{{ row.NationalId }}</td>
+              <td>{{ row.EmployeeType }}</td>
+              <td>{{ row.PaymentPeriod }}</td>
+              <td>{{ row.PaymentDate }}</td>
+              <td>{{ row.GrossSalary }}</td>
+              <td>{{ row.EmployerContributions }}</td>
+              <td>{{ row.EmployeeBenefits }}</td>
+              <td>{{ row.EmployerCost }}</td>
             </tr>
         </tbody>
       </table>
@@ -128,25 +128,16 @@
   const session = useSession()
   const userId = computed(() => session.user?.userId ?? null)
   
-  const payrollData = [
-    {
-      employeeName: 'Pedro Vargas Vargas',
-      nationalId: '1-5270-0776',
-      employeeType: 'Tiempo Completp',
-      paymentPeriod: '2025-01-10 a 2025-10-31',
-      paymentDate: '2025-11-10',
-      grossSalary: '₡1,200,000',
-      employerContributions: '₡150,000',
-      employeeBenefits: '₡50,000',
-      employerCost: '₡1,000,000'
-    }
-  ]
+  const payrollData = ref([])
 
   const companies = ref([])
   const selectedCompanyUniqueId = ref(null)
 
   const selectedStartDate = ref('')
   const selectedEndDate = ref('')
+
+  const selectedEmployeeType = ref(null)
+  const selectedEmployeeNationalId = ref('')
 
   function adjustEndDate() {
     if (selectedEndDate.value < selectedStartDate.value) {
@@ -169,10 +160,25 @@
     }
   }
 
-  function onFiltersChanged() {
+  async function onFiltersChanged() {
     if (!selectedCompanyUniqueId.value || !selectedStartDate.value || !selectedEndDate.value) {
-      // falta back end
-      return
+      return;
+    }
+    const params = {
+      reportCode: 'EmployerEmployeePayroll',
+      companyId: selectedCompanyUniqueId.value,
+      employeeNationalId: selectedEmployeeNationalId.value || null,
+      employeeType: selectedEmployeeType.value ?? null,
+      dateFrom: selectedStartDate.value,
+      dateTo: selectedEndDate.value,
+    }
+
+    try {
+      const { data } = await URLBaseAPI.post('/api/Reports/data', params);
+      const rows = Array.isArray(data.rows) ? data.rows : [];
+      payrollData.value = rows;
+    } catch (error) {
+      console.error('Error cargando reporte', error)
     }
   }
 
