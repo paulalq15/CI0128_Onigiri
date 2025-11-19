@@ -2,6 +2,7 @@
 using Microsoft.Data.SqlClient;
 using Planilla_Backend.CleanArchitecture.Application.Ports;
 using Planilla_Backend.CleanArchitecture.Application.Reports;
+using Planilla_Backend.CleanArchitecture.Domain.Entities;
 using Planilla_Backend.CleanArchitecture.Domain.Reports;
 
 namespace Planilla_Backend.CleanArchitecture.Infrastructure
@@ -100,6 +101,48 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       catch (Exception ex)
       {
         _logger.LogError(ex, "GetEmployeePayrollReportAsync failed. PayrollId: {payrollId}", payrollId);
+        throw;
+      }
+    }
+
+    public async Task<IEnumerable<EmployerHistoryRow>> GetEmployerHistoryCompaniesAsync(int? companyId, int employeeId, DateTime dateFrom, DateTime dateTo, CancellationToken ct = default)
+    {
+      try
+      {
+        using var connection = new SqlConnection(_connectionString);
+        const string query =
+            @"SELECT 
+              e.Nombre AS CompanyName,
+              CASE e.FrecuenciaPago
+                WHEN 'Quincenal' THEN 'Biweekly'
+                WHEN 'Mensual' THEN 'Monthly'
+              END AS PaymentFrequency,
+              ne.FechaInicio AS DateFrom,
+              ne.FechaFin AS DateTo,
+              MAX(cp.FechaPago) AS PaymentDate,
+              ne.MontoBruto AS GrossSalary,
+              ne.DeduccionesEmpleador AS EmployerContributions,
+              ne.Beneficios AS EmployeeBenefits,
+              ne.Costo AS EmployerCost
+            FROM NominaEmpresa AS ne
+              JOIN Empresa AS e ON e.IdEmpresa = ne.IdEmpresa
+              JOIN UsuariosPorEmpresa AS ue ON ue.IdEmpresa = e.IdEmpresa
+              JOIN Usuario AS u ON u.IdUsuario = ue.IdUsuario
+              LEFT JOIN NominaEmpleado AS nem ON nem.IdNominaEmpresa = ne.IdNominaEmpresa
+              LEFT JOIN ComprobantePago AS cp ON cp.IdNominaEmpleado = nem.IdNominaEmpleado
+            WHERE ne.FechaFin <= @dateTo
+              AND ne.FechaInicio >= @dateFrom
+              AND (@companyId IS NULL OR e.IdEmpresa = @companyId)
+              AND u.IdPersona = @employeeId
+            GROUP BY e.Nombre, e.FrecuenciaPago, ne.FechaInicio, ne.FechaFin, ne.MontoBruto, ne.DeduccionesEmpleador, ne.Beneficios, ne.Costo
+            ORDER BY e.Nombre, ne.FechaInicio;";
+
+        var payrolls = await connection.QueryAsync<EmployerHistoryRow>(query, new { companyId, employeeId, dateFrom, dateTo });
+        return payrolls;
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, "GetEmployerHistoryCompaniesAsync failed. companyId: {CompanyId}", companyId);
         throw;
       }
     }
