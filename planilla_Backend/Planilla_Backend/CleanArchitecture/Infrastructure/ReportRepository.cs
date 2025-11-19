@@ -153,6 +153,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       try
       {
         using var connection = new SqlConnection(_connectionString);
+        await connection.OpenAsync(ct);
         const string storedProc = "dbo.sp_GetPayrollReport";
 
         var parameters = new
