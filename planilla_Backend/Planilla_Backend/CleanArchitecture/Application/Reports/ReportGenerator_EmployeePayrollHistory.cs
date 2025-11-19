@@ -54,8 +54,17 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
     {
       var rows = new List<Dictionary<string, object?>>();
 
+      decimal totalGrossSalary = 0;
+      decimal totalLegalDeductions = 0;
+      decimal totalVoluntaryDeductions = 0;
+      decimal totalNetSalary = 0;
+
       foreach (var row in report.Rows)
       {
+        totalGrossSalary += row.GrossSalary;
+        totalLegalDeductions += row.LegalDeductions;
+        totalVoluntaryDeductions += row.VoluntaryDeductions;
+        totalNetSalary += row.NetSalary;
         rows.Add(new Dictionary<string, object?>
         {
           ["paymentDate"] = row.PaymentDate.ToString("dd-MM-yyyy"),
@@ -67,6 +76,14 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
           ["netSalary"] = row.NetSalary
         });
       }
+
+      rows.Add(new Dictionary<string, object?>
+      {
+        ["totalGrossSalary"] = totalGrossSalary,
+        ["totalLegalDeductions"] = totalLegalDeductions,
+        ["totalVoluntaryDeductions"] = totalVoluntaryDeductions,
+        ["totalNetSalary"] = totalNetSalary,
+      });
 
       return rows;
     } 

@@ -68,15 +68,24 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(row, index) in payrollData" :key="index">
-              <td>{{ row.contractType }}</td>
-              <td>{{ row.position }}</td>
-              <td>{{ row.paymentDate }}</td>
-              <td>{{ row.grossSalary }}</td>
-              <td>{{ row.mandatoryDeductions }}</td>
-              <td>{{ row.voluntaryDeductions }}</td>
-              <td>{{ row.netSalary }}</td>
-            </tr>
+          <tr v-for="(row, index) in payrollData.slice(0, -1)" :key="index">
+            <td>{{ row.contractType }}</td>
+            <td>{{ row.position }}</td>
+            <td>{{ row.paymentDate }}</td>
+            <td>{{ row.grossSalary }}</td>
+            <td>{{ row.mandatoryDeductions }}</td>
+            <td>{{ row.voluntaryDeductions }}</td>
+            <td>{{ row.netSalary }}</td>
+          </tr>
+
+          <!-- Fila de totales -->
+          <tr>
+            <td colspan="3"><strong>Total</strong></td>
+            <td>{{ payrollData.at(-1).totalGrossSalary }}</td>
+            <td>{{ payrollData.at(-1).totalLegalDeductions }}</td>
+            <td>{{ payrollData.at(-1).totalVoluntaryDeductions }}</td>
+            <td>{{ payrollData.at(-1).totalNetSalary }}</td>
+          </tr>
         </tbody>
       </table>
     </div>
@@ -172,6 +181,8 @@
       payrollData.value = response.data.rows || null;
 
       isReportLoaded.value = true;
+
+      console.log(payrollData.value);
     } catch (error) {
       const data = error?.response?.data;
       const msg =
