@@ -105,7 +105,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       }
     }
 
-    public async Task<IEnumerable<EmployerReportByPersonRow>> GetEmployerPayrollByPersonAsync(int companyId, DateTime start, DateTime end, string? employeeType, string? employeeNatId)
+    public async Task<IEnumerable<EmployerReportByPersonRow>> GetEmployerPayrollByPersonAsync(int companyId, DateTime start, DateTime end, string? employeeType, string? nationalId, CancellationToken ct)
     {
       try
       {
@@ -117,8 +117,8 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
           companyId,
           start,
           end,
-          cedula = string.IsNullOrWhiteSpace(employeeNatId) ? null : employeeNatId,
-          contractType = string.IsNullOrWhiteSpace(employeeType) ? null : employeeType
+          nationalId = string.IsNullOrWhiteSpace(nationalId) ? null : nationalId,
+          employeeType = string.IsNullOrWhiteSpace(employeeType) ? null : employeeType
         };
 
         var reportRows = await connection.QueryAsync<EmployerReportByPersonRow>(storedProc, parameters, commandType: CommandType.StoredProcedure);
