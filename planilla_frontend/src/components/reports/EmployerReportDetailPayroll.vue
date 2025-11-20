@@ -13,14 +13,14 @@
 
 
 <script>
-// import jsPDF from 'jspdf';
-// import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import URLBaseAPI from '../../axiosAPIInstances.js';
-// import LinkButton from '../LinkButton.vue';
+import LinkButton from '../LinkButton.vue';
 
 export default {
   components: {
-    // LinkButton,
+    LinkButton,
   },
 
   data() {
@@ -69,11 +69,53 @@ export default {
           }, this.toastTimeout);
         });
     },
+
+    loadReport() {
+      if (!this.selectedPayrollId) return;
+
+      const companyId = this.$session.user?.companyUniqueId;
+      const employeeId = Number(this.$session.user?.personId);
+
+      const params = {
+        reportCode: 'EmployerDetailPayroll',
+        companyId,
+        employeeId,
+        payrollId: this.selectedPayrollId,
+      };
+
+      this.isLoading = true;
+      URLBaseAPI.post('/api/Reports/data', params)
+        .then((response) => {
+          this.reportResult = response.data;
+        })
+
+        .catch((error) => {
+          const data = error && error.response && error.response.data ? error.response.data : null;
+          const msg =
+            typeof data === 'string'
+              ? data
+              : (data && (data.message || data.detail)) || 'Error cargando el detalle de planilla';
+
+          this.toastMessage = msg;
+          this.toastType = 'bg-danger';
+          this.showToast = true;
+
+          setTimeout(function () {
+            this.showToast = false;
+          }, this.toastTimeout);
+
+          this.reportResult = null;
+        })
+
+        .finally(() => {
+          this.isLoading = false;
+        });
+    },
   },
 
   watch: {
     selectedPayrollId() {
-      // this.loadReport();
+      this.loadReport();
     },
   },
 
