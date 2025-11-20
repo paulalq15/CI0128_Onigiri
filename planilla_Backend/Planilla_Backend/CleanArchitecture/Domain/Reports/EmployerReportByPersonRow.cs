@@ -6,9 +6,8 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Reports
   {
     public string EmployeeName { get; set; } = null!;
     public string NationalId { get; set; } = null!;
-    public EmployeeType EmployeeType { get; set; }
-    public DateTime DateFrom { get; set; }
-    public DateTime DateTo { get; set; }
+    public string EmployeeType { get; set; }
+    public string PaymentPeriod { get; set; } = null!;
     public DateTime PaymentDate { get; set; }
     public decimal GrossSalary { get; set; }
     public decimal EmployerContributions { get; set; }
