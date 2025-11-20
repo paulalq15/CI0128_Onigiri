@@ -22,30 +22,33 @@
 
     <!-- Tipo Empleado -->
     <div>
-    <label for="EmployeeType" class="form-label fw-bold">Tipo de Empleado</label>
-    <select
-      id="EmployeeType"
-      class="form-select"
-      v-model="selectedEmployeeType"
-      @change="onFiltersChanged"
-    >
-      <option :value="null">Seleccione un tipo</option>
-      <option value="FullTime">Tiempo Completo</option>
-      <option value="PartTime">Medio Tiempo</option>
-      <option value="ProfessionalServices">Servicios Profesionales</option>
-    </select>
+      <label for="EmployeeType" class="form-label fw-bold">Tipo de Empleado</label>
+      <select
+        id="EmployeeType"
+        class="form-select"
+        v-model="selectedEmployeeType"
+        @change="onFiltersChanged"
+      >
+        <option :value="null">Seleccione un tipo</option>
+        <option value="FullTime">Tiempo Completo</option>
+        <option value="PartTime">Medio Tiempo</option>
+        <option value="ProfessionalServices">Servicios Profesionales</option>
+      </select>
     </div>
 
     <!-- Cedula Empleado -->
     <div>
-    <label for="EmployeeNationalId" class="form-label fw-bold">Cedula de Empleado</label>
-    <input
-      id="EmployeeNationalId"
-      type="text"
-      class="form-control"
-      v-model="selectedEmployeeNationalId"
-      @change="onFiltersChanged"
-    />
+      <label for="EmployeeNationalId" class="form-label fw-bold">Cedula de Empleado</label>
+      <input
+        id="EmployeeNationalId"
+        type="text"
+        class="form-control"
+        v-model="selectedEmployeeNationalId"
+        @input="formatNationalId"
+        @change="onFiltersChanged"
+        pattern="\\d{1}-\\d{4}-\\d{4}"
+        placeholder="1-2345-6789"
+      />
     </div>
 
     <!-- Fecha inicial -->
@@ -82,7 +85,6 @@
 
   <div id="reportContent">
     <h4>Detalle de Planilla Por Empleado</h4>
-
     <div id="reportTable" class="table-responsive">
       <table class="table">
         <thead>
@@ -100,16 +102,21 @@
         </thead>
         <tbody>
           <tr v-for="(row, index) in payrollData" :key="index">
-              <td>{{ row.EmployeeName }}</td>
-              <td>{{ row.NationalId }}</td>
-              <td>{{ row.EmployeeType }}</td>
-              <td>{{ row.PaymentPeriod }}</td>
-              <td>{{ row.PaymentDate }}</td>
-              <td>{{ row.GrossSalary }}</td>
-              <td>{{ row.EmployerContributions }}</td>
-              <td>{{ row.EmployeeBenefits }}</td>
-              <td>{{ row.EmployerCost }}</td>
-            </tr>
+            <td>{{ row.EmployeeName }}</td>
+            <td>{{ row.NationalId }}</td>
+            <td>{{ row.EmployeeType }}</td>
+            <td>{{ row.PaymentPeriod }}</td>
+            <td>{{ row.PaymentDate }}</td>
+            <td>{{ row.GrossSalary }}</td>
+            <td>{{ row.EmployerContributions }}</td>
+            <td>{{ row.EmployeeBenefits }}</td>
+            <td>{{ row.EmployerCost }}</td>
+          </tr>
+          <tr v-if="!payrollData.length">
+            <td colspan="8" class="text-center text-muted">
+              No hay datos para mostrar.
+          </td>
+        </tr>
         </tbody>
       </table>
     </div>
@@ -145,6 +152,25 @@
     }
   }
 
+  function formatNationalId(event) {
+    let raw = event.target.value.replace(/\D/g, "");
+
+    if (raw.length > 9) {
+      raw = raw.slice(0, 9);
+    }
+
+    let formatted = raw;
+
+    if (raw.length > 1) {
+      formatted = raw[0] + "-" + raw.slice(1);
+    }
+    if (raw.length > 5) {
+      formatted = raw[0] + "-" + raw.slice(1, 5) + "-" + raw.slice(5);
+    }
+
+    selectedEmployeeNationalId.value = formatted;
+  }
+
   async function loadCompanies() {
     try {
       if (!userId.value) {
@@ -164,6 +190,16 @@
     if (!selectedCompanyUniqueId.value || !selectedStartDate.value || !selectedEndDate.value) {
       return;
     }
+
+    if (selectedEmployeeNationalId.value) {
+      const cedulaRegex = /^\d-\d{4}-\d{4}$/;
+
+      if (!cedulaRegex.test(selectedEmployeeNationalId.value)) {
+        console.error('La cédula debe tener el formato #-####-####');
+        return;
+      }
+    }
+
     const params = {
       reportCode: 'EmployerEmployeePayroll',
       companyId: selectedCompanyUniqueId.value,
