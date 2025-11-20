@@ -1,124 +1,138 @@
 <template>
-  <div id="reportFilters">
-    <!-- Empresa -->
-    <div>
-    <label for="Company" class="form-label fw-bold">Empresa</label>
-    <select
-      id="Company"
-      class="form-select"
-      v-model="selectedCompanyUniqueId"
-      @change="onFiltersChanged"
-    >
-      <option :value="null">Seleccione una empresa</option>
-      <option
-        v-for="company in companies"
-        :key="company.companyUniqueId"
-        :value="company.companyUniqueId"
-      >
-        {{ company.companyName }}
-      </option>
-    </select>
-    </div>
-
-    <!-- Tipo Empleado -->
-    <div>
-      <label for="EmployeeType" class="form-label fw-bold">Tipo de Empleado</label>
-      <select
-        id="EmployeeType"
-        class="form-select"
-        v-model="selectedEmployeeType"
-        @change="onFiltersChanged"
-      >
-        <option :value="null">Seleccione un tipo</option>
-        <option value="FullTime">Tiempo Completo</option>
-        <option value="PartTime">Medio Tiempo</option>
-        <option value="ProfessionalServices">Servicios Profesionales</option>
-      </select>
-    </div>
-
-    <!-- Cedula Empleado -->
-    <div>
-      <label for="EmployeeNationalId" class="form-label fw-bold">Cedula de Empleado</label>
-      <input
-        id="EmployeeNationalId"
-        type="text"
-        class="form-control"
-        v-model="selectedEmployeeNationalId"
-        @input="formatNationalId"
-        @change="onFiltersChanged"
-        pattern="\\d{1}-\\d{4}-\\d{4}"
-        placeholder="1-2345-6789"
-      />
-    </div>
-
-    <!-- Fecha inicial -->
-    <div>
-      <label for="StartDate" class="form-label fw-bold">Fecha incial</label>
-      <input
-        id="StartDate"
-        type="date"
-        class="form-control"
-        v-model="selectedStartDate"
-        @change="adjustEndDate"
-      />
-    </div>
-
-    <!-- Fecha final -->
-    <div>
-      <label for="EndDate" class="form-label fw-bold">Fecha final</label>
-      <input
-        id="EndDate"
-        type="date"
-        class="form-control"
-        v-model="selectedEndDate"
-        :min="selectedStartDate"
-        @change="onFiltersChanged"
-      />
-    </div>
-  </div>
-
   <div>
-    <div id="buttons">
-      <LinkButton text="Descargar Excel" @click="downloadExcel()" />
+    <div v-if="companiesError" class="alert alert-danger mb-3">
+      {{ companiesError }}
     </div>
-  </div>
 
-  <div id="reportContent">
-    <h4>Detalle de Planilla Por Empleado</h4>
-    <div id="reportTable" class="table-responsive">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Nombre Empleado</th>
-            <th>Cedula</th>
-            <th>Tipo de Empleado</th>
-            <th>Periodo de Pago</th>
-            <th>Fecha de Pago</th>
-            <th>Salario Bruto</th>
-            <th>Cargas Sociales Empleador</th>
-            <th>Deducciones Voluntarias</th>
-            <th>Costo Empleador</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(row, index) in payrollData" :key="index">
-            <td>{{ row.EmployeeName }}</td>
-            <td>{{ row.NationalId }}</td>
-            <td>{{ row.EmployeeType }}</td>
-            <td>{{ row.PaymentPeriod }}</td>
-            <td>{{ row.PaymentDate }}</td>
-            <td>{{ row.GrossSalary }}</td>
-            <td>{{ row.EmployerContributions }}</td>
-            <td>{{ row.EmployeeBenefits }}</td>
-            <td>{{ row.EmployerCost }}</td>
-          </tr>
-          <tr v-if="!payrollData.length">
-            <td colspan="8" class="text-center text-muted">
-              No hay datos para mostrar.
-          </td>
-        </tr>
-        </tbody>
-      </table>
+    <div id="reportFilters">
+      <!-- Empresa -->
+      <div>
+        <label for="Company" class="form-label fw-bold">Empresa</label>
+        <select
+          id="Company"
+          class="form-select"
+          v-model="selectedCompanyUniqueId"
+          @change="onFiltersChanged"
+        >
+          <option :value="null">Seleccione una empresa</option>
+          <option
+            v-for="company in companies"
+            :key="company.companyUniqueId"
+            :value="company.companyUniqueId"
+          >
+            {{ company.companyName }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Tipo Empleado -->
+      <div>
+        <label for="EmployeeType" class="form-label fw-bold">Tipo de Empleado</label>
+        <select
+          id="EmployeeType"
+          class="form-select"
+          v-model="selectedEmployeeType"
+          @change="onFiltersChanged"
+        >
+          <option :value="null">Seleccione un tipo</option>
+          <option value="FullTime">Tiempo Completo</option>
+          <option value="PartTime">Medio Tiempo</option>
+          <option value="ProfessionalServices">Servicios Profesionales</option>
+        </select>
+      </div>
+
+      <!-- Cedula Empleado -->
+      <div>
+        <label for="EmployeeNationalId" class="form-label fw-bold">Cédula de Empleado</label>
+        <input
+          id="EmployeeNationalId"
+          type="text"
+          class="form-control"
+          v-model="selectedEmployeeNationalId"
+          @input="formatNationalId"
+          @change="onFiltersChanged"
+          pattern="\\d{1}-\\d{4}-\\d{4}"
+          placeholder="1-2345-6789"
+        />
+        <p v-if="cedulaError" class="text-danger small mt-1">
+          {{ cedulaError }}
+        </p>
+      </div>
+
+      <!-- Fecha inicial -->
+      <div>
+        <label for="StartDate" class="form-label fw-bold">Fecha inicial</label>
+        <input
+          id="StartDate"
+          type="date"
+          class="form-control"
+          v-model="selectedStartDate"
+          @change="adjustEndDate"
+        />
+      </div>
+
+      <!-- Fecha final -->
+      <div>
+        <label for="EndDate" class="form-label fw-bold">Fecha final</label>
+        <input
+          id="EndDate"
+          type="date"
+          class="form-control"
+          v-model="selectedEndDate"
+          :min="selectedStartDate"
+          @change="onFiltersChanged"
+        />
+      </div>
+    </div>
+
+    <div>
+      <div id="buttons" class="mt-3">
+        <LinkButton text="Descargar Excel" @click="downloadExcel()" />
+      </div>
+    </div>
+
+    <div id="reportContent" class="mt-4">
+      <h4>Detalle de Planilla Por Empleado</h4>
+
+      <div v-if="reportError" class="alert alert-warning mb-3">
+        {{ reportError }}
+      </div>
+
+      <div id="reportTable" class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Nombre Empleado</th>
+              <th>Cédula</th>
+              <th>Tipo de Empleado</th>
+              <th>Periodo de Pago</th>
+              <th>Fecha de Pago</th>
+              <th>Salario Bruto</th>
+              <th>Cargas Sociales Empleador</th>
+              <th>Deducciones Voluntarias</th>
+              <th>Costo Empleador</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(row, index) in payrollData" :key="index">
+              <td>{{ row.EmployeeName }}</td>
+              <td>{{ row.NationalId }}</td>
+              <td>{{ row.EmployeeType }}</td>
+              <td>{{ row.PaymentPeriod }}</td>
+              <td>{{ row.PaymentDate }}</td>
+              <td>{{ row.GrossSalary }}</td>
+              <td>{{ row.EmployerContributions }}</td>
+              <td>{{ row.EmployeeBenefits }}</td>
+              <td>{{ row.EmployerCost }}</td>
+            </tr>
+            <tr v-if="!payrollData.length && !reportError">
+              <td colspan="9" class="text-center text-muted">
+                No hay datos para mostrar.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
@@ -146,6 +160,10 @@
   const selectedEmployeeType = ref(null)
   const selectedEmployeeNationalId = ref('')
 
+  const companiesError = ref('')
+  const reportError = ref('')
+  const cedulaError = ref('')
+
   function adjustEndDate() {
     if (selectedEndDate.value < selectedStartDate.value) {
       selectedEndDate.value = selectedStartDate.value
@@ -172,22 +190,32 @@
   }
 
   async function loadCompanies() {
+    companiesError.value = ''
     try {
       if (!userId.value) {
-        console.warn('userId no disponible aún')
+        companiesError.value = 'No se pudo obtener la información del usuario. Intente iniciar sesión nuevamente.'
         return
       }
 
       const resp = await URLBaseAPI.get(`/api/Company/by-user/${userId.value}?onlyActive=false`)
 
       companies.value = resp.data ?? []
+
+      if (!companies.value.length) {
+        companiesError.value = 'No se encontraron empresas asociadas a tu usuario.'
+      }
+
     } catch (err) {
-      console.error('Error cargando empresas', err)
+      companiesError.value = 'Error cargando empresas. Intenta nuevamente más tarde.'
     }
   }
 
   async function onFiltersChanged() {
+    reportError.value = ''
+    cedulaError.value = ''
+
     if (!selectedCompanyUniqueId.value || !selectedStartDate.value || !selectedEndDate.value) {
+      reportError.value = 'Selecciona la empresa y el rango de fechas para cargar el reporte.'
       return;
     }
 
@@ -195,7 +223,7 @@
       const cedulaRegex = /^\d-\d{4}-\d{4}$/;
 
       if (!cedulaRegex.test(selectedEmployeeNationalId.value)) {
-        console.error('La cédula debe tener el formato #-####-####');
+        cedulaError.value = 'La cédula debe tener el formato #-####-####.'
         return;
       }
     }
@@ -213,8 +241,14 @@
       const { data } = await URLBaseAPI.post('/api/Reports/data', params);
       const rows = Array.isArray(data.rows) ? data.rows : [];
       payrollData.value = rows;
+
+      if (!rows.length) {
+        reportError.value = 'No se encontraron datos para los filtros seleccionados.'
+      }
+
     } catch (error) {
-      console.error('Error cargando reporte', error)
+      const backendMessage = error?.response?.data?.message;
+      reportError.value = backendMessage || 'No se pudo cargar el reporte. Intenta nuevamente más tarde.';
     }
   }
 
