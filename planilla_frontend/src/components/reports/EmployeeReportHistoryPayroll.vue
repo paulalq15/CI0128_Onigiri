@@ -51,8 +51,11 @@
   <div id="reportContent" v-else>
     <h4>Reporte histórico pago de planilla</h4>
     
-    <p>Empresa: {{ companyName }}</p>
-    <p>Nombre del empleado: {{ employeeName }}</p>
+    <p><strong>Empresa:</strong> {{ companyName }}</p>
+    <p><strong>Nombre del empleado:</strong> {{ employeeName }}</p>
+
+    <p><strong>Fecha inicial:</strong> {{ selectedInitialDate.periodLabel }}</p>
+    <p><strong>Fecha final:</strong> {{ selectedFinalDate.periodLabel }}</p>
 
     <div id="reportTable" class="table-responsive">
       <table class="table">
