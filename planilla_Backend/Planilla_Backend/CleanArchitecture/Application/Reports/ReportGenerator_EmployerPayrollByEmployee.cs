@@ -25,9 +25,10 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
       string? employeeNatId = request.EmployeeNationalId is not null ? request.EmployeeNationalId.Trim(): null;
       string? employeeType = request.EmployeeType switch
       { 
-        EmployeeType.FullTime => "FullTime",
-        EmployeeType.PartTime => "PartTime",
-        EmployeeType.ProfessionalServices => "ProfessionalServices",
+        EmployeeType.FullTime => "Tiempo Completo",
+        EmployeeType.PartTime => "Medio Tiempo",
+        EmployeeType.ProfessionalServices => "Servicios Profesionales",
+        null => null,
         _ => null
       };
 
