@@ -23,6 +23,7 @@ namespace Planilla_Backend.CleanArchitecture.API
         var result = await _query.GenerateReportAsync(request, ct);
         return Ok(result);
       }
+
       catch (Exception ex)
       {
         return Error.FromException(this, ex, HttpContext.Request.Path);

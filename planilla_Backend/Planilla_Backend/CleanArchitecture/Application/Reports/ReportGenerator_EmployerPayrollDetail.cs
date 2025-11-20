@@ -1,4 +1,6 @@
 ﻿using Planilla_Backend.CleanArchitecture.Application.Ports;
+using Planilla_Backend.CleanArchitecture.Domain.Entities;
+using Planilla_Backend.CleanArchitecture.Domain.Reports;
 
 namespace Planilla_Backend.CleanArchitecture.Application.Reports
 {
@@ -11,7 +13,45 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
 
     public async Task<ReportResultDto> GenerateAsync(ReportRequestDto request, IReportRepository repository, CancellationToken ct = default)
     {
-      throw new NotImplementedException("ReportGenerator_EmployerPayrollDetail aún no está implementado");
+      if (request is null) throw new ArgumentNullException(nameof(request));
+      if (repository is null) throw new ArgumentNullException(nameof(repository));
+      if (!request.CompanyId.HasValue || request.CompanyId.Value <= 0) throw new ArgumentException("El parámetro CompanyId es requerido y debe ser mayor que cero", nameof(request));
+      if (!request.EmployeeId.HasValue || request.EmployeeId.Value <= 0) throw new ArgumentException("El parámetro EmployeeId es requerido y debe ser mayor que cero", nameof(request));
+      if (!request.PayrollId.HasValue || request.PayrollId.Value <= 0) throw new ArgumentException("El parámetro PayrollId es requerido y debe ser mayor que cero", nameof(request));
+
+      var report = await repository.GetEmployerPayrollReport(request.CompanyId.Value, ct);
+
+      if (report is null) throw new KeyNotFoundException("No se encontró información ...");
+      // if (report.CompanyId != request.CompanyId.Value) throw new KeyNotFoundException("La empresa solicitante no coincide con la empresa registrada en la planilla");
+      // if (report.EmployeeId != request.EmployeeId.Value) throw new KeyNotFoundException("El empleador solicitante no coincide con el empleador registrado en la planilla");
+
+      var rows = BuildRows(report);
+
+      var result = new ReportResultDto
+      {
+        ReportCode = ReportCodes.EmployerDetailPayroll,
+        DisplayName = "Detalle de pago de planilla",
+        Columns = new List<string> { "", "Monto" },
+        Rows = rows,
+        ReportInfo = new Dictionary<string, object?>
+        {
+          ["CompanyName"] = request.CompanyName,
+          ["EmployerName"] = request.EmployerFullname,
+          // ["PaymentDate"] = report.PaymentDate
+        }
+      };
+
+      return result;
     }
+
+    private static List<Dictionary<string, object?>> BuildRows(EmployerPayrollReport report) {
+      var rows = new List<Dictionary<string, object?>>();
+      return rows;
+    }
+
+    /*
+    private static void AddLines(List<Dictionary<string, object?>> rows, IEnumerable<PayrollDetailLine> lines) {
+      //
+    }*/
   }
 }

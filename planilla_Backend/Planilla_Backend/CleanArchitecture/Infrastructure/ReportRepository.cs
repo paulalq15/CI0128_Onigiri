@@ -133,6 +133,35 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       }
     }
 
+    public async Task<EmployerPayrollReport> GetEmployerPayrollReport(int companyId, CancellationToken ct = default)
+    {
+      try
+      {
+        using var connection = new SqlConnection(_connectionString);
+        const string headerQuery = 
+          @"SELECT e.Nombre
+            FROM Empresa e
+            WHERE e.IdEmpresa = @companyId;";
+
+        // const string detailsQuery = "";
+               
+        var header = await connection.QuerySingleOrDefaultAsync<EmployerPayrollReport>(new CommandDefinition(headerQuery, new { companyId }, cancellationToken: ct));
+        if (header == null) throw new KeyNotFoundException("No se encontró la empresa seleccionada");
+
+        // var detailLines = await connection.QueryAsync<PayrollDetailLine>(new CommandDefinition(detailsQuery, new { companyId }, cancellationToken: ct));
+
+        // header.Lines = detailLines.ToList();
+
+        return header;
+      }
+
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, "GetEmployerPayrollReportAsync failed. companyId: {companyId}", companyId);
+        throw;
+      }
+    }
+
     public async Task<IEnumerable<EmployerHistoryRow>> GetEmployerHistoryCompaniesAsync(int? companyId, int employeeId, DateTime dateFrom, DateTime dateTo, CancellationToken ct = default)
     {
       try

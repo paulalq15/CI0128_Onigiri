@@ -13,14 +13,15 @@
 
 
 <script>
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import { useSession } from '../../utils/useSession.js';
+// import jsPDF from 'jspdf';
+// import html2canvas from 'html2canvas';
 import URLBaseAPI from '../../axiosAPIInstances.js';
-import LinkButton from '../LinkButton.vue';
+// import LinkButton from '../LinkButton.vue';
 
 export default {
   components: {
-    LinkButton,
+    // LinkButton,
   },
 
   data() {
@@ -75,15 +76,19 @@ export default {
 
       const companyId = this.$session.user?.companyUniqueId;
       const employeeId = Number(this.$session.user?.personId);
+      const employerFullname = Number(this.$session.user?.fullname);
+      const companyName = this.session.user?.companyName;
 
       const params = {
         reportCode: 'EmployerDetailPayroll',
         companyId,
         employeeId,
         payrollId: this.selectedPayrollId,
+        employerFullname
       };
 
       this.isLoading = true;
+
       URLBaseAPI.post('/api/Reports/data', params)
         .then((response) => {
           this.reportResult = response.data;
