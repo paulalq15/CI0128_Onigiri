@@ -1,9 +1,5 @@
 <template>
   <div>
-    <div v-if="companiesError" class="alert alert-danger mb-3">
-      {{ companiesError }}
-    </div>
-
     <div id="reportFilters">
       <!-- Empresa -->
       <div>
@@ -14,7 +10,6 @@
           v-model="selectedCompanyUniqueId"
           @change="onFiltersChanged"
         >
-          <option :value="null">Seleccione una empresa</option>
           <option
             v-for="company in companies"
             :key="company.companyUniqueId"
@@ -66,8 +61,8 @@
           id="StartDate"
           type="date"
           class="form-control"
-          v-model="selectedStartDate"
-          @change="adjustEndDate"
+          v-model="dateFrom"
+          @change="onFiltersChanged"
         />
       </div>
 
@@ -78,8 +73,7 @@
           id="EndDate"
           type="date"
           class="form-control"
-          v-model="selectedEndDate"
-          :min="selectedStartDate"
+          v-model="dateTo"
           @change="onFiltersChanged"
         />
       </div>
@@ -94,11 +88,13 @@
     <div id="reportContent" class="mt-4">
       <h4>Detalle de Planilla Por Empleado</h4>
 
-      <div v-if="reportError" class="alert alert-warning mb-3">
-        {{ reportError }}
-      </div>
+      <p><strong>Empresa:</strong> {{ companyFilterLabel }}</p>
+      <p><strong>Fecha inicial:</strong> {{ formatFilterDate(dateFrom) }}</p>
+      <p><strong>Fecha final:</strong> {{ formatFilterDate(dateTo) }}</p>
 
-      <div id="reportTable" class="table-responsive">
+      <div v-if="isLoading" class="text-muted">Cargando reporte</div>
+
+      <div v-else id="reportTable" class="table-responsive">
         <table class="table">
           <thead>
             <tr>
@@ -114,16 +110,16 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(row, index) in payrollData" :key="index">
+            <tr v-for="(row, index) in payrollData" :key="index" :class="{ 'totals-row': row.EmployeeName === 'Total' }">
               <td>{{ row.EmployeeName }}</td>
               <td>{{ row.NationalId }}</td>
               <td>{{ row.EmployeeType }}</td>
               <td>{{ row.PaymentPeriod }}</td>
-              <td>{{ row.PaymentDate }}</td>
-              <td>{{ row.GrossSalary }}</td>
-              <td>{{ row.EmployerContributions }}</td>
-              <td>{{ row.EmployeeBenefits }}</td>
-              <td>{{ row.EmployerCost }}</td>
+              <td>{{ formatDate(row.PaymentDate) }}</td>
+              <td>{{ fmtCRC(row.GrossSalary) }}</td>
+              <td>{{ fmtCRC(row.EmployerContributions) }}</td>
+              <td>{{ fmtCRC(row.EmployeeBenefits) }}</td>
+              <td>{{ fmtCRC(row.EmployerCost) }}</td>
             </tr>
             <tr v-if="!payrollData.length && !reportError">
               <td colspan="9" class="text-center text-muted">
@@ -151,32 +147,30 @@
       LinkButton,
     },
     data() {
+      const { user } = useSession();
+
       return {
-        session: useSession(),
-
+        user,
         payrollData: [],
-
+        isLoading: false,
         companies: [],
         selectedCompanyUniqueId: null,
-
-        selectedStartDate: '',
-        selectedEndDate: '',
-
+        dateFrom: '',
+        dateTo: '',
         selectedEmployeeType: null,
         selectedEmployeeNationalId: '',
       }
     },
     computed: {
-      userId() {
-        return this.session.user?.userId ?? null
-      }
+      companyFilterLabel() {
+        if (!this.selectedCompanyUniqueId) return '';
+        const match = this.companies.find(
+          c => c.companyUniqueId === this.selectedCompanyUniqueId
+        );
+        return match?.companyName || this.user?.companyName || '';
+      },
     },
     methods: {
-      adjustEndDate() {
-        if (this.selectedEndDate < this.selectedStartDate) {
-          this.selectedEndDate = this.selectedStartDate
-        }
-      },
 
       formatNationalId(event) {
         let raw = event.target.value.replace(/\D/g, "");
@@ -198,37 +192,29 @@
       },
 
       async loadCompanies() {
-        this.companiesError = ''
+        this.loadingCompanies = true;
         try {
-          if (!this.userId) {
-            const alert = useGlobalAlert()
-            alert.show('No se pudo obtener la información del usuario. Intente iniciar sesión nuevamente.', 'warning')
-            return
+          const userId = this.$session.user?.userId;
+          
+          if (!userId) {
+            this.companies = [];
+            return;
           }
-
-          const resp = await URLBaseAPI.get(`/api/Company/by-user/${this.userId}?onlyActive=false`)
-
-          this.companies = resp.data ?? []
-
-          if (!this.companies.length) {
-            const alert = useGlobalAlert()
-            alert.show('No se encontraron empresas asociadas a su usuario.', 'warning')
-          }
-
+          
+          const { data } = await URLBaseAPI.get(`/api/Company/by-user/${userId}?onlyActive=false`);
+          const rows = Array.isArray(data) ? data.slice() : [];
+          this.companies = rows;
         } catch (err) {
-          const alert = useGlobalAlert()
-          alert.show('Error cargando empresas. Intente nuevamente más tarde.', 'warning')
+          const alert = useGlobalAlert();
+          alert.show('Error al cargar empresas para el filtro.', 'warning');
+        } finally {
+          this.loadingCompanies = false;
         }
       },
 
       async onFiltersChanged() {
-
-        if (!this.selectedCompanyUniqueId || !this.selectedStartDate || !this.selectedEndDate) {
-          const alert = useGlobalAlert()
-          alert.show('Selecciona la empresa y el rango de fechas para cargar el reporte.', 'warning')
-          return;
-        }
-
+        if (!this.selectedCompanyUniqueId || !this.dateFrom || !this.dateTo) return;
+        
         if (this.selectedEmployeeNationalId) {
           const cedulaRegex = /^\d-\d{4}-\d{4}$/;
 
@@ -244,19 +230,14 @@
           companyId: this.selectedCompanyUniqueId,
           employeeNationalId: this.selectedEmployeeNationalId || null,
           employeeType: this.selectedEmployeeType ?? null,
-          dateFrom: this.selectedStartDate,
-          dateTo: this.selectedEndDate,
+          dateFrom: this.dateFrom,
+          dateTo: this.dateTo,
         }
 
         try {
           const { data } = await URLBaseAPI.post('/api/Reports/data', params);
           const rows = Array.isArray(data.rows) ? data.rows : [];
           this.payrollData = rows;
-
-          if (!rows.length) {
-            const alert = useGlobalAlert()
-            alert.show('No se encontraron datos para los filtros seleccionados.', 'warning')
-          }
 
         } catch (error) {
           const backendMessage = error?.response?.data?.message;
@@ -276,7 +257,7 @@
         if (!table) return;
         
         const exportTable = table.cloneNode(true);
-        const numericCols = [4, 5, 6, 7];
+        const numericCols = [5, 6, 7, 8];
         
         const rows = exportTable.querySelectorAll('tbody tr');
         rows.forEach(tr => {
@@ -306,9 +287,45 @@
         const blob = new Blob([wbout], { type: 'application/octet-stream' });
         saveAs(blob, 'Reporte_Planilla.xlsx');
       },
+      fmtCRC(v) {
+        return new Intl.NumberFormat('es-CR', {
+          style: 'currency',
+          currency: 'CRC',
+          currencyDisplay: 'symbol',
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(Number(v ?? 0));
+      },
+      formatFilterDate(value) {
+        if (!value) return '';
+        const [yyyy, mm, dd] = value.split('-');
+        return `${dd}/${mm}/${yyyy}`;
+      },
+      formatDate(dateString) {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return isNaN(date)
+        ? ''
+        : new Intl.DateTimeFormat('es-CR', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        }).format(date);
+      },
     },
+    async mounted() {
+      const today = new Date();
+      const first = new Date(today.getFullYear(), today.getMonth(), 1);
+      const last = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+      this.dateFrom = first.toISOString().slice(0, 10);
+      this.dateTo = last.toISOString().slice(0, 10);
 
-    mounted() {
+      const sessionCompanyId = this.$session.user?.companyUniqueId;
+      if (sessionCompanyId) {
+        this.selectedCompanyUniqueId = Number(sessionCompanyId);
+        this.onFiltersChanged();
+      }
+
       this.loadCompanies()
     }
   }
@@ -367,7 +384,7 @@
   }
 
   .totals-row td {
-  font-weight: 600;
-  border-top: 2px solid #1C4532;
-}
+    font-weight: 600;
+    border-top: 2px solid #1C4532;
+  }
 </style>

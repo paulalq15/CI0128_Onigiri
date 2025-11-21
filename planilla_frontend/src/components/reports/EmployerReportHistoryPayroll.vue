@@ -127,6 +127,8 @@ export default {
       }
     },
     async loadReport() {
+      if (!this.dateFrom || !this.dateTo) return;
+      
       const employeeId = Number(this.$session.user?.personId);
       const params = {
         reportCode: 'EmployerHistoryPayroll',

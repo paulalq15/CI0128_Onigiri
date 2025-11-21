@@ -48,7 +48,7 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
           ["NationalId"] = item.NationalId,
           ["EmployeeType"] = item.EmployeeType,
           ["PaymentPeriod"] = item.PaymentPeriod,
-          ["PaymentDate"] = item.PaymentDate.ToString("dd-MM-yyyy"),
+          ["PaymentDate"] = item.PaymentDate,
           ["GrossSalary"] = item.GrossSalary,
           ["EmployerContributions"] = item.EmployerContributions,
           ["EmployeeBenefits"] = item.EmployeeBenefits,

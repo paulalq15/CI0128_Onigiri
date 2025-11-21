@@ -56,8 +56,8 @@
           </tr>
 
           <!-- Fila de totales -->
-          <tr v-if="payrollData.length">
-            <td colspan="3"><strong>Total</strong></td>
+          <tr v-if="payrollData.length" class="totals-row">
+            <td colspan="3">Total</td>
             <td>{{ fmtCRC(payrollData.at(-1).totalGrossSalary) }}</td>
             <td>{{ fmtCRC(payrollData.at(-1).totalLegalDeductions) }}</td>
             <td>{{ fmtCRC(payrollData.at(-1).totalVoluntaryDeductions) }}</td>
