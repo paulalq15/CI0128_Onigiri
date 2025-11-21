@@ -19,10 +19,11 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
 
     public async Task<CompanyModel> GetCompany(int companyId, SqlConnection? conn = null, SqlTransaction? tx = null)
     {
+      var connection = conn ?? new SqlConnection(_connectionString);
+      var shouldClose = conn == null;
+      if (shouldClose) await connection.OpenAsync();
       try
       {
-        var connection = conn ?? new SqlConnection(_connectionString);
-        if (conn == null) await connection.OpenAsync();
         const string query =
           @"SELECT IdEmpresa AS Id, DiaPago1 AS PayDay1, DiaPago2 AS PayDay2, CedulaJuridica AS LegalID,
               CASE FrecuenciaPago
@@ -32,7 +33,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
             FROM Empresa
             WHERE IdEmpresa = @companyId;";
 
-        var company = await connection.QuerySingleOrDefaultAsync<CompanyModel>(query, new { companyId });
+        var company = await connection.QuerySingleOrDefaultAsync<CompanyModel>(query, new { companyId }, transaction: tx);
         if (company == null) throw new KeyNotFoundException("La empresa no existe.");
 
         return company;
@@ -42,14 +43,20 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         _logger.LogError(ex, "GetCompany failed. companyId: {CompanyId}", companyId);
         throw;
       }
+      finally
+      {
+        if (shouldClose)
+          await connection.CloseAsync();
+      }
     }
 
     public async Task<IEnumerable<EmployeeModel>> GetEmployees(int companyId, DateTime dateFrom, DateTime dateTo, SqlConnection? conn = null, SqlTransaction? tx = null)
     {
+      var connection = conn ?? new SqlConnection(_connectionString);
+      var shouldClose = conn == null;
+      if (shouldClose) await connection.OpenAsync();
       try
       {
-        var connection = conn ?? new SqlConnection(_connectionString);
-        if (conn == null) await connection.OpenAsync();
         const string query =
           @"SELECT p.IdPersona AS Id, e.IdEmpresa AS CompanyId, p.TipoPersona AS PersonType, 
             CASE 
@@ -74,7 +81,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
                 WHERE fn.EmployeeId = p.IdPersona
               );";
 
-        var employees = await connection.QueryAsync<EmployeeModel>(query, new { companyId, dateFrom, dateTo });
+        var employees = await connection.QueryAsync<EmployeeModel>(query, new { companyId, dateFrom, dateTo }, transaction: tx);
         return employees;
       }
       catch (Exception ex)
@@ -82,14 +89,20 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         _logger.LogError(ex, "GetEmployees failed. companyId: {CompanyId}", companyId);
         throw;
       }
+      finally
+      {
+        if (shouldClose)
+          await connection.CloseAsync();
+      }
     }
 
     public async Task<IEnumerable<ContractModel>> GetContracts(int companyId, DateTime dateFrom, DateTime dateTo, SqlConnection? conn = null, SqlTransaction? tx = null)
     {
+      var connection = conn ?? new SqlConnection(_connectionString);
+      var shouldClose = conn == null;
+      if (shouldClose) await connection.OpenAsync();
       try
       {
-        var connection = conn ?? new SqlConnection(_connectionString);
-        if (conn == null) await connection.OpenAsync();
         const string query =
           @"SELECT c.IdContrato AS Id, c.IdPersona AS EmployeeId, c.FechaInicio AS StartDate, c.FechaFin AS EndDate, c.Salario AS Salary, c.CuentaPago AS PaymentAccount, c.Puesto as Role,
               CASE c.Tipo
@@ -111,7 +124,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
               WHERE fn.EmployeeId = c.IdPersona
             );";
 
-        var contracts = await connection.QueryAsync<ContractModel>(query, new { companyId, dateFrom, dateTo });
+        var contracts = await connection.QueryAsync<ContractModel>(query, new { companyId, dateFrom, dateTo }, transaction: tx);
         return contracts;
       }
       catch (Exception ex)
@@ -119,14 +132,20 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         _logger.LogError(ex, "GetContracts failed. companyId: {CompanyId}", companyId);
         throw;
       }
+      finally
+      {
+        if (shouldClose)
+          await connection.CloseAsync();
+      }
     }
 
     public async Task<IEnumerable<ElementModel>> GetElementsForEmployee(int companyId, int employeeId, DateTime dateFrom, DateTime dateTo, SqlConnection? conn = null, SqlTransaction? tx = null)
     {
+      var connection = conn ?? new SqlConnection(_connectionString);
+      var shouldClose = conn == null;
+      if (shouldClose) await connection.OpenAsync();
       try
       {
-        var connection = conn ?? new SqlConnection(_connectionString);
-        if (conn == null) await connection.OpenAsync();
         const string query =
           @"SELECT ea.IdElementoAplicado AS Id, e.Nombre AS Name, e.Valor AS Value, p.IdPersona AS EmployeeId, ea.TipoPlan AS PensionType, ea.CantidadDependientes AS NumberOfDependents,
               CASE 
@@ -147,7 +166,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
               AND ea.FechaInicio <= @dateTo
               AND (ea.FechaFin IS NULL OR ea.FechaFin >= @dateFrom);";
 
-        var elements = await connection.QueryAsync<ElementModel>(query, new { companyId, employeeId, dateFrom, dateTo });
+        var elements = await connection.QueryAsync<ElementModel>(query, new { companyId, employeeId, dateFrom, dateTo }, transaction: tx);
         return elements;
       }
       catch (Exception ex)
@@ -155,21 +174,26 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         _logger.LogError(ex, "GetElementsForEmployee failed. companyId: {CompanyId}", companyId);
         throw;
       }
+      finally
+      {
+        if (shouldClose)
+          await connection.CloseAsync();
+      }
     }
 
     public async Task<IDictionary<int, decimal>> GetEmployeeTimesheets(int companyId, DateTime dateFrom, DateTime dateTo, SqlConnection? conn = null, SqlTransaction? tx = null)
     {
+      var connection = conn ?? new SqlConnection(_connectionString);
+      var shouldClose = conn == null;
+      if (shouldClose) await connection.OpenAsync();
       try
       {
-        var connection = conn ?? new SqlConnection(_connectionString);
-        if (conn == null) await connection.OpenAsync();
-
         const string query =
           @"SELECT EmployeeId, TotalHours
             FROM dbo.fn_GetPayrollTimesheets(@companyId, @dateFrom, @dateTo);";
 
         var rows = await connection.QueryAsync<(int EmployeeId, decimal TotalHours)>(
-          new CommandDefinition(query, new { companyId, dateFrom, dateTo }));
+          new CommandDefinition(query, new { companyId, dateFrom, dateTo }, transaction: tx));
 
         var dict = new Dictionary<int, decimal>();
         foreach (var r in rows)
@@ -182,21 +206,27 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         _logger.LogError(ex, "GetEmployeeTimesheets failed. companyId: {CompanyId}", companyId);
         throw;
       }
+      finally
+      {
+        if (shouldClose)
+          await connection.CloseAsync();
+      }
     }
 
     public async Task<IEnumerable<TaxModel>> GetTaxes(DateTime dateFrom, DateTime dateTo, SqlConnection? conn = null, SqlTransaction? tx = null)
     {
+      var connection = conn ?? new SqlConnection(_connectionString);
+      var shouldClose = conn == null;
+      if (shouldClose) await connection.OpenAsync();
       try
       {
-        var connection = conn ?? new SqlConnection(_connectionString);
-        if (conn == null) await connection.OpenAsync();
         const string query =
           @"SELECT IdImpuestoRenta AS Id, MontoMinimo AS Min, MontoMaximo AS Max, Porcentaje AS Rate, 'Tax' AS ItemType
             FROM ImpuestoRenta
             WHERE FechaInicio <= @dateFrom
               AND (FechaFin IS NULL OR FechaFin >= @dateTo)";
 
-        var taxBrackets = await connection.QueryAsync<TaxModel>(query, new { dateFrom, dateTo });
+        var taxBrackets = await connection.QueryAsync<TaxModel>(query, new { dateFrom, dateTo }, transaction: tx);
         return taxBrackets;
       }
       catch (Exception ex)
@@ -204,14 +234,20 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         _logger.LogError(ex, "GetTaxes failed.");
         throw;
       }
+      finally
+      {
+        if (shouldClose)
+          await connection.CloseAsync();
+      }
     }
 
     public async Task<IEnumerable<CCSSModel>> GetCCSS(DateTime dateFrom, DateTime dateTo, SqlConnection? conn = null, SqlTransaction? tx = null)
     {
+      var connection = conn ?? new SqlConnection(_connectionString);
+      var shouldClose = conn == null;
+      if (shouldClose) await connection.OpenAsync();
       try
       {
-        var connection = conn ?? new SqlConnection(_connectionString);
-        if (conn == null) await connection.OpenAsync();
         const string query =
           @"SELECT IdCCSS AS Id, Categoria AS Category, Concepto AS Concept, Porcentaje AS Rate,
               CASE 
@@ -222,7 +258,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
             WHERE FechaInicio <= @dateFrom
               AND (FechaFin IS NULL OR FechaFin >= @dateTo)";
 
-        var ccssLines = await connection.QueryAsync<CCSSModel>(query, new { dateFrom, dateTo });
+        var ccssLines = await connection.QueryAsync<CCSSModel>(query, new { dateFrom, dateTo }, transaction: tx);
         return ccssLines;
       }
       catch (Exception ex)
@@ -230,28 +266,48 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         _logger.LogError(ex, "GetCCSS failed.");
         throw;
       }
+      finally
+      {
+        if (shouldClose)
+          await connection.CloseAsync();
+      }
     }
 
     public async Task<bool> ExistsPayrollForPeriod(int companyId, DateTime dateFrom, DateTime dateTo, SqlConnection? conn = null, SqlTransaction? tx = null)
     {
       var connection = conn ?? new SqlConnection(_connectionString);
-      if (conn == null) await connection.OpenAsync();
-      const string sql =
-        @"SELECT COUNT(1)
-          FROM NominaEmpresa
-          WHERE IdEmpresa = @companyId AND FechaInicio = @dateFrom AND FechaFin = @dateTo";
-      var count = await connection.ExecuteScalarAsync<int>(sql, new { companyId, dateFrom, dateTo });
-      return count > 0;
+      var shouldClose = conn == null;
+      if (shouldClose) await connection.OpenAsync();
+      try
+      { 
+        const string sql =
+          @"SELECT COUNT(1)
+            FROM NominaEmpresa
+            WHERE IdEmpresa = @companyId AND FechaInicio = @dateFrom AND FechaFin = @dateTo";
+        var count = await connection.ExecuteScalarAsync<int>(sql, new { companyId, dateFrom, dateTo }, transaction: tx);
+        return count > 0;
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, "ExistsPayrollForPeriod failed");
+        throw;
+      }
+      finally
+      {
+        if (shouldClose)
+          await connection.CloseAsync();
+      }
     }
 
     // WRITE METHODS
 
     public async Task<int> SaveCompanyPayroll(CompanyPayrollModel header, SqlConnection? conn = null, SqlTransaction? tx = null)
     {
+      var connection = conn ?? new SqlConnection(_connectionString);
+      var shouldClose = conn == null;
+      if (shouldClose) await connection.OpenAsync();
       try
       {
-        var connection = conn ?? new SqlConnection(_connectionString);
-        if (conn == null) await connection.OpenAsync();
         const string sql =
           @"INSERT INTO NominaEmpresa(FechaInicio, FechaFin, MontoBruto, MontoNeto, DeduccionesEmpleado, DeduccionesEmpleador, Beneficios, CreadoPor, IdEmpresa, Costo)
             VALUES (@DateFrom, @DateTo, @Gross, @Net, @EmployeeDeductions, @EmployerDeductions, @Benefits, @CreatedBy, @CompanyId, @Cost);
@@ -269,7 +325,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
           header.Net,
           header.Cost,
           header.CreatedBy,
-        });
+        }, transaction: tx);
 
         return id;
       }
@@ -278,13 +334,19 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         _logger.LogError(ex, "SaveCompanyPayroll failed");
         throw;
       }
+      finally
+      {
+        if (shouldClose)
+          await connection.CloseAsync();
+      }
     }
     public async Task<int> SaveEmployeePayroll(EmployeePayrollModel employeePayroll, SqlConnection? conn = null, SqlTransaction? tx = null)
     {
+      var connection = conn ?? new SqlConnection(_connectionString);
+      var shouldClose = conn == null;
+      if (shouldClose) await connection.OpenAsync();
       try
       {
-        var connection = conn ?? new SqlConnection(_connectionString);
-        if (conn == null) await connection.OpenAsync();
         const string sql =
           @"INSERT INTO NominaEmpleado(IdNominaEmpresa, IdEmpleado, PuestoEnMomento, MontoBruto, MontoNeto, DeduccionesEmpleado, DeduccionesEmpleador, Beneficios, Costo)
             VALUES (@CompanyPayrollId, @EmployeeId, @EmployeeRole, @Gross, @Net, @EmployeeDeductions, @EmployerDeductions, @Benefits, @Cost);
@@ -301,7 +363,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
           employeePayroll.Benefits,
           employeePayroll.Net,
           employeePayroll.Cost,
-        });
+        }, transaction: tx);
 
         return id;
       }
@@ -310,13 +372,19 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         _logger.LogError(ex, "SaveEmployeePayroll failed");
         throw;
       }
+      finally
+      {
+        if (shouldClose)
+          await connection.CloseAsync();
+      }
     }
     public async Task SavePayrollDetails(int employeePayrollId, IEnumerable<PayrollDetailModel> details, SqlConnection? conn = null, SqlTransaction? tx = null)
     {
+      var connection = conn ?? new SqlConnection(_connectionString);
+      var shouldClose = conn == null;
+      if (shouldClose) await connection.OpenAsync();
       try
       {
-        var connection = conn ?? new SqlConnection(_connectionString);
-        if (conn == null) await connection.OpenAsync();
         const string sql =
           @"INSERT INTO DetalleNomina(IdNominaEmpleado, IdCCSS, IdImpuestoRenta, IdElementoAplicado, Descripcion, Monto, Tipo)
             VALUES (@EmployeePayrollId, @IdCCSS, @IdTax, @IdElement, @Description, @Amount,
@@ -329,92 +397,108 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
               END 
             );";
 
-        var args = new List<object>();
-        foreach (var line in details)
+        var args = details.Select(line => new
         {
-          args.Add(new
-          {
-            EmployeePayrollId = employeePayrollId,
-            line.Description,
-            Type = line.Type.ToString(),
-            line.Amount,
-            line.IdCCSS,
-            line.IdTax,
-            line.IdElement
-          });
-        }
+          EmployeePayrollId = employeePayrollId,
+          line.Description,
+          Type = line.Type.ToString(),
+          line.Amount,
+          line.IdCCSS,
+          line.IdTax,
+          line.IdElement
+        }).ToList();
 
         if (args.Count > 0)
-        {
-          await connection.ExecuteAsync(sql, args);
-        }
+          await connection.ExecuteAsync(sql, args, transaction: tx);
       }
       catch (Exception ex)
       {
         _logger.LogError(ex, "SavePayrollDetails failed for EmployeePayrollId {EmployeePayrollId}", employeePayrollId);
         throw;
       }
+      finally
+      {
+        if (shouldClose)
+          await connection.CloseAsync();
+      }
     }
     public async Task UpdateEmployeePayrollTotals(int employeePayrollId, EmployeePayrollModel totalsAndStatus, SqlConnection? conn = null, SqlTransaction? tx = null)
     {
       var connection = conn ?? new SqlConnection(_connectionString);
-      if (conn == null) await connection.OpenAsync();
-      const string sql = @" UPDATE NominaEmpleado
-                            SET
-                              MontoBruto = @Gross,
-                              DeduccionesEmpleado = @EmployeeDeductions,
-                              DeduccionesEmpleador = @EmployerDeductions,
-                              Beneficios = @Benefits,
-                              MontoNeto = @Net,
-                              Costo = @Cost
-                            WHERE IdNominaEmpleado = @employeePayrollId;";
-      var affected = await connection.ExecuteAsync(sql, new
+      var shouldClose = conn == null;
+      if (shouldClose) await connection.OpenAsync();
+      try
       {
-        employeePayrollId,
-        totalsAndStatus.Gross,
-        totalsAndStatus.EmployeeDeductions,
-        totalsAndStatus.EmployerDeductions,
-        totalsAndStatus.Benefits,
-        totalsAndStatus.Net,
-        totalsAndStatus.Cost,
-        totalsAndStatus.BaseSalaryForPeriod
-      });
-      if (affected != 1)
-        throw new InvalidOperationException($"No se pudo actualizar la Nomina de Empleado Id={employeePayrollId} (registros afectados: {affected}).");
+        const string sql = @" UPDATE NominaEmpleado
+                              SET
+                                MontoBruto = @Gross,
+                                DeduccionesEmpleado = @EmployeeDeductions,
+                                DeduccionesEmpleador = @EmployerDeductions,
+                                Beneficios = @Benefits,
+                                MontoNeto = @Net,
+                                Costo = @Cost
+                              WHERE IdNominaEmpleado = @employeePayrollId;";
+        var affected = await connection.ExecuteAsync(sql, new
+        {
+          employeePayrollId,
+          totalsAndStatus.Gross,
+          totalsAndStatus.EmployeeDeductions,
+          totalsAndStatus.EmployerDeductions,
+          totalsAndStatus.Benefits,
+          totalsAndStatus.Net,
+          totalsAndStatus.Cost,
+          totalsAndStatus.BaseSalaryForPeriod
+        }, transaction: tx);
+        if (affected != 1)
+          throw new InvalidOperationException($"No se pudo actualizar la Nomina de Empleado Id={employeePayrollId} (registros afectados: {affected}).");
+      }
+      finally
+      {
+        if (shouldClose) await connection.CloseAsync();
+      }
     }
     public async Task UpdateCompanyPayrollTotals(int companyPayrollId, CompanyPayrollModel totalsAndStatus, SqlConnection? conn = null, SqlTransaction? tx = null)
     {
       var connection = conn ?? new SqlConnection(_connectionString);
-      if (conn == null) await connection.OpenAsync();
-      const string sql = @" UPDATE NominaEmpresa
-                            SET
-                              MontoBruto = @Gross,
-                              DeduccionesEmpleado = @EmployeeDeductions,
-                              DeduccionesEmpleador = @EmployerDeductions,
-                              Beneficios = @Benefits,
-                              MontoNeto = @Net,
-                              Costo = @Cost,
-                              Estado = 'Pagado'
-                            WHERE IdNominaEmpresa = @CompanyPayrollId;";
-      var affected = await connection.ExecuteAsync(sql, new
+      var shouldClose = conn == null;
+      if (shouldClose) await connection.OpenAsync();
+      try
+      {        
+        const string sql = @" UPDATE NominaEmpresa
+                              SET
+                                MontoBruto = @Gross,
+                                DeduccionesEmpleado = @EmployeeDeductions,
+                                DeduccionesEmpleador = @EmployerDeductions,
+                                Beneficios = @Benefits,
+                                MontoNeto = @Net,
+                                Costo = @Cost,
+                                Estado = 'Pagado'
+                              WHERE IdNominaEmpresa = @CompanyPayrollId;";
+        var affected = await connection.ExecuteAsync(sql, new
+        {
+          companyPayrollId,
+          totalsAndStatus.Gross,
+          totalsAndStatus.EmployeeDeductions,
+          totalsAndStatus.EmployerDeductions,
+          totalsAndStatus.Benefits,
+          totalsAndStatus.Net,
+          totalsAndStatus.Cost
+        }, transaction: tx);
+        if (affected != 1)
+          throw new InvalidOperationException($"No se pudo actualizar la Nomina de Empleado Id={companyPayrollId} (registros afectados: {affected}).");
+      }
+      finally
       {
-        companyPayrollId,
-        totalsAndStatus.Gross,
-        totalsAndStatus.EmployeeDeductions,
-        totalsAndStatus.EmployerDeductions,
-        totalsAndStatus.Benefits,
-        totalsAndStatus.Net,
-        totalsAndStatus.Cost
-      });
-      if (affected != 1)
-        throw new InvalidOperationException($"No se pudo actualizar la Nomina de Empleado Id={companyPayrollId} (registros afectados: {affected}).");
+        if (shouldClose) await connection.CloseAsync();
+      }
     }
     public async Task SavePayment(int employeePayrollId, PaymentModel payment, SqlConnection? conn = null, SqlTransaction? tx = null)
     {
+      var connection = conn ?? new SqlConnection(_connectionString);
+      var shouldClose = conn == null;
+      if (shouldClose) await connection.OpenAsync();
       try
       {
-        var connection = conn ?? new SqlConnection(_connectionString);
-        if (conn == null) await connection.OpenAsync();
         const string sql =
           @"INSERT INTO ComprobantePago(Referencia, FechaPago, Monto, IdNominaEmpleado, IdCreadoPor)
             VALUES (@PaymentRef, @PaymentDate, @Amount, @EmployeePayrollId, @CreatedBy);";
@@ -426,12 +510,17 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
           payment.PaymentDate,
           payment.Amount,
           payment.CreatedBy,
-        });
+        },transaction: tx);
       }
       catch (Exception ex)
       {
         _logger.LogError(ex, "SavePayment failed");
         throw;
+      }
+      finally
+      {
+        if (shouldClose)
+          await connection.CloseAsync();
       }
     }
   }
