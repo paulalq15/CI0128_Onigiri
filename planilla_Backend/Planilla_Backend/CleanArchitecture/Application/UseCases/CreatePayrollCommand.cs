@@ -93,6 +93,7 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
         {
           CompanyPayrollId = companyPayrollId,
           EmployeeId = employee.Id,
+          EmployeeRole = contracts.FirstOrDefault(c => c.EmployeeId == employee.Id)?.Role ?? "",
           Gross = 0m,
           EmployeeDeductions = 0m,
           EmployerDeductions = 0m,

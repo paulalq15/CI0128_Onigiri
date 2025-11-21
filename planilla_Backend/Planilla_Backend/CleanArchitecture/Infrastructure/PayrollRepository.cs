@@ -88,7 +88,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       {
         using var connection = new SqlConnection(_connectionString);
         const string query =
-          @"SELECT c.IdContrato AS Id, c.IdPersona AS EmployeeId, c.FechaInicio AS StartDate, c.FechaFin AS EndDate, c.Salario AS Salary, c.CuentaPago AS PaymentAccount,
+          @"SELECT c.IdContrato AS Id, c.IdPersona AS EmployeeId, c.FechaInicio AS StartDate, c.FechaFin AS EndDate, c.Salario AS Salary, c.CuentaPago AS PaymentAccount, c.Puesto as Role,
               CASE c.Tipo
                 WHEN 'Tiempo Completo' THEN 'FixedSalary'
                 WHEN 'Medio Tiempo' THEN 'FixedSalary'
@@ -276,14 +276,15 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       {
         using var connection = new SqlConnection(_connectionString);
         const string sql =
-          @"INSERT INTO NominaEmpleado(IdNominaEmpresa, IdEmpleado, MontoBruto, MontoNeto, DeduccionesEmpleado, DeduccionesEmpleador, Beneficios, Costo)
-            VALUES (@CompanyPayrollId, @EmployeeId, @Gross, @Net, @EmployeeDeductions, @EmployerDeductions, @Benefits, @Cost);
+          @"INSERT INTO NominaEmpleado(IdNominaEmpresa, IdEmpleado, PuestoEnMomento, MontoBruto, MontoNeto, DeduccionesEmpleado, DeduccionesEmpleador, Beneficios, Costo)
+            VALUES (@CompanyPayrollId, @EmployeeId, @EmployeeRole, @Gross, @Net, @EmployeeDeductions, @EmployerDeductions, @Benefits, @Cost);
             SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
         var id = await connection.ExecuteScalarAsync<int>(sql, new
         {
           employeePayroll.CompanyPayrollId,
           employeePayroll.EmployeeId,
+          employeePayroll.EmployeeRole,
           employeePayroll.Gross,
           employeePayroll.EmployeeDeductions,
           employeePayroll.EmployerDeductions,
