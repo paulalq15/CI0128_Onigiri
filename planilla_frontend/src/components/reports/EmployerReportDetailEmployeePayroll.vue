@@ -80,12 +80,12 @@
     </div>
 
     <div>
-      <div id="buttons" class="mt-3">
+      <div id="buttons">
         <LinkButton text="Descargar Excel" @click="downloadExcel()" />
       </div>
     </div>
 
-    <div id="reportContent" class="mt-4">
+    <div id="reportContent">
       <h4>Detalle de Planilla Por Empleado</h4>
 
       <p><strong>Empresa:</strong> {{ companyFilterLabel }}</p>
