@@ -215,8 +215,8 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
             Inner Join Contrato c On c.IdPersona = p.IdPersona
             Where p.IdPersona = @employeeId
               And nem.FechaInicio >= @startPayrollDate
-              And nem.FechaFin <= @finalPayrollDate;
-        ";
+              And nem.FechaFin <= @finalPayrollDate
+            Order By PaymentDate;";
 
         var header = await connection.QuerySingleOrDefaultAsync<EmployeePayrollHistoryReport>(
             headerQuery,

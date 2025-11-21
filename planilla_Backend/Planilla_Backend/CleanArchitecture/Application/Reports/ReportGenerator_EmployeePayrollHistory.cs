@@ -1,4 +1,5 @@
 ﻿using Planilla_Backend.CleanArchitecture.Application.Ports;
+using Planilla_Backend.CleanArchitecture.Domain.Entities;
 using Planilla_Backend.CleanArchitecture.Domain.Reports;
 
 namespace Planilla_Backend.CleanArchitecture.Application.Reports
@@ -67,8 +68,8 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
         totalNetSalary += row.NetSalary;
         rows.Add(new Dictionary<string, object?>
         {
-          ["paymentDate"] = row.PaymentDate.ToString("dd-MM-yyyy"),
-          ["contractType"] = row.ContractType.ToString(),
+          ["paymentDate"] = row.PaymentDate,
+          ["contractType"] = GetContractTypeDisplayName(row.ContractType),
           ["position"] = row.Role,
           ["grossSalary"] = row.GrossSalary,
           ["mandatoryDeductions"] = row.LegalDeductions,
@@ -86,6 +87,20 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
       });
 
       return rows;
-    } 
+    }
+    private static string GetContractTypeDisplayName(EmployeeType type)
+    {
+      switch (type)
+      {
+        case EmployeeType.FullTime:
+          return "Tiempo Completo";
+        case EmployeeType.PartTime:
+          return "Medio Tiempo";
+        case EmployeeType.ProfessionalServices:
+          return "Servicios Profesionales";
+        default:
+          return type.ToString();
+      }
+    }
   }
 }

@@ -1,61 +1,29 @@
 <template>
-  <div id="reportFilters" v-if="isReportLoaded">
-    <!-- Fecha inicial -->
+  <div id="reportFilters">
     <div>
-      <label for="selectFechaInicial" class="form-label fw-bold">Fecha inicial</label>
-      <select
-        id="selectFechaInicial"
-        class="form-select"
-        v-model="selectedInitialDate"
-        @change="loadReport()"
-      >
-        <option
-          v-for="date in initialDatesList"
-          :key="date.payrollId"
-          :value="date"
-        >
-          {{ date.periodLabel }}
-        </option>
-      </select>
+      <label for="dateFrom" class="form-label fw-bold">Fecha inicial</label>
+      <input id="dateFrom" type="date" class="form-control" v-model="dateFrom"/>
     </div>
-
-    <!-- Fecha final -->
     <div>
-      <label for="selectFechaFinal" class="form-label fw-bold">Fecha final</label>
-      <select
-        id="selectFechaFinal"
-        class="form-select"
-        v-model="selectedFinalDate"
-        @change="loadReport()"
-      >
-        <option
-          v-for="date in finalDatesList"
-          :key="date.payrollId"
-          :value="date"
-        >
-          {{ date.periodLabel }}
-        </option>
-      </select>
+      <label for="dateTo" class="form-label fw-bold">Fecha final</label>
+      <input id="dateTo" type="date" class="form-control" v-model="dateTo"/>
     </div>
   </div>
 
   <div>
-    <div id="buttons" v-if="isReportLoaded">
+    <div id="buttons">
       <LinkButton text="Descargar Excel" @click="downloadExcel()" />
     </div>
   </div>
 
-  <div v-if="!isReportLoaded">
-    {{ waitingMessage }}
-  </div>
-  <div id="reportContent" v-else>
+  <div id="reportContent">
     <h4>Reporte histórico pago de planilla</h4>
     
     <p><strong>Empresa:</strong> {{ companyName }}</p>
     <p><strong>Nombre del empleado:</strong> {{ employeeName }}</p>
 
-    <p><strong>Fecha inicial:</strong> {{ selectedInitialDate.periodLabel }}</p>
-    <p><strong>Fecha final:</strong> {{ selectedFinalDate.periodLabel }}</p>
+    <p><strong>Fecha inicial:</strong> {{ formatFilterDate(dateFrom) }}</p>
+    <p><strong>Fecha final:</strong> {{ formatFilterDate(dateTo) }}</p>
 
     <div id="reportTable" class="table-responsive">
       <table class="table">
@@ -74,20 +42,26 @@
           <tr v-for="(row, index) in payrollData.slice(0, -1)" :key="index">
             <td>{{ row.contractType }}</td>
             <td>{{ row.position }}</td>
-            <td>{{ row.paymentDate }}</td>
-            <td>{{ row.grossSalary }}</td>
-            <td>{{ row.mandatoryDeductions }}</td>
-            <td>{{ row.voluntaryDeductions }}</td>
-            <td>{{ row.netSalary }}</td>
+            <td>{{ formatDate(row.paymentDate) }}</td>
+            <td>{{ fmtCRC(row.grossSalary) }}</td>
+            <td>{{ fmtCRC(row.mandatoryDeductions) }}</td>
+            <td>{{ fmtCRC(row.voluntaryDeductions) }}</td>
+            <td>{{ fmtCRC(row.netSalary) }}</td>
+          </tr>
+
+          <tr v-if="!payrollData.length">
+            <td colspan="7" class="text-center text-muted">
+              No hay datos para mostrar.
+            </td>
           </tr>
 
           <!-- Fila de totales -->
-          <tr>
+          <tr v-if="payrollData.length">
             <td colspan="3"><strong>Total</strong></td>
-            <td>{{ payrollData.at(-1).totalGrossSalary }}</td>
-            <td>{{ payrollData.at(-1).totalLegalDeductions }}</td>
-            <td>{{ payrollData.at(-1).totalVoluntaryDeductions }}</td>
-            <td>{{ payrollData.at(-1).totalNetSalary }}</td>
+            <td>{{ fmtCRC(payrollData.at(-1).totalGrossSalary) }}</td>
+            <td>{{ fmtCRC(payrollData.at(-1).totalLegalDeductions) }}</td>
+            <td>{{ fmtCRC(payrollData.at(-1).totalVoluntaryDeductions) }}</td>
+            <td>{{ fmtCRC(payrollData.at(-1).totalNetSalary) }}</td>
           </tr>
         </tbody>
       </table>
@@ -113,67 +87,17 @@
 
       return {
         user,
-
         companyName: "",
         employeeName: "",
-
-        initialDatesList: [],
-        selectedInitialDate: null,
-
-        waitingMessage: "Cargando datos...",
-
-        selectedFinalDate: null,
-
+        dateFrom: '',
+        dateTo: '',
         payrollData: [],
-
-        isReportLoaded: false,
+        isLoading: false,
       };
     },
-    computed: {
-      finalDatesList() {
-        if (!this.selectedInitialDate) return [];
-
-        const index = this.initialDatesList.findIndex(
-          item => item.payrollId === this.selectedInitialDate.payrollId
-        );
-
-        if (index === -1) return [];
-
-        return this.initialDatesList.slice(index);
-      },
-    },
     methods: {
-      async getPayrollPeriodsList() {
-        const companyId = this.user?.companyUniqueId;
-        const employeeId = Number(this.user?.personId);
-
-        try {
-          const response = await URLBaseAPI.get('/api/Reports/employee/payroll-periods', {
-            params: { companyId, employeeId }
-          });
-
-          this.initialDatesList = response.data || [];
-
-          if (this.initialDatesList.length > 0) {
-            this.selectedInitialDate = this.initialDatesList[0];
-            this.selectedFinalDate = this.initialDatesList[this.initialDatesList.length - 1];
-          }
-        } catch (error) {
-          const data = error?.response?.data;
-          const msg =
-            typeof data === "string" ? data
-            : data?.message || data?.detail || "Error cargando las últimas planillas";
-
-          const alert = useGlobalAlert();
-          alert.show(msg, "warning");
-        }
-      },
-
       async loadReport() {
-        if (!this.selectedInitialDate || !this.selectedFinalDate) {
-          this.waitingMessage = "No hay datos que mostrar";
-          return;
-        }
+        if (!this.dateFrom || !this.dateTo) return;
 
         const companyId = this.user?.companyUniqueId;
         const employeeId = Number(this.user?.personId);
@@ -182,9 +106,12 @@
           reportCode: 'EmployeeHistoryPayroll',
           companyId,
           employeeId,
-          DateFrom: this.selectedInitialDate.dateFrom,
-          DateTo: this.selectedFinalDate.dateTo
+          dateFrom: this.dateFrom,
+          dateTo: this.dateTo,
         };
+
+        this.isLoading = true;
+        this.payrollData = [];
 
         try {
           const response = await URLBaseAPI.post('/api/Reports/data', params);
@@ -192,64 +119,106 @@
           this.companyName = response.data.reportInfo.CompanyName;
           this.employeeName = response.data.reportInfo.EmployeeName;
 
-          this.payrollData = response.data.rows || null;
+          this.payrollData = response.data.rows || [];
 
-          this.isReportLoaded = true;
-
-          console.log(this.payrollData);
         } catch (error) {
           const data = error?.response?.data;
           const msg =
             typeof data === 'string' ? data
             : (data && (data.message || data.detail)) || 'Error cargando el detalle de planilla';
+          
+          const noDataMsg = 'No se encontró información de pago para el empleado en el rango seleccionado';
+          if (msg !== noDataMsg) {
+            const alert = useGlobalAlert();
+            alert.show(msg, "warning");
+          }
 
-          const alert = useGlobalAlert();
-          alert.show(msg, "warning");
+          this.payrollData = [];
+        } finally {
+          this.isLoading = false;
         }
       },
 
       downloadExcel() {
-      const tableWrapper = document.getElementById('reportTable');
-      if (!tableWrapper) return;
-      
-      const table = tableWrapper.querySelector('table');
-      if (!table) return;
-      
-      const exportTable = table.cloneNode(true);
-      const numericCols = [4, 5, 6, 7];
-      
-      const rows = exportTable.querySelectorAll('tbody tr');
-      rows.forEach(tr => {
-        const cells = tr.querySelectorAll('td');
+        const tableWrapper = document.getElementById('reportTable');
+        if (!tableWrapper) return;
         
-        numericCols.forEach(idx => {
-          const cell = cells[idx];
-          if (!cell) return;
-          const raw = cell.textContent || '';
-          let txt = raw.replace(/[^\d.,-]/g, '');
-          const seps = txt.match(/[.,]/g);
-          if (seps && seps.length > 1) {
-            const lastSep = Math.max(txt.lastIndexOf(','), txt.lastIndexOf('.'));
-            const intPart = txt.slice(0, lastSep).replace(/[.,]/g, '');
-            const decPart = txt.slice(lastSep + 1).replace(/[.,]/g, '');
-            txt = intPart + '.' + decPart;
-          } else {
-            txt = txt.replace(/\./g, '').replace(',', '.');
-          }
+        const table = tableWrapper.querySelector('table');
+        if (!table) return;
+        
+        const exportTable = table.cloneNode(true);
+        const numericCols = [4, 5, 6, 7];
+        
+        const rows = exportTable.querySelectorAll('tbody tr');
+        rows.forEach(tr => {
+          const cells = tr.querySelectorAll('td');
           
-          cell.textContent = txt;
+          numericCols.forEach(idx => {
+            const cell = cells[idx];
+            if (!cell) return;
+            const raw = cell.textContent || '';
+            let txt = raw.replace(/[^\d.,-]/g, '');
+            const seps = txt.match(/[.,]/g);
+            if (seps && seps.length > 1) {
+              const lastSep = Math.max(txt.lastIndexOf(','), txt.lastIndexOf('.'));
+              const intPart = txt.slice(0, lastSep).replace(/[.,]/g, '');
+              const decPart = txt.slice(lastSep + 1).replace(/[.,]/g, '');
+              txt = intPart + '.' + decPart;
+            } else {
+              txt = txt.replace(/\./g, '').replace(',', '.');
+            }
+            
+            cell.textContent = txt;
+          });
         });
-      });
-      
-      const wb = XLSX.utils.table_to_book(exportTable, { sheet: 'Planilla' });
-      const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-      const blob = new Blob([wbout], { type: 'application/octet-stream' });
-      saveAs(blob, 'Reporte_Planilla.xlsx');
+        
+        const wb = XLSX.utils.table_to_book(exportTable, { sheet: 'Planilla' });
+        const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        const blob = new Blob([wbout], { type: 'application/octet-stream' });
+        saveAs(blob, 'Reporte_Planilla.xlsx');
+      },
+      fmtCRC(v) {
+        return new Intl.NumberFormat('es-CR', {
+          style: 'currency',
+          currency: 'CRC',
+          currencyDisplay: 'symbol',
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(Number(v ?? 0));
+      },
+      formatFilterDate(value) {
+        if (!value) return '';
+        const [yyyy, mm, dd] = value.split('-');
+        return `${dd}/${mm}/${yyyy}`;
+      },
+      formatDate(dateString) {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return isNaN(date)
+        ? ''
+        : new Intl.DateTimeFormat('es-CR', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        }).format(date);
+      },
     },
+    watch: {
+      dateFrom() {
+        this.loadReport();
+      },
+      dateTo() {
+        this.loadReport();
+      },
     },
     async mounted() {
-      await this.getPayrollPeriodsList();
-      await this.loadReport();
+      const today = new Date();
+      const first = new Date(today.getFullYear(), today.getMonth(), 1);
+      const last = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+      
+      this.dateFrom = first.toISOString().slice(0, 10);
+      this.dateTo = last.toISOString().slice(0, 10);
+      this.loadReport();
     },
   };
 </script>

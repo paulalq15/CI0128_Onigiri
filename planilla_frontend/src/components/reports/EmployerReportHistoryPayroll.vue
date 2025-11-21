@@ -148,8 +148,14 @@ export default {
         typeof data === 'string'
         ? data
         : (data && (data.message || data.detail)) || 'Error cargando el reporte histórico de empresas';
-        const alert = useGlobalAlert();
-        alert.show(msg, 'warning');
+
+        const noDataMsg = 'No se encontró información de pago para el empleado en el rango seleccionado';
+        if (msg !== noDataMsg) {
+          const alert = useGlobalAlert();
+          alert.show(msg, "warning");
+        }
+
+        this.payrollData = [];
       } finally {
         this.isLoading = false;
       }
