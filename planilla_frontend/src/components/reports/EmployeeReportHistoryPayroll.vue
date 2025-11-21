@@ -20,7 +20,7 @@
     <h4>Reporte histórico pago de planilla</h4>
     
     <p><strong>Empresa:</strong> {{ companyName }}</p>
-    <p><strong>Nombre del empleado:</strong> {{ employeeName }}</p>
+    <p><strong>Empleado:</strong> {{ employeeName }}</p>
 
     <p><strong>Fecha inicial:</strong> {{ formatFilterDate(dateFrom) }}</p>
     <p><strong>Fecha final:</strong> {{ formatFilterDate(dateTo) }}</p>

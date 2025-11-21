@@ -89,8 +89,7 @@
       <h4>Detalle de Planilla Por Empleado</h4>
 
       <p><strong>Empresa:</strong> {{ companyFilterLabel }}</p>
-      <p><strong>Fecha inicial:</strong> {{ formatFilterDate(dateFrom) }}</p>
-      <p><strong>Fecha final:</strong> {{ formatFilterDate(dateTo) }}</p>
+      <p><strong>Empleador:</strong> {{ employerName }}</p>
 
       <div v-if="isLoading" class="text-muted">Cargando reporte</div>
 
@@ -157,6 +156,7 @@
         selectedCompanyUniqueId: null,
         dateFrom: '',
         dateTo: '',
+        employerName: "",
         selectedEmployeeType: null,
         selectedEmployeeNationalId: '',
       }
@@ -195,7 +195,7 @@
         this.loadingCompanies = true;
         try {
           const userId = this.$session.user?.userId;
-          
+          this.employerName = this.$session.user?.fullName || '';
           if (!userId) {
             this.companies = [];
             return;
