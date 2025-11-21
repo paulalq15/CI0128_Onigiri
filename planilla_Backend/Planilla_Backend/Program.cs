@@ -10,6 +10,7 @@ using Planilla_Backend.LayeredArchitecture.Repositories;
 using Planilla_Backend.LayeredArchitecture.Services;
 using Planilla_Backend.LayeredArchitecture.Services.EmailService;
 using Planilla_Backend.LayeredArchitecture.Services.Utils;
+using System.Text.Json.Serialization;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
@@ -79,6 +80,10 @@ builder.Services.AddScoped<IReportGenerator, ReportGenerator_EmployerPayrollHist
 builder.Services.AddScoped<IReportGenerator, ReportGenerator_EmployerPayrollByEmployee>();
 
 builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+  options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
