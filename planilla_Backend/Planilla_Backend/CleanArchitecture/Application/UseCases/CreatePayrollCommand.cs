@@ -1,6 +1,7 @@
 ﻿using Planilla_Backend.CleanArchitecture.Application.Ports;
 using Planilla_Backend.CleanArchitecture.Domain.Calculation;
 using Planilla_Backend.CleanArchitecture.Domain.Entities;
+using System.Data;
 
 namespace Planilla_Backend.CleanArchitecture.Application.UseCases
 {
@@ -8,11 +9,15 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
   {
     private readonly IPayrollRepository _repo;
     private readonly PayrollTemplate _template;
+    private readonly IPayrollDbSession _session;
+    private readonly ILogger<CreatePayrollCommand> _logger;
 
-    public CreatePayrollCommand(IPayrollRepository repo, PayrollTemplate template)
+    public CreatePayrollCommand(IPayrollRepository repo, PayrollTemplate template, IPayrollDbSession session, ILogger<CreatePayrollCommand> logger)
     {
       _repo = repo;
       _template = template;
+      _session = session;
+      _logger = logger;
     }
 
     public async Task<PayrollSummary> Execute(int companyId, int personId, DateTime dateFrom, DateTime dateTo)
