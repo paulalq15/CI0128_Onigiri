@@ -266,7 +266,7 @@ export default {
 }
 
 #reportContent {
-  background: rgba(255, 255, 255, 0.9);
+  background: white;
   border-radius: 10px;
   
   display: flex;

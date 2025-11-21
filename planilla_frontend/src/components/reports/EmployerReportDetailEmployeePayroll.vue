@@ -344,7 +344,6 @@
     align-items: flex-start;
 
     padding: 20px;
-    gap: 20px;
   }
 
   h4, p {
@@ -366,4 +365,9 @@
     color: white;
     font-weight: normal;
   }
+
+  .totals-row td {
+  font-weight: 600;
+  border-top: 2px solid #1C4532;
+}
 </style>

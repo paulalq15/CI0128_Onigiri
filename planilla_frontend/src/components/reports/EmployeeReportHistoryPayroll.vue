@@ -276,7 +276,7 @@
   }
 
   #reportContent {
-    background: azure;
+    background: white;
     border-radius: 10px;
 
     display: flex;
@@ -284,7 +284,6 @@
     align-items: flex-start;
 
     padding: 20px;
-    gap: 20px;
   }
 
   h4, p {
@@ -305,5 +304,10 @@
     background-color: #1C4532;
     color: white;
     font-weight: normal;
+  }
+
+  .totals-row td {
+    font-weight: 600;
+    border-top: 2px solid #1C4532;
   }
 </style>
