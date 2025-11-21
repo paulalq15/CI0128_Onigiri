@@ -39,7 +39,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(row, index) in payrollData.slice(0, -1)" :key="index">
+          <tr v-for="(row, index) in payrollData" :key="index" :class="{ 'totals-row': row.contractType === 'Total' }">
             <td>{{ row.contractType }}</td>
             <td>{{ row.position }}</td>
             <td>{{ formatDate(row.paymentDate) }}</td>
@@ -48,20 +48,10 @@
             <td>{{ fmtCRC(row.voluntaryDeductions) }}</td>
             <td>{{ fmtCRC(row.netSalary) }}</td>
           </tr>
-
           <tr v-if="!payrollData.length">
             <td colspan="7" class="text-center text-muted">
               No hay datos para mostrar.
             </td>
-          </tr>
-
-          <!-- Fila de totales -->
-          <tr v-if="payrollData.length" class="totals-row">
-            <td colspan="3">Total</td>
-            <td>{{ fmtCRC(payrollData.at(-1).totalGrossSalary) }}</td>
-            <td>{{ fmtCRC(payrollData.at(-1).totalLegalDeductions) }}</td>
-            <td>{{ fmtCRC(payrollData.at(-1).totalVoluntaryDeductions) }}</td>
-            <td>{{ fmtCRC(payrollData.at(-1).totalNetSalary) }}</td>
           </tr>
         </tbody>
       </table>
@@ -149,7 +139,7 @@
         if (!table) return;
         
         const exportTable = table.cloneNode(true);
-        const numericCols = [4, 5, 6, 7];
+        const numericCols = [3, 4, 5, 6];
         
         const rows = exportTable.querySelectorAll('tbody tr');
         rows.forEach(tr => {

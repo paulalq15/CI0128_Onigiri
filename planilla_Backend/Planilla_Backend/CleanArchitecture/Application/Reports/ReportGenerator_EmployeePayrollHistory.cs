@@ -68,9 +68,9 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
         totalNetSalary += row.NetSalary;
         rows.Add(new Dictionary<string, object?>
         {
-          ["paymentDate"] = row.PaymentDate,
           ["contractType"] = GetContractTypeDisplayName(row.ContractType),
           ["position"] = row.Role,
+          ["paymentDate"] = row.PaymentDate,
           ["grossSalary"] = row.GrossSalary,
           ["mandatoryDeductions"] = row.LegalDeductions,
           ["voluntaryDeductions"] = row.VoluntaryDeductions,
@@ -80,10 +80,13 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
 
       rows.Add(new Dictionary<string, object?>
       {
-        ["totalGrossSalary"] = totalGrossSalary,
-        ["totalLegalDeductions"] = totalLegalDeductions,
-        ["totalVoluntaryDeductions"] = totalVoluntaryDeductions,
-        ["totalNetSalary"] = totalNetSalary,
+        ["contractType"] = "Total",
+        ["position"] = string.Empty,
+        ["paymentDate"] = null,
+        ["grossSalary"] = totalGrossSalary,
+        ["mandatoryDeductions"] = totalLegalDeductions,
+        ["voluntaryDeductions"] = totalVoluntaryDeductions,
+        ["netSalary"] = totalNetSalary,
       });
 
       return rows;
