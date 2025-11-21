@@ -142,6 +142,7 @@
   import { saveAs } from "file-saver";
   import URLBaseAPI from '@/axiosAPIInstances'
   import { useSession } from '@/utils/useSession'
+  import { useGlobalAlert } from '@/utils/alerts.js';
 
   import LinkButton from '../LinkButton.vue';
 
@@ -163,10 +164,6 @@
 
         selectedEmployeeType: null,
         selectedEmployeeNationalId: '',
-
-        companiesError: '',
-        reportError: '',
-        cedulaError: '',
       }
     },
     computed: {
@@ -204,7 +201,8 @@
         this.companiesError = ''
         try {
           if (!this.userId) {
-            this.companiesError = 'No se pudo obtener la información del usuario. Intente iniciar sesión nuevamente.'
+            const alert = useGlobalAlert()
+            alert.show('No se pudo obtener la información del usuario. Intente iniciar sesión nuevamente.', 'warning')
             return
           }
 
@@ -213,20 +211,21 @@
           this.companies = resp.data ?? []
 
           if (!this.companies.length) {
-            this.companiesError = 'No se encontraron empresas asociadas a tu usuario.'
+            const alert = useGlobalAlert()
+            alert.show('No se encontraron empresas asociadas a su usuario.', 'warning')
           }
 
         } catch (err) {
-          this.companiesError = 'Error cargando empresas. Intenta nuevamente más tarde.'
+          const alert = useGlobalAlert()
+          alert.show('Error cargando empresas. Intente nuevamente más tarde.', 'warning')
         }
       },
 
       async onFiltersChanged() {
-        this.reportError = ''
-        this.cedulaError = ''
 
         if (!this.selectedCompanyUniqueId || !this.selectedStartDate || !this.selectedEndDate) {
-          this.reportError = 'Selecciona la empresa y el rango de fechas para cargar el reporte.'
+          const alert = useGlobalAlert()
+          alert.show('Selecciona la empresa y el rango de fechas para cargar el reporte.', 'warning')
           return;
         }
 
@@ -234,7 +233,8 @@
           const cedulaRegex = /^\d-\d{4}-\d{4}$/;
 
           if (!cedulaRegex.test(this.selectedEmployeeNationalId)) {
-            this.cedulaError = 'La cédula debe tener el formato #-####-####.'
+            const alert = useGlobalAlert()
+            alert.show('La cédula debe tener el formato #-####-####.', 'warning')
             return;
           }
         }
@@ -254,22 +254,58 @@
           this.payrollData = rows;
 
           if (!rows.length) {
-            this.reportError = 'No se encontraron datos para los filtros seleccionados.'
+            const alert = useGlobalAlert()
+            alert.show('No se encontraron datos para los filtros seleccionados.', 'warning')
           }
 
         } catch (error) {
           const backendMessage = error?.response?.data?.message;
-          this.reportError = backendMessage || 'No se pudo cargar el reporte. Intenta nuevamente más tarde.';
+          const alert = useGlobalAlert()
+          alert.show(
+            backendMessage || 'No se pudo cargar el reporte. Intente nuevamente más tarde.',
+            'warning'
+          )
         }
       },
 
       downloadExcel() {
-        const table = document.getElementById("reportTable").querySelector("table");
-        const wb = XLSX.utils.table_to_book(table, { sheet: "Planilla" });
-        const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-        const blob = new Blob([wbout], { type: "application/octet-stream" });
-        saveAs(blob, "Reporte_Detalle_Planilla_Por_Empleado.xlsx");
-      }
+        const tableWrapper = document.getElementById('reportTable');
+        if (!tableWrapper) return;
+        
+        const table = tableWrapper.querySelector('table');
+        if (!table) return;
+        
+        const exportTable = table.cloneNode(true);
+        const numericCols = [4, 5, 6, 7];
+        
+        const rows = exportTable.querySelectorAll('tbody tr');
+        rows.forEach(tr => {
+          const cells = tr.querySelectorAll('td');
+          
+          numericCols.forEach(idx => {
+            const cell = cells[idx];
+            if (!cell) return;
+            const raw = cell.textContent || '';
+            let txt = raw.replace(/[^\d.,-]/g, '');
+            const seps = txt.match(/[.,]/g);
+            if (seps && seps.length > 1) {
+              const lastSep = Math.max(txt.lastIndexOf(','), txt.lastIndexOf('.'));
+              const intPart = txt.slice(0, lastSep).replace(/[.,]/g, '');
+              const decPart = txt.slice(lastSep + 1).replace(/[.,]/g, '');
+              txt = intPart + '.' + decPart;
+            } else {
+              txt = txt.replace(/\./g, '').replace(',', '.');
+            }
+            
+            cell.textContent = txt;
+          });
+        });
+        
+        const wb = XLSX.utils.table_to_book(exportTable, { sheet: 'Planilla' });
+        const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        const blob = new Blob([wbout], { type: 'application/octet-stream' });
+        saveAs(blob, 'Reporte_Planilla.xlsx');
+      },
     },
 
     mounted() {

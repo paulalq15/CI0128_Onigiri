@@ -81,6 +81,7 @@ import URLBaseAPI from '../../axiosAPIInstances.js';
 import LinkButton from '../LinkButton.vue';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { useGlobalAlert } from '@/utils/alerts.js';
 
 export default {
   components: {
@@ -94,9 +95,6 @@ export default {
       dateTo: '',
       loadingCompanies: false,
       isLoading: false,
-      showToast: false,
-      toastMessage: '',
-      toastType: '',
       payrollData: [],
     };
   },
@@ -110,7 +108,6 @@ export default {
   methods: {
     async fetchCompanies() {
       this.loadingCompanies = true;
-      this.toastMessage = '';
       try {
         const userId = this.$session.user?.userId;
         
@@ -123,9 +120,8 @@ export default {
         const rows = Array.isArray(data) ? data.slice() : [];
         this.companies = rows;
       } catch (err) {
-        this.toastType = 'bg-danger';
-        this.toastMessage = 'Error al cargar empresas para el filtro.';
-        this.showToast = true;
+        const alert = useGlobalAlert();
+        alert.show('Error al cargar empresas para el filtro.', 'warning');
       } finally {
         this.loadingCompanies = false;
       }
@@ -152,14 +148,8 @@ export default {
         typeof data === 'string'
         ? data
         : (data && (data.message || data.detail)) || 'Error cargando el reporte histórico de empresas';
-        this.toastMessage = msg;
-        this.toastType = 'bg-danger';
-        this.showToast = true;
-        
-        setTimeout(function () {
-          this.showToast = false;
-        }, this.toastTimeout);
-        this.reportResult = null;
+        const alert = useGlobalAlert();
+        alert.show(msg, 'warning');
       } finally {
         this.isLoading = false;
       }

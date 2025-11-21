@@ -68,6 +68,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import URLBaseAPI from '../../axiosAPIInstances.js';
 import LinkButton from '../LinkButton.vue';
+import { useGlobalAlert } from '@/utils/alerts.js';
 
 export default {
   components: {
@@ -79,9 +80,6 @@ export default {
       selectedPayrollId: null,
       reportResult: null,
       isLoading: false,
-      showToast: false,
-      toastMessage: '',
-      toastTimeout: 2000,
     };
   },
   methods: {
@@ -108,13 +106,8 @@ export default {
               ? data
               : (data && (data.message || data.detail)) || 'Error cargando las últimas planillas';
 
-          this.toastMessage = msg;
-          this.toastType = 'bg-danger';
-          this.showToast = true;
-
-          setTimeout(function () {
-            this.showToast = false;
-          }, this.toastTimeout);
+          const alert = useGlobalAlert();
+          alert.show(msg, 'warning');
         });
     },
     loadReport() {
@@ -142,13 +135,8 @@ export default {
               ? data
               : (data && (data.message || data.detail)) || 'Error cargando el detalle de planilla';
 
-          this.toastMessage = msg;
-          this.toastType = 'bg-danger';
-          this.showToast = true;
-
-          setTimeout(function () {
-            this.showToast = false;
-          }, this.toastTimeout);
+          const alert = useGlobalAlert();
+          alert.show(msg, 'warning');
           this.reportResult = null;
         })
         .finally(() => {
