@@ -137,8 +137,7 @@
   </div>
 </template>
 
-<script setup>
-  import { ref, computed, onMounted } from 'vue';
+<script>
   import * as XLSX from "xlsx";
   import { saveAs } from "file-saver";
   import URLBaseAPI from '@/axiosAPIInstances'
@@ -146,122 +145,136 @@
 
   import LinkButton from '../LinkButton.vue';
 
-  const session = useSession()
-  const userId = computed(() => session.user?.userId ?? null)
-  
-  const payrollData = ref([])
+  export default {
+    components: {
+      LinkButton,
+    },
+    data() {
+      return {
+        session: useSession(),
 
-  const companies = ref([])
-  const selectedCompanyUniqueId = ref(null)
+        payrollData: [],
 
-  const selectedStartDate = ref('')
-  const selectedEndDate = ref('')
+        companies: [],
+        selectedCompanyUniqueId: null,
 
-  const selectedEmployeeType = ref(null)
-  const selectedEmployeeNationalId = ref('')
+        selectedStartDate: '',
+        selectedEndDate: '',
 
-  const companiesError = ref('')
-  const reportError = ref('')
-  const cedulaError = ref('')
+        selectedEmployeeType: null,
+        selectedEmployeeNationalId: '',
 
-  function adjustEndDate() {
-    if (selectedEndDate.value < selectedStartDate.value) {
-      selectedEndDate.value = selectedStartDate.value
-    }
-  }
-
-  function formatNationalId(event) {
-    let raw = event.target.value.replace(/\D/g, "");
-
-    if (raw.length > 9) {
-      raw = raw.slice(0, 9);
-    }
-
-    let formatted = raw;
-
-    if (raw.length > 1) {
-      formatted = raw[0] + "-" + raw.slice(1);
-    }
-    if (raw.length > 5) {
-      formatted = raw[0] + "-" + raw.slice(1, 5) + "-" + raw.slice(5);
-    }
-
-    selectedEmployeeNationalId.value = formatted;
-  }
-
-  async function loadCompanies() {
-    companiesError.value = ''
-    try {
-      if (!userId.value) {
-        companiesError.value = 'No se pudo obtener la información del usuario. Intente iniciar sesión nuevamente.'
-        return
+        companiesError: '',
+        reportError: '',
+        cedulaError: '',
       }
-
-      const resp = await URLBaseAPI.get(`/api/Company/by-user/${userId.value}?onlyActive=false`)
-
-      companies.value = resp.data ?? []
-
-      if (!companies.value.length) {
-        companiesError.value = 'No se encontraron empresas asociadas a tu usuario.'
+    },
+    computed: {
+      userId() {
+        return this.session.user?.userId ?? null
       }
+    },
+    methods: {
+      adjustEndDate() {
+        if (this.selectedEndDate < this.selectedStartDate) {
+          this.selectedEndDate = this.selectedStartDate
+        }
+      },
 
-    } catch (err) {
-      companiesError.value = 'Error cargando empresas. Intenta nuevamente más tarde.'
-    }
-  }
+      formatNationalId(event) {
+        let raw = event.target.value.replace(/\D/g, "");
 
-  async function onFiltersChanged() {
-    reportError.value = ''
-    cedulaError.value = ''
+        if (raw.length > 9) {
+          raw = raw.slice(0, 9);
+        }
 
-    if (!selectedCompanyUniqueId.value || !selectedStartDate.value || !selectedEndDate.value) {
-      reportError.value = 'Selecciona la empresa y el rango de fechas para cargar el reporte.'
-      return;
-    }
+        let formatted = raw;
 
-    if (selectedEmployeeNationalId.value) {
-      const cedulaRegex = /^\d-\d{4}-\d{4}$/;
+        if (raw.length > 1) {
+          formatted = raw[0] + "-" + raw.slice(1);
+        }
+        if (raw.length > 5) {
+          formatted = raw[0] + "-" + raw.slice(1, 5) + "-" + raw.slice(5);
+        }
 
-      if (!cedulaRegex.test(selectedEmployeeNationalId.value)) {
-        cedulaError.value = 'La cédula debe tener el formato #-####-####.'
-        return;
+        this.selectedEmployeeNationalId = formatted;
+      },
+
+      async loadCompanies() {
+        this.companiesError = ''
+        try {
+          if (!this.userId) {
+            this.companiesError = 'No se pudo obtener la información del usuario. Intente iniciar sesión nuevamente.'
+            return
+          }
+
+          const resp = await URLBaseAPI.get(`/api/Company/by-user/${this.userId}?onlyActive=false`)
+
+          this.companies = resp.data ?? []
+
+          if (!this.companies.length) {
+            this.companiesError = 'No se encontraron empresas asociadas a tu usuario.'
+          }
+
+        } catch (err) {
+          this.companiesError = 'Error cargando empresas. Intenta nuevamente más tarde.'
+        }
+      },
+
+      async onFiltersChanged() {
+        this.reportError = ''
+        this.cedulaError = ''
+
+        if (!this.selectedCompanyUniqueId || !this.selectedStartDate || !this.selectedEndDate) {
+          this.reportError = 'Selecciona la empresa y el rango de fechas para cargar el reporte.'
+          return;
+        }
+
+        if (this.selectedEmployeeNationalId) {
+          const cedulaRegex = /^\d-\d{4}-\d{4}$/;
+
+          if (!cedulaRegex.test(this.selectedEmployeeNationalId)) {
+            this.cedulaError = 'La cédula debe tener el formato #-####-####.'
+            return;
+          }
+        }
+
+        const params = {
+          reportCode: 'EmployerEmployeePayroll',
+          companyId: this.selectedCompanyUniqueId,
+          employeeNationalId: this.selectedEmployeeNationalId || null,
+          employeeType: this.selectedEmployeeType ?? null,
+          dateFrom: this.selectedStartDate,
+          dateTo: this.selectedEndDate,
+        }
+
+        try {
+          const { data } = await URLBaseAPI.post('/api/Reports/data', params);
+          const rows = Array.isArray(data.rows) ? data.rows : [];
+          this.payrollData = rows;
+
+          if (!rows.length) {
+            this.reportError = 'No se encontraron datos para los filtros seleccionados.'
+          }
+
+        } catch (error) {
+          const backendMessage = error?.response?.data?.message;
+          this.reportError = backendMessage || 'No se pudo cargar el reporte. Intenta nuevamente más tarde.';
+        }
+      },
+
+      downloadExcel() {
+        const table = document.getElementById("reportTable").querySelector("table");
+        const wb = XLSX.utils.table_to_book(table, { sheet: "Planilla" });
+        const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+        const blob = new Blob([wbout], { type: "application/octet-stream" });
+        saveAs(blob, "Reporte_Detalle_Planilla_Por_Empleado.xlsx");
       }
+    },
+
+    mounted() {
+      this.loadCompanies()
     }
-
-    const params = {
-      reportCode: 'EmployerEmployeePayroll',
-      companyId: selectedCompanyUniqueId.value,
-      employeeNationalId: selectedEmployeeNationalId.value || null,
-      employeeType: selectedEmployeeType.value ?? null,
-      dateFrom: selectedStartDate.value,
-      dateTo: selectedEndDate.value,
-    }
-
-    try {
-      const { data } = await URLBaseAPI.post('/api/Reports/data', params);
-      const rows = Array.isArray(data.rows) ? data.rows : [];
-      payrollData.value = rows;
-
-      if (!rows.length) {
-        reportError.value = 'No se encontraron datos para los filtros seleccionados.'
-      }
-
-    } catch (error) {
-      const backendMessage = error?.response?.data?.message;
-      reportError.value = backendMessage || 'No se pudo cargar el reporte. Intenta nuevamente más tarde.';
-    }
-  }
-
-  onMounted(() => {
-    loadCompanies()
-  })
-
-  function downloadExcel() {
-    const table = document.getElementById("reportTable").querySelector("table");
-    const wb = XLSX.utils.table_to_book(table, { sheet: "Planilla" });
-    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-    const blob = new Blob([wbout], { type: "application/octet-stream" });
-    saveAs(blob, "Reporte_Detalle_Planilla_Por_Empleado.xlsx");
   }
 </script>
 

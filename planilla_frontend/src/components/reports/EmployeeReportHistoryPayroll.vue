@@ -95,8 +95,7 @@
   </div>
 </template>
 
-<script setup>
-  import { ref, computed, onMounted } from 'vue';
+<script>
   import * as XLSX from "xlsx";
   import { saveAs } from "file-saver";
   import { useSession } from '@/utils/useSession';
@@ -105,111 +104,154 @@
   import URLBaseAPI from '../../axiosAPIInstances.js';
   import LinkButton from '../LinkButton.vue';
 
-  const { user } = useSession();
+  export default {
+    components: {
+      LinkButton,
+    },
+    data() {
+      const { user } = useSession();
 
-  const companyName = ref("");
-  const employeeName = ref("");
-  
-  const initialDatesList = ref([]);
-  const selectedInitialDate = ref(null);
-  
-  const waitingMessage = ref("Cargando datos...");
+      return {
+        user,
 
-  const finalDatesList = computed(() => {
-    if (!selectedInitialDate.value) return [];
+        companyName: "",
+        employeeName: "",
 
-    const index = initialDatesList.value.findIndex(
-      item => item.payrollId === selectedInitialDate.value.payrollId
-    );
+        initialDatesList: [],
+        selectedInitialDate: null,
 
-    if (index === -1) return [];
+        waitingMessage: "Cargando datos...",
 
-    return initialDatesList.value.slice(index);
-  });
-  const selectedFinalDate = ref(null);
-  
-  const payrollData = ref([]);
+        selectedFinalDate: null,
 
-  const isReportLoaded = ref(false);
+        payrollData: [],
 
-  async function getPayrollPeriodsList() {
-    const companyId = user?.companyUniqueId;
-    const employeeId = Number(user?.personId);
+        isReportLoaded: false,
+      };
+    },
+    computed: {
+      finalDatesList() {
+        if (!this.selectedInitialDate) return [];
 
-    try {
-      const response = await URLBaseAPI.get('/api/Reports/employee/payroll-periods', {
-        params: { companyId, employeeId }
+        const index = this.initialDatesList.findIndex(
+          item => item.payrollId === this.selectedInitialDate.payrollId
+        );
+
+        if (index === -1) return [];
+
+        return this.initialDatesList.slice(index);
+      },
+    },
+    methods: {
+      async getPayrollPeriodsList() {
+        const companyId = this.user?.companyUniqueId;
+        const employeeId = Number(this.user?.personId);
+
+        try {
+          const response = await URLBaseAPI.get('/api/Reports/employee/payroll-periods', {
+            params: { companyId, employeeId }
+          });
+
+          this.initialDatesList = response.data || [];
+
+          if (this.initialDatesList.length > 0) {
+            this.selectedInitialDate = this.initialDatesList[0];
+            this.selectedFinalDate = this.initialDatesList[this.initialDatesList.length - 1];
+          }
+        } catch (error) {
+          const data = error?.response?.data;
+          const msg =
+            typeof data === "string" ? data
+            : data?.message || data?.detail || "Error cargando las últimas planillas";
+
+          const alert = useGlobalAlert();
+          alert.show(msg, "warning");
+        }
+      },
+
+      async loadReport() {
+        if (!this.selectedInitialDate || !this.selectedFinalDate) {
+          this.waitingMessage = "No hay datos que mostrar";
+          return;
+        }
+
+        const companyId = this.user?.companyUniqueId;
+        const employeeId = Number(this.user?.personId);
+
+        const params = {
+          reportCode: 'EmployeeHistoryPayroll',
+          companyId,
+          employeeId,
+          DateFrom: this.selectedInitialDate.dateFrom,
+          DateTo: this.selectedFinalDate.dateTo
+        };
+
+        try {
+          const response = await URLBaseAPI.post('/api/Reports/data', params);
+
+          this.companyName = response.data.reportInfo.CompanyName;
+          this.employeeName = response.data.reportInfo.EmployeeName;
+
+          this.payrollData = response.data.rows || null;
+
+          this.isReportLoaded = true;
+
+          console.log(this.payrollData);
+        } catch (error) {
+          const data = error?.response?.data;
+          const msg =
+            typeof data === 'string' ? data
+            : (data && (data.message || data.detail)) || 'Error cargando el detalle de planilla';
+
+          const alert = useGlobalAlert();
+          alert.show(msg, "warning");
+        }
+      },
+
+      downloadExcel() {
+      const tableWrapper = document.getElementById('reportTable');
+      if (!tableWrapper) return;
+      
+      const table = tableWrapper.querySelector('table');
+      if (!table) return;
+      
+      const exportTable = table.cloneNode(true);
+      const numericCols = [4, 5, 6, 7];
+      
+      const rows = exportTable.querySelectorAll('tbody tr');
+      rows.forEach(tr => {
+        const cells = tr.querySelectorAll('td');
+        
+        numericCols.forEach(idx => {
+          const cell = cells[idx];
+          if (!cell) return;
+          const raw = cell.textContent || '';
+          let txt = raw.replace(/[^\d.,-]/g, '');
+          const seps = txt.match(/[.,]/g);
+          if (seps && seps.length > 1) {
+            const lastSep = Math.max(txt.lastIndexOf(','), txt.lastIndexOf('.'));
+            const intPart = txt.slice(0, lastSep).replace(/[.,]/g, '');
+            const decPart = txt.slice(lastSep + 1).replace(/[.,]/g, '');
+            txt = intPart + '.' + decPart;
+          } else {
+            txt = txt.replace(/\./g, '').replace(',', '.');
+          }
+          
+          cell.textContent = txt;
+        });
       });
-
-      initialDatesList.value = response.data || [];
-
-      if (initialDatesList.value.length > 0) {
-        selectedInitialDate.value = initialDatesList.value[0];
-        selectedFinalDate.value = initialDatesList.value[initialDatesList.value.length - 1];
-      }
-    } catch (error) {
-      const data = error?.response?.data;
-      const msg =
-        typeof data === "string" ? data
-        : data?.message || data?.detail || "Error cargando las últimas planillas";
-
-      const alert = useGlobalAlert();
-      alert.show(msg, "warning");
-    }
-  }
-
-  async function loadReport() {
-    if (!selectedInitialDate.value  || !selectedFinalDate.value) {
-      waitingMessage.value = "No hay datos que mostrar";
-      return;
-    }
-
-    const companyId = user?.companyUniqueId;
-    const employeeId = Number(user?.personId);
-
-    const params = {
-      reportCode: 'EmployeeHistoryPayroll',
-      companyId,
-      employeeId,
-      DateFrom: selectedInitialDate.value.dateFrom,
-      DateTo: selectedFinalDate.value.dateTo
-    };
-
-    try {
-      const response = await URLBaseAPI.post('/api/Reports/data', params);
-
-      companyName.value = response.data.reportInfo.CompanyName;
-      employeeName.value = response.data.reportInfo.EmployeeName;
-
-      payrollData.value = response.data.rows || null;
-
-      isReportLoaded.value = true;
-
-      console.log(payrollData.value);
-    } catch (error) {
-      const data = error?.response?.data;
-      const msg =
-        typeof data === 'string' ? data
-        : (data && (data.message || data.detail)) || 'Error cargando el detalle de planilla';
-
-      const alert = useGlobalAlert();
-      alert.show(msg, "warning");
-    }
-  }
-
-  function downloadExcel() {
-    const table = document.getElementById("reportTable").querySelector("table");
-    const wb = XLSX.utils.table_to_book(table, { sheet: "Planilla" });
-    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-    const blob = new Blob([wbout], { type: "application/octet-stream" });
-    saveAs(blob, "Reporte_Planilla.xlsx");
-  }
-
-  onMounted(async () => {
-    await getPayrollPeriodsList();
-    await loadReport();
-  });
-
+      
+      const wb = XLSX.utils.table_to_book(exportTable, { sheet: 'Planilla' });
+      const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+      const blob = new Blob([wbout], { type: 'application/octet-stream' });
+      saveAs(blob, 'Reporte_Planilla.xlsx');
+    },
+    },
+    async mounted() {
+      await this.getPayrollPeriodsList();
+      await this.loadReport();
+    },
+  };
 </script>
 
 <style lang="scss" scoped>
