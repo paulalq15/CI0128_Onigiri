@@ -1,7 +1,7 @@
 ﻿using Moq;
 using Planilla_Backend.CleanArchitecture.Application.Ports;
 using Planilla_Backend.CleanArchitecture.Application.Services;
-using Planilla_Backend.CleanArchitecture.Application.UseCases;
+using Planilla_Backend.CleanArchitecture.Domain.Entities;
 
 namespace Tests
 {
