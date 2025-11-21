@@ -99,6 +99,8 @@
       async loadReport() {
         if (!this.dateFrom || !this.dateTo) return;
 
+        this.companyName = this.user?.companyName || '';
+        this.employeeName = this.user?.fullName || '';
         const companyId = this.user?.companyUniqueId;
         const employeeId = Number(this.user?.personId);
 
@@ -215,7 +217,6 @@
       const today = new Date();
       const first = new Date(today.getFullYear(), today.getMonth(), 1);
       const last = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-      
       this.dateFrom = first.toISOString().slice(0, 10);
       this.dateTo = last.toISOString().slice(0, 10);
       this.loadReport();

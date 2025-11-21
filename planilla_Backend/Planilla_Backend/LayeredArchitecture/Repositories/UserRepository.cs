@@ -22,7 +22,6 @@ namespace Planilla_Backend.LayeredArchitecture.Repositories
           u.Contrasena      AS Password, 
           u.Estado          AS Status, 
           u.IdPersona       AS PersonID,
-
           (
               SELECT TOP (1) e.IdEmpresa
               FROM dbo.UsuariosPorEmpresa ue
@@ -30,7 +29,15 @@ namespace Planilla_Backend.LayeredArchitecture.Repositories
               WHERE ue.IdUsuario = u.IdUsuario
                 AND e.Estado = 'Activo'
               ORDER BY e.Nombre ASC, e.IdEmpresa ASC
-          )                  AS CompanyUniqueId,
+          ) AS CompanyUniqueId,
+          (
+              SELECT TOP (1) e.Nombre
+              FROM dbo.UsuariosPorEmpresa ue
+              JOIN dbo.Empresa e  ON e.IdEmpresa = ue.IdEmpresa
+              WHERE ue.IdUsuario = u.IdUsuario
+                AND e.Estado = 'Activo'
+              ORDER BY e.Nombre ASC, e.IdEmpresa ASC
+          ) AS CompanyName,
 
           -- PERSON (primera col para splitOn)
           p.Cedula          AS Cedula,
