@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
+using System.Data;
 using Planilla_Backend.CleanArchitecture.Application.Ports;
 using Planilla_Backend.CleanArchitecture.Application.Reports;
 using Planilla_Backend.CleanArchitecture.Domain.Entities;
@@ -143,6 +144,34 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       catch (Exception ex)
       {
         _logger.LogError(ex, "GetEmployerHistoryCompaniesAsync failed. companyId: {CompanyId}", companyId);
+        throw;
+      }
+    }
+
+    public async Task<IEnumerable<EmployerReportByPersonRow>> GetEmployerPayrollByPersonAsync(int companyId, DateTime start, DateTime end, string? employeeType, string? nationalId, CancellationToken ct)
+    {
+      try
+      {
+        using var connection = new SqlConnection(_connectionString);
+        await connection.OpenAsync(ct);
+        const string storedProc = "dbo.sp_GetPayrollReport";
+
+        var parameters = new
+        {
+          companyId,
+          start,
+          end,
+          employeeType = string.IsNullOrWhiteSpace(employeeType) ? null : employeeType,
+          nationalId = string.IsNullOrWhiteSpace(nationalId) ? null : nationalId
+        };
+
+        var reportRows = await connection.QueryAsync<EmployerReportByPersonRow>(storedProc, parameters, commandType: CommandType.StoredProcedure);
+
+        return reportRows;
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, "GetEmployerPayrollByPersonAsync failed. companyId: {CompanyId}", companyId);
         throw;
       }
     }
