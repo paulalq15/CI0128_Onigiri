@@ -33,7 +33,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
               JOIN NominaEmpresa AS nem ON ne.IdNominaEmpresa = nem.IdNominaEmpresa
             WHERE nem.IdEmpresa = @companyId
              AND ne.IdEmpleado = @employeeId
-            ORDER BY nem.FechaInicio ASC;";
+            ORDER BY nem.FechaInicio DESC;";
 
         var payrolls = await connection.QueryAsync<ReportPayrollPeriodDto>(query, new { companyId, employeeId, top });
         return payrolls;
