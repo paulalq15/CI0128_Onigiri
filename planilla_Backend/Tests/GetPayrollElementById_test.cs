@@ -21,7 +21,7 @@ public class GetPayrollElementById_test
     int payrollElementIdNegative = -1;
 
     var mockRepository = new Mock<IPayrollElementRepository>();
-    IGetPayrollElement getPayrollElement = new GetPayrollElementById(mockRepository.Object);
+    IPayrollElementQuery getPayrollElement = new PayrollElementQuery(mockRepository.Object);
 
     // Act & Assert
     var exZero = Assert.ThrowsAsync<ArgumentException>(async () => await getPayrollElement.Execute(payrollElementIdZero));
@@ -45,7 +45,7 @@ public class GetPayrollElementById_test
     mockRepository.Setup(r => r.GetPayrollElementByElementId(payrollElementId))
         .ReturnsAsync(elementEntity);
 
-    IGetPayrollElement getPayrollElement = new GetPayrollElementById(mockRepository.Object);
+    IPayrollElementQuery getPayrollElement = new PayrollElementQuery(mockRepository.Object);
 
     // Act
     PayrollElementEntity? element = await getPayrollElement.Execute(payrollElementId);

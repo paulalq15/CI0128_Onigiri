@@ -4,11 +4,11 @@ using Planilla_Backend.CleanArchitecture.Domain.Entities;
 
 namespace Planilla_Backend.CleanArchitecture.Application.UseCases
 {
-  public class UpdatePayrollElement : IUpdatePayrollElement
+  public class PayrollElementCommand : IPayrollElementCommand
   {
     private readonly IPayrollElementRepository payrollElementRepository;
 
-    public UpdatePayrollElement(IPayrollElementRepository payrollElementRepository)
+    public PayrollElementCommand(IPayrollElementRepository payrollElementRepository)
     {
       this.payrollElementRepository = payrollElementRepository;
     }
@@ -21,6 +21,5 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
       
       return affectedRows;
     }
-
   }
 }

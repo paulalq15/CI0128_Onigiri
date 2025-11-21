@@ -9,10 +9,10 @@ namespace Planilla_Backend.CleanArchitecture.API
   [ApiController]
   public class PayrollElementController : ControllerBase
   {
-    private IGetPayrollElement getPayrollElementCommand;
-    private IUpdatePayrollElement updatePayrollElementCommand;
+    private IPayrollElementQuery getPayrollElementCommand;
+    private IPayrollElementCommand updatePayrollElementCommand;
 
-    public PayrollElementController(IGetPayrollElement getPayrollElement, IUpdatePayrollElement updatePayrollElement)
+    public PayrollElementController(IPayrollElementQuery getPayrollElement, IPayrollElementCommand updatePayrollElement)
     {
       this.getPayrollElementCommand = getPayrollElement;
       this.updatePayrollElementCommand = updatePayrollElement;

@@ -3,11 +3,11 @@ using Planilla_Backend.CleanArchitecture.Domain.Entities;
 
 namespace Planilla_Backend.CleanArchitecture.Application.UseCases
 {
-  public class GetPayrollElementById : IGetPayrollElement
+  public class PayrollElementQuery : IPayrollElementQuery
   {
     private readonly IPayrollElementRepository payrollElementRepository;
 
-    public GetPayrollElementById(IPayrollElementRepository payrollElementRepository)
+    public PayrollElementQuery(IPayrollElementRepository payrollElementRepository)
     {
       this.payrollElementRepository = payrollElementRepository;
     }
