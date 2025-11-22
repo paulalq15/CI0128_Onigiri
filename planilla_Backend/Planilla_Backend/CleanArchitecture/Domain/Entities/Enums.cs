@@ -1,11 +1,5 @@
 ﻿namespace Planilla_Backend.CleanArchitecture.Domain.Entities
 {
-  public enum ContractType
-  {
-    FixedSalary,
-    ProfessionalServices
-  }
-
   public enum PaymentFrequency
   {
     Monthly,

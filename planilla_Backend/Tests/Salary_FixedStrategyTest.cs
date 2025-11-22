@@ -23,7 +23,7 @@ namespace Tests
         EmployeeId = 1,
         Salary = 1000m,
         PaymentAccount = "123456789",
-        ContractType = ContractType.FixedSalary,
+        ContractType = EmployeeType.FullTime,
         StartDate = DateTime.Now.AddMonths(-1),
         EndDate = null
       };
@@ -40,7 +40,7 @@ namespace Tests
         EmployeeId = 1,
         Salary = 1000m,
         PaymentAccount = "123456789",
-        ContractType = ContractType.ProfessionalServices,
+        ContractType = EmployeeType.ProfessionalServices,
         StartDate = DateTime.Now.AddMonths(-1),
         EndDate = null
       };
@@ -60,7 +60,7 @@ namespace Tests
         EmployeeId = 1,
         Salary = monthlySalary,
         PaymentAccount = "123456789",
-        ContractType = ContractType.FixedSalary,
+        ContractType = EmployeeType.FullTime,
         StartDate = DateTime.Now.AddMonths(-1),
         EndDate = null
       };
@@ -117,7 +117,7 @@ namespace Tests
         EmployeeId = 1,
         Salary = monthlySalary,
         PaymentAccount = "123456789",
-        ContractType = ContractType.FixedSalary,
+        ContractType = EmployeeType.FullTime,
         StartDate = DateTime.Now.AddMonths(-1),
         EndDate = null
       };
@@ -145,7 +145,7 @@ namespace Tests
         EmployeeId = 1,
         Salary = monthlySalary,
         PaymentAccount = "123456789",
-        ContractType = ContractType.ProfessionalServices,
+        ContractType = EmployeeType.FullTime,
         StartDate = new DateTime(2025, 10, 01),
         EndDate = null
       };
@@ -167,7 +167,7 @@ namespace Tests
       Assert.AreEqual(monthlySalary, employeePayroll.BaseSalaryForPeriod);
       Assert.IsNotNull(detail);
       Assert.AreEqual(employeePayroll.Id, detail.EmployeePayrollId);
-      Assert.AreEqual("Salario bruto", detail.Description);
+      Assert.AreEqual("Salario Tiempo Completo", detail.Description);
       Assert.AreEqual(PayrollItemType.Base, detail.Type);
       Assert.AreEqual(expectedSalary, detail.Amount);
       Assert.IsNull(detail.IdCCSS);
@@ -196,7 +196,7 @@ namespace Tests
         EmployeeId = 1,
         Salary = monthlySalary,
         PaymentAccount = "123456789",
-        ContractType = ContractType.ProfessionalServices,
+        ContractType = EmployeeType.ProfessionalServices,
         StartDate = new DateTime(2025, 10, 6),
         EndDate = null
       };
@@ -219,7 +219,7 @@ namespace Tests
       Assert.AreEqual(expectedMonthlySalary, employeePayroll.BaseSalaryForPeriod);
       Assert.IsNotNull(detail);
       Assert.AreEqual(employeePayroll.Id, detail.EmployeePayrollId);
-      Assert.AreEqual("Salario bruto", detail.Description);
+      Assert.AreEqual("Salario Servicios Profesionales", detail.Description);
       Assert.AreEqual(PayrollItemType.Base, detail.Type);
       Assert.AreEqual(expectedSalary, detail.Amount);
       Assert.IsNull(detail.IdCCSS);
@@ -248,7 +248,7 @@ namespace Tests
         EmployeeId = 1,
         Salary = monthlySalary,
         PaymentAccount = "123456789",
-        ContractType = ContractType.ProfessionalServices,
+        ContractType = EmployeeType.ProfessionalServices,
         StartDate = new DateTime(2025, 10, 6),
         EndDate = new DateTime(2025, 10, 20)
       };
@@ -271,7 +271,7 @@ namespace Tests
       Assert.AreEqual(expectedMonthlySalary, employeePayroll.BaseSalaryForPeriod);
       Assert.IsNotNull(detail);
       Assert.AreEqual(employeePayroll.Id, detail.EmployeePayrollId);
-      Assert.AreEqual("Salario bruto", detail.Description);
+      Assert.AreEqual("Salario Servicios Profesionales", detail.Description);
       Assert.AreEqual(PayrollItemType.Base, detail.Type);
       Assert.AreEqual(expectedSalary, detail.Amount);
       Assert.IsNull(detail.IdCCSS);
