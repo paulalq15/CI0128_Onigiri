@@ -2,6 +2,7 @@
 using Microsoft.Data.SqlClient;
 using Planilla_Backend.CleanArchitecture.Application.Ports;
 using Planilla_Backend.CleanArchitecture.Domain.Entities;
+using Planilla_Backend.LayeredArchitecture.Services.Email.EmailModels;
 using System.ComponentModel.Design;
 
 namespace Planilla_Backend.CleanArchitecture.Infrastructure

@@ -1,5 +1,6 @@
 ﻿using Planilla_Backend.CleanArchitecture.Application.Ports;
 using Planilla_Backend.CleanArchitecture.Domain.Entities;
+using Planilla_Backend.LayeredArchitecture.Services.Email.EmailModels;
 
 namespace Planilla_Backend.CleanArchitecture.Application.UseCases
 {
