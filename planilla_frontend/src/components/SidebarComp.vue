@@ -178,7 +178,7 @@
         </li>
 
         <!--Reports menu-->
-        <li class="my-3" v-if="session.user?.typeUser === 'Empleador' || session.user?.typeUser === 'Aprobador'">
+        <li class="my-3">
           <button
             class="nav-link d-flex w-100 gap-2 px-2 py-2 sidebar-item collapsed"
             data-bs-toggle="collapse"
