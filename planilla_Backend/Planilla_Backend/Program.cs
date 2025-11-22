@@ -19,7 +19,7 @@ builder.Services.AddCors(options =>
   options.AddPolicy(name: MyAllowSpecificOrigins,
                     policy =>
                     {
-                      policy.WithOrigins("http://localhost:8080")
+                      policy.WithOrigins("http://localhost:8080", "https://planillaonigiri.netlify.app")
                               .AllowAnyHeader()
                               .AllowAnyMethod();
                     });
@@ -104,9 +104,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
-
 app.UseCors(MyAllowSpecificOrigins);
+
+app.UseAuthorization();
 
 app.MapControllers();
 

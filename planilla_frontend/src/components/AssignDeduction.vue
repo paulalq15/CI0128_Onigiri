@@ -119,7 +119,7 @@
 </template>
 
 <script>
-  import URLBaseAPI from '../../axiosAPIInstances.js';
+  import URLBaseAPI from '../axiosAPIInstances.js';
   import { getUser } from '../session.js';
 
   export default {
