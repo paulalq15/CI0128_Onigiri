@@ -106,8 +106,8 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         const string query =
           @"SELECT c.IdContrato AS Id, c.IdPersona AS EmployeeId, c.FechaInicio AS StartDate, c.FechaFin AS EndDate, c.Salario AS Salary, c.CuentaPago AS PaymentAccount, c.Puesto as Role,
               CASE c.Tipo
-                WHEN 'Tiempo Completo' THEN 'FixedSalary'
-                WHEN 'Medio Tiempo' THEN 'FixedSalary'
+                WHEN 'Tiempo Completo' THEN 'FullTime'
+                WHEN 'Medio Tiempo' THEN 'PartTime'
                 WHEN 'Servicios Profesionales' THEN 'ProfessionalServices'
               END AS ContractType
             FROM Contrato AS c
