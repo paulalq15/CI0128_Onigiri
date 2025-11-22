@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "mssql1": {
+      "serviceConnectorResourceId": "/subscriptions/[parameters('subscriptionId')]/resourcegroups/[parameters('serviceConnectorResourceGroupName')]/providers/Microsoft.Web/sites/PlanillaBackend20251121185053/providers/Microsoft.ServiceLinker/linkers/ConnectionStringsOnigiriContext_175374FCD1",
+      "secretStore": "AzureAppSettings",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/servidor-planillas-onigiri/databases/SistemaPlanillas",
+      "type": "mssql.azure",
+      "connectionId": "ConnectionStrings:OnigiriContext"
+    }
+  }
+}
