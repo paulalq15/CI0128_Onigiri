@@ -1,4 +1,4 @@
-﻿namespace Planilla_Backend.CleanArchitecture.Domain.Entities
+﻿namespace Planilla_Backend.LayeredArchitecture.Services.Email.EmailModels
 {
   public class DeletePayrollElementEmailDto
   {
