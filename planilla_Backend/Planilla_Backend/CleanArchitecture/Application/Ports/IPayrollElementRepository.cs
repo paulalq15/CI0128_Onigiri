@@ -7,7 +7,7 @@ namespace Planilla_Backend.CleanArchitecture.Application.Ports
   {
     Task<PayrollElementEntity?> GetPayrollElementByElementId(int elementId);
     Task<int> UpdatePayrollElement(PayrollElementEntity payrollElement);
-    Task<IEnumerable<DeletePayrollElementEmailDto>> EmailPayrollElementAssignedEmployees(int elementId);
+    Task<IEnumerable<DeletePayrollElementEmailDto>> GetEmployeeEmailsByAssignedElement(int elementId);
     Task<int> DeletePayrollElement(int elementId);
   }
 }
