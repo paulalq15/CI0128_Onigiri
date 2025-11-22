@@ -11,7 +11,7 @@
   </div>
 
   <div id="buttons">
-    <LinkButton text="Descargar Excel" @click="downloadExcel()" />
+    <LinkButton text="Descargar PDF" @click="downloadPDF()" />
   </div>
 
   <div id="reportContent">
