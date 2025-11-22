@@ -4,6 +4,7 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
 {
   public interface IPayrollElementQuery
   {
-    Task<PayrollElementEntity?> Execute(int payElementId);
+    Task<PayrollElementEntity?> GetPayrollElement(int payElementId);
+    Task<DeletePayrollElementEmailListDto> GetEmployeeEmails(int elementId);
   }
 }

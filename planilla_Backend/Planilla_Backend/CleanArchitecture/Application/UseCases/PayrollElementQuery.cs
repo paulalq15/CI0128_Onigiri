@@ -12,7 +12,7 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
       this.payrollElementRepository = payrollElementRepository;
     }
 
-    public async Task<PayrollElementEntity?> Execute(int payElementId)
+    public async Task<PayrollElementEntity?> GetPayrollElement(int payElementId)
     {
       if (payElementId <= 0) throw new ArgumentException("El parámetro elementId debe ser mayor que cero");
 
@@ -20,5 +20,20 @@ namespace Planilla_Backend.CleanArchitecture.Application.UseCases
 
       return payrollElementEntity;
     }
-  }
+
+    public async Task<DeletePayrollElementEmailListDto> GetEmployeeEmails(int elementId)
+    {
+      if (elementId <= 0) throw new ArgumentException("El parámetro elementId debe ser mayor que cero");
+
+      var items = await this.payrollElementRepository.GetEmployeeEmailsByAssignedElement(elementId);
+
+      DeletePayrollElementEmailListDto emailList = new DeletePayrollElementEmailListDto
+      {
+        Entries = items.ToList()
+      };
+
+      return emailList;
+    }
+
+  } // end class
 }
