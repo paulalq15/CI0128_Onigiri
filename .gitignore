@@ -442,3 +442,4 @@ FodyWeavers.xsd
 *.msm
 *.msp
 planilla_Backend/Planilla_Backend/appsettings.json
+planilla_Backend/Planilla_Backend/appsettings.Local.json
