@@ -14,6 +14,7 @@
             <th>Día de Pago #2</th>
             <th>Total Empleados</th>
             <th v-if="$session.user?.typeUser === 'Administrador'">Employer</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -27,6 +28,7 @@
             <td>{{ company.payDay2 }}</td>
             <td>{{ company.employeeCount }}</td>
             <td v-if="$session.user?.typeUser === 'Administrador'">{{ company.employerName }}</td>
+            <td><button class="btn btn-sm btn-danger" @click="deleteCompany(company)">Eliminar</button></td>
           </tr>
         </tbody>
       </table>
@@ -35,6 +37,8 @@
 </template>
 
 <script>
+import { popUpAlert } from '../utils/alerts.js';
+
 import URLBaseAPI from '../axiosAPIInstances.js';
 
 export default {
@@ -47,7 +51,7 @@ export default {
   },
 
   methods: {
-  fetchCompanies() {
+    fetchCompanies() {
       const userId = this.$session.user?.userId;
       if (!userId) return;
 
@@ -63,6 +67,24 @@ export default {
       .catch((error) => {
         console.error('Error fetching companies:', error);
       });
+    },
+
+    async deleteCompany(company) {
+      const confirmAlert = popUpAlert();
+
+      const ok = await confirmAlert.confirmAlert(
+        `¿Está seguro de que desea eliminar esta empresa?
+        Empresa: ${company.companyName} (Cédula Jurídica: ${company.companyId})`
+      );
+      
+      if (!ok) return;
+
+      URLBaseAPI.delete('/api/Company/DeleteCompany', {
+        params: { companyId: company.companyId },
+      })
+      .then(() => {
+        this.companies = this.companies.filter(c => c.companyId !== company.companyId);
+      })
     },
   },
 
