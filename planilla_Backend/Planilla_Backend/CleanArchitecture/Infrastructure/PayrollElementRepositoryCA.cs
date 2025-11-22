@@ -88,7 +88,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       }
       return affectedRows;
     }
-    public async Task<IEnumerable<DeletePayrollElementEmailDto>> EmailPayrollElementAssignedEmployees(int elementId)
+    public async Task<IEnumerable<DeletePayrollElementEmailDto>> GetEmployeeEmailsByAssignedElement(int elementId)
     {
       try
       {
@@ -97,7 +97,8 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
           select
 	          p.Nombre1 + ' ' + p.Apellido1 + ' ' + p.Apellido2 AS EmployeeName,
 	          u.Correo as EmployeeEmail, 
-	          e.Nombre as Benefit
+	          e.Nombre as Benefit,
+	          ea.FechaFin as EffectiveDate
           from ElementoPlanilla e
           join ElementoAplicado ea on e.IdElemento = ea.IdElemento
           join Usuario u on ea.IdUsuario = u.IdUsuario
