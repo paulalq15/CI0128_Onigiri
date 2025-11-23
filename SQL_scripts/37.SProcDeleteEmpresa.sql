@@ -1,5 +1,3 @@
-Use [Onigiri_PI];
-
 Create Or Alter Procedure Sproc_delete_empresa(@IdEmpresa Int)
 As
 Begin
@@ -11,7 +9,7 @@ Begin
 		Where IdEmpresa = @IdEmpresa
 	)
 	Begin
-		RAISERROR('No se encontr� la empresa con IdEmpresa = %d', 16, 1, @IdEmpresa);
+		RAISERROR('No se encontró la empresa con IdEmpresa = %d', 16, 1, @IdEmpresa);
 		Return;
 	End;
 
@@ -28,7 +26,7 @@ Begin
 
 			-- Inactivar empresa
 			Update Empresa
-			Set Estado = 'Inactivo'
+			Set Estado = 'Inactivo', isDelete = 1
 			Where IdEmpresa = @IdEmpresa;
 
 			Set @RowsAffected = @RowsAffected + @@ROWCOUNT;
@@ -66,7 +64,7 @@ Begin
 		Delete ea
 		From ElementoAplicado ea
 		Inner Join Usuario u On u.IdUsuario = ea.IdUsuario
-		WHERE u.IdPersona IN (SELECT IdPersona FROM @Personas);
+		Where u.IdPersona IN (Select IdPersona From @Personas);
 
 		Set @RowsAffected = @RowsAffected + @@ROWCOUNT;
 
@@ -92,6 +90,12 @@ Begin
 		Delete From Contrato
 		Where IdPersona In (Select IdPersona From @Personas);
 
+		-- UsuariosPorEmpresa
+		Delete From UsuariosPorEmpresa
+		Where IdEmpresa = @IdEmpresa;
+
+		Set @RowsAffected = @RowsAffected + @@ROWCOUNT;
+
 		-- Usuarios
 		Delete From Usuario
 		Where IdPersona In (Select IdPersona From @Personas);
@@ -104,12 +108,6 @@ Begin
 
 		-- Direccion empresa
 		Delete From Direccion
-		Where IdEmpresa = @IdEmpresa;
-
-		Set @RowsAffected = @RowsAffected + @@ROWCOUNT;
-
-		-- UsuariosPorEmpresa
-		Delete From UsuariosPorEmpresa
 		Where IdEmpresa = @IdEmpresa;
 
 		Set @RowsAffected = @RowsAffected + @@ROWCOUNT;
