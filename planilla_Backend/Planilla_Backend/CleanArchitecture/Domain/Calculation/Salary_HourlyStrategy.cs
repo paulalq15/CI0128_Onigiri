@@ -6,7 +6,7 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
   {
     public bool Applicable(ContractModel contract)
     {
-      return contract != null && contract.ContractType == ContractType.ProfessionalServices;
+      return contract != null && contract.ContractType == EmployeeType.ProfessionalServices;
     }
     public PayrollDetailModel CreateBaseLine(EmployeePayrollModel employeePayroll, ContractModel contract, PayrollContext ctx)
     {
@@ -26,7 +26,7 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
       return new PayrollDetailModel
       {
         EmployeePayrollId = employeePayroll.Id,
-        Description = "Servicios Profesionales",
+        Description = "Salario Servicios Profesionales",
         Type = PayrollItemType.Base,
         Amount = amount,
         IdCCSS = null,

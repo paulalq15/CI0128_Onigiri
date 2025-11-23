@@ -46,6 +46,7 @@ namespace Planilla_Backend.LayeredArchitecture.Services
         PersonType = p?.PersonType,
         Email = user.Email,
         CompanyUniqueId = user?.CompanyUniqueId,
+        CompanyName = user?.CompanyName,
       };
     }
   }

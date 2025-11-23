@@ -119,7 +119,7 @@
 </template>
 
 <script>
-import axios from "axios";
+  import URLBaseAPI from '../axiosAPIInstances.js';
   import { getUser } from '../session.js';
 
   export default {
@@ -166,16 +166,15 @@ import axios from "axios";
 
         this.user = user;
         const companyId = user.companyUniqueId;
-        const url = `https://localhost:7071/api/PersonUser/getEmployeesByCompanyId?companyId=${companyId}`;
 
-        axios.get(url).then((response) => {
+        URLBaseAPI.get(`/api/PersonUser/getEmployeesByCompanyId?companyId=${companyId}`).then((response) => {
           this.employees = response.data;
         });
       },
 
       async getCompanyIdByUserId() {
         try {
-          const response = await axios.get(`https://localhost:7071/api/Company/getCompanyIdByUserId?userId=${this.user.userId}`);
+          const response = await URLBaseAPI.get(`/api/Company/getCompanyIdByUserId?userId=${this.user.userId}`);
           this.companyId = response.data;
           this.getDeductions();
 
@@ -190,7 +189,7 @@ import axios from "axios";
           return;
         }
 
-        axios.get(`https://localhost:7071/api/PayrollElement/GetPayRollElements`, {
+        URLBaseAPI.get(`/api/PayrollElement/GetPayRollElements`, {
           params: {
             idCompany: this.companyId
           }})
@@ -205,7 +204,7 @@ import axios from "axios";
       },
 
       getAppliedElements() {
-        axios.get(`https://localhost:7071/api/AppliedElement/getAppliedElements?employeeId=${this.selectedEmployee.id}`)
+        URLBaseAPI.get(`/api/AppliedElement/getAppliedElements?employeeId=${this.selectedEmployee.id}`)
           .then((response) => {
             this.appliedElements = response.data;
           })
@@ -257,7 +256,7 @@ import axios from "axios";
         }
 
         // Make a POST request to add the new applied element:
-        axios.post(`https://localhost:7071/api/AppliedElement/addAppliedElement`,
+        URLBaseAPI.post(`/api/AppliedElement/addAppliedElement`,
         {
           UserId: this.selectedEmployee.id,
           ElementId: deduction.idElement,
@@ -286,7 +285,7 @@ import axios from "axios";
         }
 
         try {
-          await axios.post('https://localhost:7071/api/AppliedElement/deactivateAppliedElement', {
+          await URLBaseAPI.post('/api/AppliedElement/deactivateAppliedElement', {
             ElementId: appliedElementId
           });
 
