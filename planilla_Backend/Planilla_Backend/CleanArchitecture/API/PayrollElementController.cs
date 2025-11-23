@@ -50,7 +50,7 @@ namespace Planilla_Backend.CleanArchitecture.API
       }
     }
 
-    [HttpPost("{payrollElementId:int}")]
+    [HttpDelete("{payrollElementId:int}")]
     public async Task<IActionResult> DeletePayrollElement(int payrollElementId)
     {
       try

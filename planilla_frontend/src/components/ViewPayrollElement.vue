@@ -134,9 +134,9 @@
 
   async function deletePayrollElement(PayrollElementId) {
     try {
-      await URLBaseAPI.post(`/api/PayrollElement/${PayrollElementId}`);
+      await URLBaseAPI.delete(`/api/PayrollElement/${PayrollElementId}`);
       alert.show('Elemento eliminado', 'success');
-      elements.value = elements.value.filter(e => e.idElement !== PayrollElementId);
+      elements.value = elements.value.filter(e => e.idElement != PayrollElementId);
     } catch (error) {
       alert.show('Error al eliminar elemento' + error, 'warning');
     }
