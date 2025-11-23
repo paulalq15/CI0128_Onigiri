@@ -90,6 +90,12 @@ Begin
 		Delete From Contrato
 		Where IdPersona In (Select IdPersona From @Personas);
 
+		-- UsuariosPorEmpresa
+		Delete From UsuariosPorEmpresa
+		Where IdEmpresa = @IdEmpresa;
+
+		Set @RowsAffected = @RowsAffected + @@ROWCOUNT;
+
 		-- Usuarios
 		Delete From Usuario
 		Where IdPersona In (Select IdPersona From @Personas);
@@ -102,12 +108,6 @@ Begin
 
 		-- Direccion empresa
 		Delete From Direccion
-		Where IdEmpresa = @IdEmpresa;
-
-		Set @RowsAffected = @RowsAffected + @@ROWCOUNT;
-
-		-- UsuariosPorEmpresa
-		Delete From UsuariosPorEmpresa
 		Where IdEmpresa = @IdEmpresa;
 
 		Set @RowsAffected = @RowsAffected + @@ROWCOUNT;
