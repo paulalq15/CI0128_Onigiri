@@ -56,17 +56,17 @@ namespace Planilla_Backend.LayeredArchitecture.Repositories
 
         const string sqlGetPayrollElements = @"
           SELECT
-          IdElemento As IdElement,
-          Nombre AS ElementName,
-          Tipo AS CalculationType,
-          Valor AS CalculationValue,
-          PagadoPor AS PaidBy,
-          Estado AS Status,
-          IdEmpresa AS CompanyId
-          FROM
-          ElementoPlanilla
+            IdElemento As IdElement,
+            Nombre AS ElementName,
+            Tipo AS CalculationType,
+            Valor AS CalculationValue,
+            PagadoPor AS PaidBy,
+            Estado AS Status,
+            IdEmpresa AS CompanyId
+          FROM ElementoPlanilla
           WHERE
-          IdEmpresa = @idCompany";
+            IdEmpresa = @idCompany
+            and Is_Deleted <> 1";
 
         var elementsList = await connection.QueryAsync<PayrollElementModel>(sqlGetPayrollElements, new { idCompany });
         return elementsList.ToList();
