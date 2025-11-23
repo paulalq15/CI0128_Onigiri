@@ -2,6 +2,17 @@
   <div class="d-flex flex-column">
     <div class="container mt-5">
       <h1 class="display-4 text-center">Empresas activas</h1>
+      <transition name="fade">
+        <PopUp
+          v-if="popup"
+          :mainText="popUpData.mainText"
+          :bodyText="popUpData.bodyText"
+          :fistButtontext="popUpData.fistButtontext"
+          :secondButtontext="popUpData.secondButtontext"
+          @closePopUp="togglePopUp"
+          @resolved="popUpData.resolve"
+        />
+      </transition>
       <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
         <thead>
           <tr>
@@ -69,18 +80,29 @@
 </template>
 
 <script>
-import { popUpAlert } from '../utils/alerts.js';
 import { useGlobalAlert } from '../utils/alerts.js';
+
+import PopUp from './alerts/PopUp.vue';
 
 import URLBaseAPI from '../axiosAPIInstances.js';
 
 export default {
   name: "CompaniesList",
+  components: {
+    PopUp,
+  },
 
   data() {
     return {
       activeCompanies: [],
       inactiveCompanies: [],
+      popup: false,
+      popUpData: {
+        mainText: '',
+        bodyText: '',
+        fistButtontext: '',
+        secondButtontext: '',
+      },
     };
   },
 
@@ -106,13 +128,8 @@ export default {
     },
 
     async deleteCompany(company) {
-      const confirmAlert = popUpAlert();
+      const ok = await this.showPopUp(company);
 
-      const ok = await confirmAlert.confirmAlert(
-        `¿Está seguro de que desea eliminar esta empresa?
-        Empresa: ${company.companyName} (Cédula Jurídica: ${company.companyId})`
-      );
-      
       if (!ok) return;
 
       try {
@@ -138,6 +155,26 @@ export default {
       console.log('Active companies:', this.activeCompanies);
       console.log('Inactive companies:', this.inactiveCompanies);
     },
+
+    showPopUp(company) {
+      return new Promise((resolve) => {
+
+        this.popUpData = {
+          mainText: 'Eliminar Empresa',
+          bodyText: `¿Está seguro de que desea eliminar esta empresa?
+            Empresa: ${company.companyName} (Cédula Jurídica: ${company.companyId})`,
+          fistButtontext: 'Sí, eliminar',
+          secondButtontext: 'No, cancelar',
+          resolve,
+        };
+
+        this.togglePopUp();
+      });
+    },
+
+    togglePopUp() {
+      this.popup = !this.popup;
+    }
   },
 
   created() {
