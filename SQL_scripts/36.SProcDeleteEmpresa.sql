@@ -11,7 +11,7 @@ Begin
 		Where IdEmpresa = @IdEmpresa
 	)
 	Begin
-		RAISERROR('No se encontró la empresa con IdEmpresa = %d', 16, 1, @IdEmpresa);
+		RAISERROR('No se encontrï¿½ la empresa con IdEmpresa = %d', 16, 1, @IdEmpresa);
 		Return;
 	End;
 
