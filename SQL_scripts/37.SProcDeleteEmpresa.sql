@@ -60,13 +60,6 @@ Begin
 
 		-- Borrar en orden
 
-		-- Detalle nomina
-		Delete dn
-		From DetalleNomina dn
-		Inner Join ElementoAplicado ea On ea.IdElementoAplicado = dn.IdElementoAplicado
-		Inner Join Usuario u On u.IdUsuario = ea.IdUsuario
-		Where u.IdPersona IN (Select IdPersona From @Personas);
-
 		-- ElementosAplicados
 		Delete ea
 		From ElementoAplicado ea
