@@ -20,11 +20,13 @@
     </div>
 
     <!-- Div container of report-->
-    <div class="text-center">
-      <div v-if="!selectedReportId" class="text-muted mb-2">
+    <div>
+      <div v-if="!selectedReportId" class="text-muted mb-2 text-center">
         No hay un reporte seleccionado
       </div>
-      <component v-else :is="selectedReport.component"></component>
+      <div v-else class="report-host">
+        <component :is="selectedReport.component"></component>
+      </div>
     </div>
   </div>
 </template>
@@ -47,9 +49,8 @@
 </script>
 
 <style lang="scss" scoped>
-  
-</style>
-
-<style lang="scss" scoped>
-  
+  .report-host {
+    width: 100%;
+    text-align: left;
+  }
 </style>

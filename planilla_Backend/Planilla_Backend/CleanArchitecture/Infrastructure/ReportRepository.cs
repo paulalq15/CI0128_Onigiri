@@ -33,7 +33,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
               JOIN NominaEmpresa AS nem ON ne.IdNominaEmpresa = nem.IdNominaEmpresa
             WHERE nem.IdEmpresa = @companyId
              AND ne.IdEmpleado = @employeeId
-            ORDER BY nem.FechaInicio ASC;";
+            ORDER BY nem.FechaInicio DESC;";
 
         var payrolls = await connection.QueryAsync<ReportPayrollPeriodDto>(query, new { companyId, employeeId, top });
         return payrolls;
@@ -205,18 +205,28 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
               ne.PuestoEnMomento As Role,
               cp.FechaPago As PaymentDate,
               ne.MontoBruto As GrossSalary,
-              ne.DeduccionesEmpleado As LegalDeductions,
-              ne.Beneficios As VoluntaryDeductions,
-              (ne.MontoBruto - (ne.DeduccionesEmpleado + ne.Beneficios)) As NetSalary
+              ISNULL(SUM(
+                CASE 
+                  WHEN dn.Tipo = 'Deduccion Empleado' AND (dn.IdCCSS IS NOT NULL OR dn.IdImpuestoRenta IS NOT NULL) THEN dn.Monto
+                  ELSE 0
+                END), 0) AS LegalDeductions,
+              ISNULL(SUM(
+                CASE 
+                  WHEN dn.Tipo = 'Deduccion Empleado' AND dn.IdElementoAplicado IS NOT NULL THEN dn.Monto
+                  ELSE 0
+                END), 0) AS VoluntaryDeductions,
+              ne.MontoNeto As NetSalary
             From Persona p
             Inner Join NominaEmpleado ne On ne.IdEmpleado = p.IdPersona
             Inner Join ComprobantePago cp On cp.IdNominaEmpleado = ne.IdNominaEmpleado
             Inner Join NominaEmpresa nem On nem.IdNominaEmpresa = ne.IdNominaEmpresa
             Inner Join Contrato c On c.IdPersona = p.IdPersona
+            Inner Join DetalleNomina AS dn ON dn.IdNominaEmpleado = ne.IdNominaEmpleado
             Where p.IdPersona = @employeeId
               And nem.FechaInicio >= @startPayrollDate
-              And nem.FechaFin <= @finalPayrollDate;
-        ";
+              And nem.FechaFin <= @finalPayrollDate
+            Group By c.Tipo, ne.PuestoEnMomento, cp.FechaPago, ne.MontoBruto, ne.MontoNeto
+            Order By PaymentDate;";
 
         var header = await connection.QuerySingleOrDefaultAsync<EmployeePayrollHistoryReport>(
             headerQuery,

@@ -1,9 +1,5 @@
 <template>
   <div>
-    <div v-if="companiesError" class="alert alert-danger mb-3">
-      {{ companiesError }}
-    </div>
-
     <div id="reportFilters">
       <!-- Empresa -->
       <div>
@@ -14,7 +10,6 @@
           v-model="selectedCompanyUniqueId"
           @change="onFiltersChanged"
         >
-          <option :value="null">Seleccione una empresa</option>
           <option
             v-for="company in companies"
             :key="company.companyUniqueId"
@@ -66,8 +61,8 @@
           id="StartDate"
           type="date"
           class="form-control"
-          v-model="selectedStartDate"
-          @change="adjustEndDate"
+          v-model="dateFrom"
+          @change="onFiltersChanged"
         />
       </div>
 
@@ -78,27 +73,27 @@
           id="EndDate"
           type="date"
           class="form-control"
-          v-model="selectedEndDate"
-          :min="selectedStartDate"
+          v-model="dateTo"
           @change="onFiltersChanged"
         />
       </div>
     </div>
 
     <div>
-      <div id="buttons" class="mt-3">
+      <div id="buttons">
         <LinkButton text="Descargar Excel" @click="downloadExcel()" />
       </div>
     </div>
 
-    <div id="reportContent" class="mt-4">
+    <div id="reportContent">
       <h4>Detalle de Planilla Por Empleado</h4>
 
-      <div v-if="reportError" class="alert alert-warning mb-3">
-        {{ reportError }}
-      </div>
+      <p><strong>Empresa:</strong> {{ companyFilterLabel }}</p>
+      <p><strong>Empleador:</strong> {{ employerName }}</p>
 
-      <div id="reportTable" class="table-responsive">
+      <div v-if="isLoading" class="text-muted">Cargando reporte</div>
+
+      <div v-else id="reportTable" class="table-responsive">
         <table class="table">
           <thead>
             <tr>
@@ -114,16 +109,16 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(row, index) in payrollData" :key="index">
+            <tr v-for="(row, index) in payrollData" :key="index" :class="{ 'totals-row': row.EmployeeName === 'Total' }">
               <td>{{ row.EmployeeName }}</td>
               <td>{{ row.NationalId }}</td>
               <td>{{ row.EmployeeType }}</td>
               <td>{{ row.PaymentPeriod }}</td>
-              <td>{{ row.PaymentDate }}</td>
-              <td>{{ row.GrossSalary }}</td>
-              <td>{{ row.EmployerContributions }}</td>
-              <td>{{ row.EmployeeBenefits }}</td>
-              <td>{{ row.EmployerCost }}</td>
+              <td>{{ formatDate(row.PaymentDate) }}</td>
+              <td>{{ fmtCRC(row.GrossSalary) }}</td>
+              <td>{{ fmtCRC(row.EmployerContributions) }}</td>
+              <td>{{ fmtCRC(row.EmployeeBenefits) }}</td>
+              <td>{{ fmtCRC(row.EmployerCost) }}</td>
             </tr>
             <tr v-if="!payrollData.length && !reportError">
               <td colspan="9" class="text-center text-muted">
@@ -137,131 +132,202 @@
   </div>
 </template>
 
-<script setup>
-  import { ref, computed, onMounted } from 'vue';
+<script>
   import * as XLSX from "xlsx";
   import { saveAs } from "file-saver";
   import URLBaseAPI from '@/axiosAPIInstances'
   import { useSession } from '@/utils/useSession'
+  import { useGlobalAlert } from '@/utils/alerts.js';
 
   import LinkButton from '../LinkButton.vue';
 
-  const session = useSession()
-  const userId = computed(() => session.user?.userId ?? null)
-  
-  const payrollData = ref([])
+  export default {
+    components: {
+      LinkButton,
+    },
+    data() {
+      const { user } = useSession();
 
-  const companies = ref([])
-  const selectedCompanyUniqueId = ref(null)
+      return {
+        user,
+        payrollData: [],
+        isLoading: false,
+        companies: [],
+        selectedCompanyUniqueId: null,
+        dateFrom: '',
+        dateTo: '',
+        employerName: "",
+        selectedEmployeeType: null,
+        selectedEmployeeNationalId: '',
+      }
+    },
+    computed: {
+      companyFilterLabel() {
+        if (!this.selectedCompanyUniqueId) return '';
+        const match = this.companies.find(
+          c => c.companyUniqueId === this.selectedCompanyUniqueId
+        );
+        return match?.companyName || this.user?.companyName || '';
+      },
+    },
+    methods: {
 
-  const selectedStartDate = ref('')
-  const selectedEndDate = ref('')
+      formatNationalId(event) {
+        let raw = event.target.value.replace(/\D/g, "");
 
-  const selectedEmployeeType = ref(null)
-  const selectedEmployeeNationalId = ref('')
+        if (raw.length > 9) {
+          raw = raw.slice(0, 9);
+        }
 
-  const companiesError = ref('')
-  const reportError = ref('')
-  const cedulaError = ref('')
+        let formatted = raw;
 
-  function adjustEndDate() {
-    if (selectedEndDate.value < selectedStartDate.value) {
-      selectedEndDate.value = selectedStartDate.value
-    }
-  }
+        if (raw.length > 1) {
+          formatted = raw[0] + "-" + raw.slice(1);
+        }
+        if (raw.length > 5) {
+          formatted = raw[0] + "-" + raw.slice(1, 5) + "-" + raw.slice(5);
+        }
 
-  function formatNationalId(event) {
-    let raw = event.target.value.replace(/\D/g, "");
+        this.selectedEmployeeNationalId = formatted;
+      },
 
-    if (raw.length > 9) {
-      raw = raw.slice(0, 9);
-    }
+      async loadCompanies() {
+        this.loadingCompanies = true;
+        try {
+          const userId = this.$session.user?.userId;
+          this.employerName = this.$session.user?.fullName || '';
+          if (!userId) {
+            this.companies = [];
+            return;
+          }
+          
+          const { data } = await URLBaseAPI.get(`/api/Company/by-user/${userId}?onlyActive=false`);
+          const rows = Array.isArray(data) ? data.slice() : [];
+          this.companies = rows;
+        } catch (err) {
+          const alert = useGlobalAlert();
+          alert.show('Error al cargar empresas para el filtro.', 'warning');
+        } finally {
+          this.loadingCompanies = false;
+        }
+      },
 
-    let formatted = raw;
+      async onFiltersChanged() {
+        if (!this.selectedCompanyUniqueId || !this.dateFrom || !this.dateTo) return;
+        
+        if (this.selectedEmployeeNationalId) {
+          const cedulaRegex = /^\d-\d{4}-\d{4}$/;
 
-    if (raw.length > 1) {
-      formatted = raw[0] + "-" + raw.slice(1);
-    }
-    if (raw.length > 5) {
-      formatted = raw[0] + "-" + raw.slice(1, 5) + "-" + raw.slice(5);
-    }
+          if (!cedulaRegex.test(this.selectedEmployeeNationalId)) {
+            const alert = useGlobalAlert()
+            alert.show('La cédula debe tener el formato #-####-####.', 'warning')
+            return;
+          }
+        }
 
-    selectedEmployeeNationalId.value = formatted;
-  }
+        const params = {
+          reportCode: 'EmployerEmployeePayroll',
+          companyId: this.selectedCompanyUniqueId,
+          employeeNationalId: this.selectedEmployeeNationalId || null,
+          employeeType: this.selectedEmployeeType ?? null,
+          dateFrom: this.dateFrom,
+          dateTo: this.dateTo,
+        }
 
-  async function loadCompanies() {
-    companiesError.value = ''
-    try {
-      if (!userId.value) {
-        companiesError.value = 'No se pudo obtener la información del usuario. Intente iniciar sesión nuevamente.'
-        return
+        try {
+          const { data } = await URLBaseAPI.post('/api/Reports/data', params);
+          const rows = Array.isArray(data.rows) ? data.rows : [];
+          this.payrollData = rows;
+
+        } catch (error) {
+          const backendMessage = error?.response?.data?.message;
+          const alert = useGlobalAlert()
+          alert.show(
+            backendMessage || 'No se pudo cargar el reporte. Intente nuevamente más tarde.',
+            'warning'
+          )
+        }
+      },
+
+      downloadExcel() {
+        const tableWrapper = document.getElementById('reportTable');
+        if (!tableWrapper) return;
+        
+        const table = tableWrapper.querySelector('table');
+        if (!table) return;
+        
+        const exportTable = table.cloneNode(true);
+        const numericCols = [5, 6, 7, 8];
+        
+        const rows = exportTable.querySelectorAll('tbody tr');
+        rows.forEach(tr => {
+          const cells = tr.querySelectorAll('td');
+          
+          numericCols.forEach(idx => {
+            const cell = cells[idx];
+            if (!cell) return;
+            const raw = cell.textContent || '';
+            let txt = raw.replace(/[^\d.,-]/g, '');
+            const seps = txt.match(/[.,]/g);
+            if (seps && seps.length > 1) {
+              const lastSep = Math.max(txt.lastIndexOf(','), txt.lastIndexOf('.'));
+              const intPart = txt.slice(0, lastSep).replace(/[.,]/g, '');
+              const decPart = txt.slice(lastSep + 1).replace(/[.,]/g, '');
+              txt = intPart + '.' + decPart;
+            } else {
+              txt = txt.replace(/\./g, '').replace(',', '.');
+            }
+            
+            cell.textContent = txt;
+          });
+        });
+        
+        const wb = XLSX.utils.table_to_book(exportTable, { sheet: 'Planilla' });
+        const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        const blob = new Blob([wbout], { type: 'application/octet-stream' });
+        saveAs(blob, 'Reporte_Planilla.xlsx');
+      },
+      fmtCRC(v) {
+        return new Intl.NumberFormat('es-CR', {
+          style: 'currency',
+          currency: 'CRC',
+          currencyDisplay: 'symbol',
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(Number(v ?? 0));
+      },
+      formatFilterDate(value) {
+        if (!value) return '';
+        const [yyyy, mm, dd] = value.split('-');
+        return `${dd}/${mm}/${yyyy}`;
+      },
+      formatDate(dateString) {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return isNaN(date)
+        ? ''
+        : new Intl.DateTimeFormat('es-CR', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        }).format(date);
+      },
+    },
+    async mounted() {
+      const today = new Date();
+      const first = new Date(today.getFullYear(), today.getMonth(), 1);
+      const last = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+      this.dateFrom = first.toISOString().slice(0, 10);
+      this.dateTo = last.toISOString().slice(0, 10);
+
+      const sessionCompanyId = this.$session.user?.companyUniqueId;
+      if (sessionCompanyId) {
+        this.selectedCompanyUniqueId = Number(sessionCompanyId);
+        this.onFiltersChanged();
       }
 
-      const resp = await URLBaseAPI.get(`/api/Company/by-user/${userId.value}?onlyActive=false`)
-
-      companies.value = resp.data ?? []
-
-      if (!companies.value.length) {
-        companiesError.value = 'No se encontraron empresas asociadas a tu usuario.'
-      }
-
-    } catch (err) {
-      companiesError.value = 'Error cargando empresas. Intenta nuevamente más tarde.'
+      this.loadCompanies()
     }
-  }
-
-  async function onFiltersChanged() {
-    reportError.value = ''
-    cedulaError.value = ''
-
-    if (!selectedCompanyUniqueId.value || !selectedStartDate.value || !selectedEndDate.value) {
-      reportError.value = 'Selecciona la empresa y el rango de fechas para cargar el reporte.'
-      return;
-    }
-
-    if (selectedEmployeeNationalId.value) {
-      const cedulaRegex = /^\d-\d{4}-\d{4}$/;
-
-      if (!cedulaRegex.test(selectedEmployeeNationalId.value)) {
-        cedulaError.value = 'La cédula debe tener el formato #-####-####.'
-        return;
-      }
-    }
-
-    const params = {
-      reportCode: 'EmployerEmployeePayroll',
-      companyId: selectedCompanyUniqueId.value,
-      employeeNationalId: selectedEmployeeNationalId.value || null,
-      employeeType: selectedEmployeeType.value ?? null,
-      dateFrom: selectedStartDate.value,
-      dateTo: selectedEndDate.value,
-    }
-
-    try {
-      const { data } = await URLBaseAPI.post('/api/Reports/data', params);
-      const rows = Array.isArray(data.rows) ? data.rows : [];
-      payrollData.value = rows;
-
-      if (!rows.length) {
-        reportError.value = 'No se encontraron datos para los filtros seleccionados.'
-      }
-
-    } catch (error) {
-      const backendMessage = error?.response?.data?.message;
-      reportError.value = backendMessage || 'No se pudo cargar el reporte. Intenta nuevamente más tarde.';
-    }
-  }
-
-  onMounted(() => {
-    loadCompanies()
-  })
-
-  function downloadExcel() {
-    const table = document.getElementById("reportTable").querySelector("table");
-    const wb = XLSX.utils.table_to_book(table, { sheet: "Planilla" });
-    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-    const blob = new Blob([wbout], { type: "application/octet-stream" });
-    saveAs(blob, "Reporte_Detalle_Planilla_Por_Empleado.xlsx");
   }
 </script>
 
@@ -295,7 +361,6 @@
     align-items: flex-start;
 
     padding: 20px;
-    gap: 20px;
   }
 
   h4, p {
@@ -316,5 +381,10 @@
     background-color: #1C4532;
     color: white;
     font-weight: normal;
+  }
+
+  .totals-row td {
+    font-weight: 600;
+    border-top: 2px solid #1C4532;
   }
 </style>
