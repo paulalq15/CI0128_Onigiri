@@ -3,6 +3,7 @@ using Planilla_Backend.CleanArchitecture.Application.Ports;
 using Planilla_Backend.CleanArchitecture.Application.Reports;
 using Planilla_Backend.CleanArchitecture.Application.Services;
 using Planilla_Backend.CleanArchitecture.Application.UseCases;
+using Planilla_Backend.CleanArchitecture.Application.UseCases.company;
 using Planilla_Backend.CleanArchitecture.Domain.Calculation;
 using Planilla_Backend.CleanArchitecture.Infrastructure;
 using Planilla_Backend.CleanArchitecture.Infrastructure.External;
@@ -78,6 +79,10 @@ builder.Services.AddScoped<IReportGenerator, ReportGenerator_EmployeePayrollHist
 builder.Services.AddScoped<IReportGenerator, ReportGenerator_EmployerPayrollDetail>();
 builder.Services.AddScoped<IReportGenerator, ReportGenerator_EmployerPayrollHistory>();
 builder.Services.AddScoped<IReportGenerator, ReportGenerator_EmployerPayrollByEmployee>();
+
+// Company
+builder.Services.AddScoped<ICompanyRepository, CompanyRepositoryCA>();
+builder.Services.AddScoped<IDeleteCompanyCommand, DeleteCompanyCommand>();
 
 builder.Services.AddControllers();
 builder.Services.AddControllers().AddJsonOptions(options =>
