@@ -22,8 +22,8 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         using var connection = new SqlConnection(_connectionString);
 
         const string query = @"
-            SELECT 
-              CASE 
+            SELECT
+              CASE
                 WHEN EXISTS (
                   SELECT 1
                   FROM Persona p
@@ -56,13 +56,14 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
               WHEN EXISTS (
                 SELECT 1
                 FROM Empresa e
+                Inner Join Usuario u On u.IdPersona = @idPersona
                 WHERE e.IdEmpresa = @companyUniqueId
-                  AND e.IdCreadoPor = @idPersona
+                  AND e.IdCreadoPor = u.IdUsuario
               )
             THEN 1 ELSE 0 END
         ";
 
-        int isOwner = await connection.QuerySingleAsync<int>(query, new { companyUniqueId = companyUniqueId, idPersona = employeerPersonId });
+        int isOwner = await connection.QuerySingleAsync<int>(query, new { idPersona = employeerPersonId, companyUniqueId = companyUniqueId });
 
         return isOwner;
       }
@@ -78,14 +79,10 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       try
       {
         using var connection = new SqlConnection(_connectionString);
-        
-        // No se elimina directamente, la base de datos debe manejar con un trigger
-        const string query = @"
-          DELETE FROM Empresa
-          WHERE IdEmpresa = @companyUniqueId
-        ";
 
-        int rowsAffected = await connection.ExecuteAsync(query, new { companyUniqueId = companyUniqueId });
+        const string query = "EXEC Sproc_delete_empresa @companyUniqueId";
+
+        int rowsAffected = await connection.ExecuteAsync(query, new { companyUniqueId });
 
         return rowsAffected;
       }
@@ -95,4 +92,5 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         return -1;
       }
     }
+  }
 }
