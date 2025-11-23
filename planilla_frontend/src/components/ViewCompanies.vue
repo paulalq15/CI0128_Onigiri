@@ -133,7 +133,7 @@ export default {
       if (!ok) return;
 
       try {
-        await URLBaseAPI.delete('/api/Company/deleteCompany', {
+        await URLBaseAPI.delete('/api/Company/company', {
           params: { companyId: company.companyUniqueId , employeerPersonId: this.$session.user?.personId },
         });
 

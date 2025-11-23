@@ -15,7 +15,7 @@ namespace Planilla_Backend.CleanArchitecture.API
       this.deleteCompanyCommand = deleteCompanyCommand;
     }
 
-    [HttpDelete("deleteCompany")]
+    [HttpDelete("company")]
     public async Task<ActionResult<int>> deleteCompany(int companyId, int employeerPersonId)
     {
       try
