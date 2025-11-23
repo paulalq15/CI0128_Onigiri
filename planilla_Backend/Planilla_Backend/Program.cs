@@ -1,4 +1,3 @@
-using Planilla_Backend.CleanArchitecture.Application;
 using Planilla_Backend.CleanArchitecture.Application.Ports;
 using Planilla_Backend.CleanArchitecture.Application.Reports;
 using Planilla_Backend.CleanArchitecture.Application.Services;
@@ -43,6 +42,7 @@ builder.Services.AddScoped<PersonUserService>();
 
 builder.Services.AddScoped<ICreatePayrollCommand, CreatePayrollCommand>();
 builder.Services.AddScoped<IPayrollRepository, PayrollRepository>();
+builder.Services.AddScoped<IPayrollDbSession, PayrollDbSession>();
 builder.Services.AddScoped<PayrollTemplate, StandardPayrollRun>();
 builder.Services.AddScoped<CalculationFactory>();
 

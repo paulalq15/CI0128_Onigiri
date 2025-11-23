@@ -96,9 +96,9 @@ public class ReportGenerator_EmployeePayrollHistory_test
 
     // Fila 1
     var row0 = result.Rows[0];
-    Assert.That(row0["contractType"], Is.EqualTo("FullTime"));
+    Assert.That(row0["contractType"], Is.EqualTo("Tiempo Completo"));
     Assert.That(row0["position"], Is.EqualTo("Contador"));
-    Assert.That(row0["paymentDate"], Is.EqualTo("29-09-2025"));
+    Assert.That(row0["paymentDate"], Is.EqualTo(new DateTime(2025, 09, 29, 00, 0, 0)));
     Assert.That(row0["grossSalary"], Is.EqualTo(535000));
     Assert.That(row0["mandatoryDeductions"], Is.EqualTo(48565));
     Assert.That(row0["voluntaryDeductions"], Is.EqualTo(20000));
@@ -106,9 +106,9 @@ public class ReportGenerator_EmployeePayrollHistory_test
 
     // Fila 2
     var row1 = result.Rows[1];
-    Assert.That(row1["contractType"], Is.EqualTo("FullTime"));
+    Assert.That(row1["contractType"], Is.EqualTo("Tiempo Completo"));
     Assert.That(row1["position"], Is.EqualTo("Auditor"));
-    Assert.That(row1["paymentDate"], Is.EqualTo("29-10-2025"));
+    Assert.That(row1["paymentDate"], Is.EqualTo(new DateTime(2025, 10, 29, 00, 0, 0)));
     Assert.That(row1["grossSalary"], Is.EqualTo(800000));
     Assert.That(row1["mandatoryDeductions"], Is.EqualTo(75000));
     Assert.That(row1["voluntaryDeductions"], Is.EqualTo(20000));
@@ -116,10 +116,10 @@ public class ReportGenerator_EmployeePayrollHistory_test
 
     // Totales
     var totals = result.Rows[2];
-    Assert.That(totals["totalGrossSalary"], Is.EqualTo(1335000));
-    Assert.That(totals["totalLegalDeductions"], Is.EqualTo(123565));
-    Assert.That(totals["totalVoluntaryDeductions"], Is.EqualTo(40000));
-    Assert.That(totals["totalNetSalary"], Is.EqualTo(1171435));
+    Assert.That(totals["grossSalary"], Is.EqualTo(1335000));
+    Assert.That(totals["mandatoryDeductions"], Is.EqualTo(123565));
+    Assert.That(totals["voluntaryDeductions"], Is.EqualTo(40000));
+    Assert.That(totals["netSalary"], Is.EqualTo(1171435));
 
     Assert.That(result.ReportInfo["EmployeeName"], Is.EqualTo("Juan Solano"));
     Assert.That(result.ReportInfo["CompanyName"], Is.EqualTo("Empresa PI"));

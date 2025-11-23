@@ -9,5 +9,6 @@
     public int PersonID { get; set; }
     public Person? Person { get; set; }
     public int? CompanyUniqueId { get; set; }
+    public string CompanyName { get; set; } = "";
   }
 }
