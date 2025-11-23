@@ -6,7 +6,7 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
   {
     public bool Applicable(ContractModel contract)
     {
-      return contract != null && contract.ContractType == ContractType.FixedSalary;
+      return contract != null && contract.ContractType != EmployeeType.ProfessionalServices;
     }
     public PayrollDetailModel CreateBaseLine(EmployeePayrollModel employeePayroll, ContractModel contract, PayrollContext ctx)
     {
@@ -72,7 +72,7 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
       return new PayrollDetailModel
       {
         EmployeePayrollId = employeePayroll.Id,
-        Description = "Salario bruto",
+        Description = "Salario " + GetContractTypeDisplayName(contract.ContractType),
         Type = PayrollItemType.Base,
         Amount = amountForPeriod,
         IdCCSS = null,
@@ -93,6 +93,21 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
     {
       if (workedDaysInMonth <= 0) return 0m;
       return Math.Round(contractMonthlySalary * workedDaysInMonth / totalDaysInMonth, 2);
+    }
+
+    private static string GetContractTypeDisplayName(EmployeeType type)
+    {
+      switch (type)
+      {
+        case EmployeeType.FullTime:
+          return "Tiempo Completo";
+        case EmployeeType.PartTime:
+          return "Medio Tiempo";
+        case EmployeeType.ProfessionalServices:
+          return "Servicios Profesionales";
+        default:
+          return type.ToString();
+      }
     }
   }
 }

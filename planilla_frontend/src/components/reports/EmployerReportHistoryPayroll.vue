@@ -5,75 +5,75 @@
       <select id="selectCompany" class="form-select" v-model.number="selectedCompanyId">
         <option :value="0">Todas</option>
         <option 
-        v-for="company in companies" 
-        :key="company.companyUniqueId" 
-        :value="company.companyUniqueId"
-        >
-        {{ company.companyName }}
-      </option>
-    </select>
+          v-for="company in companies" 
+          :key="company.companyUniqueId" 
+          :value="company.companyUniqueId"
+          >
+          {{ company.companyName }}
+        </option>
+      </select>
+    </div>
+    
+    <div>
+      <label for="dateFrom" class="form-label fw-bold">Fecha inicial</label>
+      <input id="dateFrom" type="date" class="form-control" v-model="dateFrom"/>
+    </div>
+    
+    <div>
+      <label for="dateTo" class="form-label fw-bold">Fecha final</label>
+      <input id="dateTo" type="date" class="form-control" v-model="dateTo"/>
+    </div>
   </div>
-  
-  <div>
-    <label for="dateFrom" class="form-label fw-bold">Fecha inicial</label>
-    <input id="dateFrom" type="date" class="form-control" v-model="dateFrom"/>
-  </div>
-  
-  <div>
-    <label for="dateTo" class="form-label fw-bold">Fecha final</label>
-    <input id="dateTo" type="date" class="form-control" v-model="dateTo"/>
-  </div>
-</div>
 
-<div>
-  <div id="buttons">
-    <LinkButton text="Descargar Excel" @click="downloadExcel()" />
+  <div>
+    <div id="buttons">
+      <LinkButton text="Descargar Excel" @click="downloadExcel()" />
+    </div>
   </div>
-</div>
 
-<div id="reportContent">
-  <h4>Reporte histórico pago de planilla</h4>
-  
-  <p>Empresa: {{ companyFilterLabel }}</p>
-  <p>Fecha inicial: {{ formatFilterDate(dateFrom) }}</p>
-  <p>Fecha final: {{ formatFilterDate(dateTo) }}</p>
-  
-  <div v-if="isLoading" class="text-muted">Cargando reporte</div>
-  
-  <div v-else id="reportTable" class="table-responsive">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Nombre de empresa</th>
-          <th>Frecuencia de pago</th>
-          <th>Periodo de pago</th>
-          <th>Fecha de pago</th>
-          <th>Salario bruto</th>
-          <th>Cargas sociales empleador</th>
-          <th>Deducciones voluntarias</th>
-          <th>Costo empleador</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(row, index) in payrollData" :key="index" :class="{ 'totals-row': row.CompanyName === 'Total' }">
-          <td>{{ row.CompanyName }}</td>
-          <td>{{ row.PaymentFrequency }}</td>
-          <td>{{ row.Period }}</td>
-          <td>{{ formatDate(row.PaymentDate) }}</td>
-          <td>{{ fmtCRC(row.GrossSalary) }}</td>
-          <td>{{ fmtCRC(row.EmployerContributions) }}</td>
-          <td>{{ fmtCRC(row.EmployeeBenefits) }}</td>
-          <td>{{ fmtCRC(row.EmployerCost) }}</td>
-        </tr>
-        <tr v-if="!payrollData.length">
-          <td colspan="8" class="text-center text-muted">
-            No hay datos para mostrar.
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div id="reportContent">
+    <h4>Reporte histórico pago de planilla</h4>
+    
+    <p><strong>Empresa:</strong> {{ companyFilterLabel }}</p>
+    <p><strong>Fecha inicial:</strong> {{ formatFilterDate(dateFrom) }}</p>
+    <p><strong>Fecha final:</strong> {{ formatFilterDate(dateTo) }}</p>
+    
+    <div v-if="isLoading" class="text-muted">Cargando reporte</div>
+    
+    <div v-else id="reportTable" class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nombre de empresa</th>
+            <th>Frecuencia de pago</th>
+            <th>Periodo de pago</th>
+            <th>Fecha de pago</th>
+            <th>Salario bruto</th>
+            <th>Cargas sociales empleador</th>
+            <th>Deducciones voluntarias</th>
+            <th>Costo empleador</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(row, index) in payrollData" :key="index" :class="{ 'totals-row': row.CompanyName === 'Total' }">
+            <td>{{ row.CompanyName }}</td>
+            <td>{{ row.PaymentFrequency }}</td>
+            <td>{{ row.Period }}</td>
+            <td>{{ formatDate(row.PaymentDate) }}</td>
+            <td>{{ fmtCRC(row.GrossSalary) }}</td>
+            <td>{{ fmtCRC(row.EmployerContributions) }}</td>
+            <td>{{ fmtCRC(row.EmployeeBenefits) }}</td>
+            <td>{{ fmtCRC(row.EmployerCost) }}</td>
+          </tr>
+          <tr v-if="!payrollData.length">
+            <td colspan="8" class="text-center text-muted">
+              No hay datos para mostrar.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
-</div>
 </template>
 
 <script>
@@ -81,6 +81,7 @@ import URLBaseAPI from '../../axiosAPIInstances.js';
 import LinkButton from '../LinkButton.vue';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { useGlobalAlert } from '@/utils/alerts.js';
 
 export default {
   components: {
@@ -94,9 +95,6 @@ export default {
       dateTo: '',
       loadingCompanies: false,
       isLoading: false,
-      showToast: false,
-      toastMessage: '',
-      toastType: '',
       payrollData: [],
     };
   },
@@ -110,7 +108,6 @@ export default {
   methods: {
     async fetchCompanies() {
       this.loadingCompanies = true;
-      this.toastMessage = '';
       try {
         const userId = this.$session.user?.userId;
         
@@ -123,14 +120,15 @@ export default {
         const rows = Array.isArray(data) ? data.slice() : [];
         this.companies = rows;
       } catch (err) {
-        this.toastType = 'bg-danger';
-        this.toastMessage = 'Error al cargar empresas para el filtro.';
-        this.showToast = true;
+        const alert = useGlobalAlert();
+        alert.show('Error al cargar empresas para el filtro.', 'warning');
       } finally {
         this.loadingCompanies = false;
       }
     },
     async loadReport() {
+      if (!this.dateFrom || !this.dateTo) return;
+      
       const employeeId = Number(this.$session.user?.personId);
       const params = {
         reportCode: 'EmployerHistoryPayroll',
@@ -152,14 +150,14 @@ export default {
         typeof data === 'string'
         ? data
         : (data && (data.message || data.detail)) || 'Error cargando el reporte histórico de empresas';
-        this.toastMessage = msg;
-        this.toastType = 'bg-danger';
-        this.showToast = true;
-        
-        setTimeout(function () {
-          this.showToast = false;
-        }, this.toastTimeout);
-        this.reportResult = null;
+
+        const noDataMsg = 'No se encontró información de pago para el empleado en el rango seleccionado';
+        if (msg !== noDataMsg) {
+          const alert = useGlobalAlert();
+          alert.show(msg, "warning");
+        }
+
+        this.payrollData = [];
       } finally {
         this.isLoading = false;
       }
@@ -275,8 +273,14 @@ export default {
   margin-bottom: 20px;
 }
 
+#buttons :deep(button),
+#buttons button {
+  width: auto;
+  white-space: nowrap;
+}
+
 #reportContent {
-  background: rgba(255, 255, 255, 0.9);
+  background: white;
   border-radius: 10px;
   
   display: flex;

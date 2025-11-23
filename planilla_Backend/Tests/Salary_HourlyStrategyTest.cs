@@ -23,7 +23,7 @@ namespace Tests
         EmployeeId = 1,
         Salary = 1000m,
         PaymentAccount = "123456789",
-        ContractType = ContractType.ProfessionalServices,
+        ContractType = EmployeeType.ProfessionalServices,
         StartDate = DateTime.Now.AddMonths(-1),
         EndDate = null
       };
@@ -42,7 +42,7 @@ namespace Tests
         EmployeeId = 1,
         Salary = 1000m,
         PaymentAccount = "123456789",
-        ContractType = ContractType.FixedSalary,
+        ContractType = EmployeeType.FullTime,
         StartDate = DateTime.Now.AddMonths(-1),
         EndDate = null
       };
@@ -79,7 +79,7 @@ namespace Tests
         EmployeeId = 1,
         Salary = hourlyRate,
         PaymentAccount = "123456789",
-        ContractType = ContractType.ProfessionalServices,
+        ContractType = EmployeeType.ProfessionalServices,
         StartDate = new DateTime(2025, 10, 01),
         EndDate = null
       };
@@ -100,7 +100,7 @@ namespace Tests
       Assert.AreEqual(expectedSalary, employeePayroll.Gross);
       Assert.IsNotNull(detail);
       Assert.AreEqual(employeePayroll.Id, detail.EmployeePayrollId);
-      Assert.AreEqual("Servicios Profesionales", detail.Description);
+      Assert.AreEqual("Salario Servicios Profesionales", detail.Description);
       Assert.AreEqual(PayrollItemType.Base, detail.Type);
       Assert.AreEqual(expectedSalary, detail.Amount);
       Assert.IsNull(detail.IdCCSS);
@@ -120,7 +120,7 @@ namespace Tests
         EmployeeId = 1,
         Salary = hourlyRate,
         PaymentAccount = "123456789",
-        ContractType = ContractType.ProfessionalServices,
+        ContractType = EmployeeType.ProfessionalServices,
         StartDate = DateTime.Now.AddMonths(-1),
         EndDate = null
       };
@@ -177,7 +177,7 @@ namespace Tests
         EmployeeId = 1,
         Salary = hourlyRate,
         PaymentAccount = "123456789",
-        ContractType = ContractType.ProfessionalServices,
+        ContractType = EmployeeType.ProfessionalServices,
         StartDate = DateTime.Now.AddMonths(-1),
         EndDate = null
       };
@@ -205,7 +205,7 @@ namespace Tests
         EmployeeId = 1,
         Salary = hourlyRate,
         PaymentAccount = "123456789",
-        ContractType = ContractType.ProfessionalServices,
+        ContractType = EmployeeType.ProfessionalServices,
         StartDate = DateTime.Now.AddMonths(-1),
         EndDate = null
       };

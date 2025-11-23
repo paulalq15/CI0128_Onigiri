@@ -42,7 +42,7 @@
     const alert = useGlobalAlert();
 
     try {
-      const response = await URLBaseAPI.post('https://localhost:7071/api/Tokens/ResendActivation', `"${email.value}"`);
+      const response = await URLBaseAPI.post('/api/Tokens/ResendActivation', `"${email.value}"`);
 
       alert.show(response.data.message, 'success');
       emailSended.value = true;

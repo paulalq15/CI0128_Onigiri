@@ -1,61 +1,29 @@
 <template>
-  <div id="reportFilters" v-if="isReportLoaded">
-    <!-- Fecha inicial -->
+  <div id="reportFilters">
     <div>
-      <label for="selectFechaInicial" class="form-label fw-bold">Fecha inicial</label>
-      <select
-        id="selectFechaInicial"
-        class="form-select"
-        v-model="selectedInitialDate"
-        @change="loadReport()"
-      >
-        <option
-          v-for="date in initialDatesList"
-          :key="date.payrollId"
-          :value="date"
-        >
-          {{ date.periodLabel }}
-        </option>
-      </select>
+      <label for="dateFrom" class="form-label fw-bold">Fecha inicial</label>
+      <input id="dateFrom" type="date" class="form-control" v-model="dateFrom"/>
     </div>
-
-    <!-- Fecha final -->
     <div>
-      <label for="selectFechaFinal" class="form-label fw-bold">Fecha final</label>
-      <select
-        id="selectFechaFinal"
-        class="form-select"
-        v-model="selectedFinalDate"
-        @change="loadReport()"
-      >
-        <option
-          v-for="date in finalDatesList"
-          :key="date.payrollId"
-          :value="date"
-        >
-          {{ date.periodLabel }}
-        </option>
-      </select>
+      <label for="dateTo" class="form-label fw-bold">Fecha final</label>
+      <input id="dateTo" type="date" class="form-control" v-model="dateTo"/>
     </div>
   </div>
 
   <div>
-    <div id="buttons" v-if="isReportLoaded">
+    <div id="buttons">
       <LinkButton text="Descargar Excel" @click="downloadExcel()" />
     </div>
   </div>
 
-  <div v-if="!isReportLoaded">
-    {{ waitingMessage }}
-  </div>
-  <div id="reportContent" v-else>
+  <div id="reportContent">
     <h4>Reporte histórico pago de planilla</h4>
     
     <p><strong>Empresa:</strong> {{ companyName }}</p>
-    <p><strong>Nombre del empleado:</strong> {{ employeeName }}</p>
+    <p><strong>Empleado:</strong> {{ employeeName }}</p>
 
-    <p><strong>Fecha inicial:</strong> {{ selectedInitialDate.periodLabel }}</p>
-    <p><strong>Fecha final:</strong> {{ selectedFinalDate.periodLabel }}</p>
+    <p><strong>Fecha inicial:</strong> {{ formatFilterDate(dateFrom) }}</p>
+    <p><strong>Fecha final:</strong> {{ formatFilterDate(dateTo) }}</p>
 
     <div id="reportTable" class="table-responsive">
       <table class="table">
@@ -71,23 +39,19 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(row, index) in payrollData.slice(0, -1)" :key="index">
+          <tr v-for="(row, index) in payrollData" :key="index" :class="{ 'totals-row': row.contractType === 'Total' }">
             <td>{{ row.contractType }}</td>
             <td>{{ row.position }}</td>
-            <td>{{ row.paymentDate }}</td>
-            <td>{{ row.grossSalary }}</td>
-            <td>{{ row.mandatoryDeductions }}</td>
-            <td>{{ row.voluntaryDeductions }}</td>
-            <td>{{ row.netSalary }}</td>
+            <td>{{ formatDate(row.paymentDate) }}</td>
+            <td>{{ fmtCRC(row.grossSalary) }}</td>
+            <td>{{ fmtCRC(row.mandatoryDeductions) }}</td>
+            <td>{{ fmtCRC(row.voluntaryDeductions) }}</td>
+            <td>{{ fmtCRC(row.netSalary) }}</td>
           </tr>
-
-          <!-- Fila de totales -->
-          <tr>
-            <td colspan="3"><strong>Total</strong></td>
-            <td>{{ payrollData.at(-1).totalGrossSalary }}</td>
-            <td>{{ payrollData.at(-1).totalLegalDeductions }}</td>
-            <td>{{ payrollData.at(-1).totalVoluntaryDeductions }}</td>
-            <td>{{ payrollData.at(-1).totalNetSalary }}</td>
+          <tr v-if="!payrollData.length">
+            <td colspan="7" class="text-center text-muted">
+              No hay datos para mostrar.
+            </td>
           </tr>
         </tbody>
       </table>
@@ -95,8 +59,7 @@
   </div>
 </template>
 
-<script setup>
-  import { ref, computed, onMounted } from 'vue';
+<script>
   import * as XLSX from "xlsx";
   import { saveAs } from "file-saver";
   import { useSession } from '@/utils/useSession';
@@ -105,111 +68,150 @@
   import URLBaseAPI from '../../axiosAPIInstances.js';
   import LinkButton from '../LinkButton.vue';
 
-  const { user } = useSession();
+  export default {
+    components: {
+      LinkButton,
+    },
+    data() {
+      const { user } = useSession();
 
-  const companyName = ref("");
-  const employeeName = ref("");
-  
-  const initialDatesList = ref([]);
-  const selectedInitialDate = ref(null);
-  
-  const waitingMessage = ref("Cargando datos...");
+      return {
+        user,
+        companyName: "",
+        employeeName: "",
+        dateFrom: '',
+        dateTo: '',
+        payrollData: [],
+        isLoading: false,
+      };
+    },
+    methods: {
+      async loadReport() {
+        if (!this.dateFrom || !this.dateTo) return;
 
-  const finalDatesList = computed(() => {
-    if (!selectedInitialDate.value) return [];
+        this.companyName = this.user?.companyName || '';
+        this.employeeName = this.user?.fullName || '';
+        const companyId = this.user?.companyUniqueId;
+        const employeeId = Number(this.user?.personId);
 
-    const index = initialDatesList.value.findIndex(
-      item => item.payrollId === selectedInitialDate.value.payrollId
-    );
+        const params = {
+          reportCode: 'EmployeeHistoryPayroll',
+          companyId,
+          employeeId,
+          dateFrom: this.dateFrom,
+          dateTo: this.dateTo,
+        };
 
-    if (index === -1) return [];
+        this.isLoading = true;
+        this.payrollData = [];
 
-    return initialDatesList.value.slice(index);
-  });
-  const selectedFinalDate = ref(null);
-  
-  const payrollData = ref([]);
+        try {
+          const response = await URLBaseAPI.post('/api/Reports/data', params);
 
-  const isReportLoaded = ref(false);
+          this.companyName = response.data.reportInfo.CompanyName;
+          this.employeeName = response.data.reportInfo.EmployeeName;
 
-  async function getPayrollPeriodsList() {
-    const companyId = user?.companyUniqueId;
-    const employeeId = Number(user?.personId);
+          this.payrollData = response.data.rows || [];
 
-    try {
-      const response = await URLBaseAPI.get('/api/Reports/employee/payroll-periods', {
-        params: { companyId, employeeId }
-      });
+        } catch (error) {
+          const data = error?.response?.data;
+          const msg =
+            typeof data === 'string' ? data
+            : (data && (data.message || data.detail)) || 'Error cargando el detalle de planilla';
+          
+          const noDataMsg = 'No se encontró información de pago para el empleado en el rango seleccionado';
+          if (msg !== noDataMsg) {
+            const alert = useGlobalAlert();
+            alert.show(msg, "warning");
+          }
 
-      initialDatesList.value = response.data || [];
+          this.payrollData = [];
+        } finally {
+          this.isLoading = false;
+        }
+      },
 
-      if (initialDatesList.value.length > 0) {
-        selectedInitialDate.value = initialDatesList.value[0];
-        selectedFinalDate.value = initialDatesList.value[initialDatesList.value.length - 1];
-      }
-    } catch (error) {
-      const data = error?.response?.data;
-      const msg =
-        typeof data === "string" ? data
-        : data?.message || data?.detail || "Error cargando las últimas planillas";
-
-      const alert = useGlobalAlert();
-      alert.show(msg, "warning");
-    }
-  }
-
-  async function loadReport() {
-    if (!selectedInitialDate.value  || !selectedFinalDate.value) {
-      waitingMessage.value = "No hay datos que mostrar";
-      return;
-    }
-
-    const companyId = user?.companyUniqueId;
-    const employeeId = Number(user?.personId);
-
-    const params = {
-      reportCode: 'EmployeeHistoryPayroll',
-      companyId,
-      employeeId,
-      DateFrom: selectedInitialDate.value.dateFrom,
-      DateTo: selectedFinalDate.value.dateTo
-    };
-
-    try {
-      const response = await URLBaseAPI.post('/api/Reports/data', params);
-
-      companyName.value = response.data.reportInfo.CompanyName;
-      employeeName.value = response.data.reportInfo.EmployeeName;
-
-      payrollData.value = response.data.rows || null;
-
-      isReportLoaded.value = true;
-
-      console.log(payrollData.value);
-    } catch (error) {
-      const data = error?.response?.data;
-      const msg =
-        typeof data === 'string' ? data
-        : (data && (data.message || data.detail)) || 'Error cargando el detalle de planilla';
-
-      const alert = useGlobalAlert();
-      alert.show(msg, "warning");
-    }
-  }
-
-  function downloadExcel() {
-    const table = document.getElementById("reportTable").querySelector("table");
-    const wb = XLSX.utils.table_to_book(table, { sheet: "Planilla" });
-    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-    const blob = new Blob([wbout], { type: "application/octet-stream" });
-    saveAs(blob, "Reporte_Planilla.xlsx");
-  }
-
-  onMounted(async () => {
-    await getPayrollPeriodsList();
-    await loadReport();
-  });
-
+      downloadExcel() {
+        const tableWrapper = document.getElementById('reportTable');
+        if (!tableWrapper) return;
+        
+        const table = tableWrapper.querySelector('table');
+        if (!table) return;
+        
+        const exportTable = table.cloneNode(true);
+        const numericCols = [3, 4, 5, 6];
+        
+        const rows = exportTable.querySelectorAll('tbody tr');
+        rows.forEach(tr => {
+          const cells = tr.querySelectorAll('td');
+          
+          numericCols.forEach(idx => {
+            const cell = cells[idx];
+            if (!cell) return;
+            const raw = cell.textContent || '';
+            let txt = raw.replace(/[^\d.,-]/g, '');
+            const seps = txt.match(/[.,]/g);
+            if (seps && seps.length > 1) {
+              const lastSep = Math.max(txt.lastIndexOf(','), txt.lastIndexOf('.'));
+              const intPart = txt.slice(0, lastSep).replace(/[.,]/g, '');
+              const decPart = txt.slice(lastSep + 1).replace(/[.,]/g, '');
+              txt = intPart + '.' + decPart;
+            } else {
+              txt = txt.replace(/\./g, '').replace(',', '.');
+            }
+            
+            cell.textContent = txt;
+          });
+        });
+        
+        const wb = XLSX.utils.table_to_book(exportTable, { sheet: 'Planilla' });
+        const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        const blob = new Blob([wbout], { type: 'application/octet-stream' });
+        saveAs(blob, 'Reporte_Planilla.xlsx');
+      },
+      fmtCRC(v) {
+        return new Intl.NumberFormat('es-CR', {
+          style: 'currency',
+          currency: 'CRC',
+          currencyDisplay: 'symbol',
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(Number(v ?? 0));
+      },
+      formatFilterDate(value) {
+        if (!value) return '';
+        const [yyyy, mm, dd] = value.split('-');
+        return `${dd}/${mm}/${yyyy}`;
+      },
+      formatDate(dateString) {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return isNaN(date)
+        ? ''
+        : new Intl.DateTimeFormat('es-CR', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        }).format(date);
+      },
+    },
+    watch: {
+      dateFrom() {
+        this.loadReport();
+      },
+      dateTo() {
+        this.loadReport();
+      },
+    },
+    async mounted() {
+      const today = new Date();
+      const first = new Date(today.getFullYear(), today.getMonth(), 1);
+      const last = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+      this.dateFrom = first.toISOString().slice(0, 10);
+      this.dateTo = last.toISOString().slice(0, 10);
+      this.loadReport();
+    },
+  };
 </script>
 
 <style lang="scss" scoped>
@@ -234,7 +236,7 @@
   }
 
   #reportContent {
-    background: azure;
+    background: white;
     border-radius: 10px;
 
     display: flex;
@@ -242,7 +244,6 @@
     align-items: flex-start;
 
     padding: 20px;
-    gap: 20px;
   }
 
   h4, p {
@@ -263,5 +264,10 @@
     background-color: #1C4532;
     color: white;
     font-weight: normal;
+  }
+
+  .totals-row td {
+    font-weight: 600;
+    border-top: 2px solid #1C4532;
   }
 </style>

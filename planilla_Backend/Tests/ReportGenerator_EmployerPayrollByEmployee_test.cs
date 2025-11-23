@@ -3,11 +3,6 @@ using Planilla_Backend.CleanArchitecture.Application.Ports;
 using Planilla_Backend.CleanArchitecture.Application.Reports;
 using Planilla_Backend.CleanArchitecture.Domain.Entities;
 using Planilla_Backend.CleanArchitecture.Domain.Reports;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Tests
 {
@@ -40,7 +35,7 @@ namespace Tests
         EmployeeName = "Ana Vargas Vargas",
         NationalId = "1-1111-1111",
         EmployeeType = EmployeeType.FullTime.ToString(),
-        PaymentPeriod = "2025-10-01 al 2025-10-31",
+        PaymentPeriod = "Del 01/10/2025 al 31/10/2025",
         PaymentDate = new DateTime(2025, 11, 01, 12, 0, 0),
         GrossSalary = 1000000,
         EmployerContributions = 266700,
@@ -52,7 +47,7 @@ namespace Tests
         EmployeeName = "Jorge Rojas Rojas",
         NationalId = "2-2222-2222",
         EmployeeType = EmployeeType.FullTime.ToString(),
-        PaymentPeriod = "2025-10-01 al 2025-10-31",
+        PaymentPeriod = "Del 01/10/2025 al 31/10/2025",
         PaymentDate = new DateTime(2025, 11, 01, 12, 0, 0),
         GrossSalary = 1000000,
         EmployerContributions = 266700,
@@ -104,8 +99,8 @@ namespace Tests
       Assert.That(r0["EmployeeName"], Is.EqualTo("Ana Vargas Vargas"));
       Assert.That(r0["NationalId"], Is.EqualTo("1-1111-1111"));
       Assert.That(r0["EmployeeType"], Is.EqualTo("FullTime"));
-      Assert.That(r0["PaymentPeriod"], Is.EqualTo("2025-10-01 al 2025-10-31"));
-      Assert.That(r0["PaymentDate"], Is.EqualTo("01-11-2025"));
+      Assert.That(r0["PaymentPeriod"], Is.EqualTo("Del 01/10/2025 al 31/10/2025"));
+      Assert.That(r0["PaymentDate"], Is.EqualTo(new DateTime(2025, 11, 01, 12, 0, 0)));
       Assert.That(r0["GrossSalary"], Is.EqualTo(1000000));
       Assert.That(r0["EmployerContributions"], Is.EqualTo(266700));
       Assert.That(r0["EmployeeBenefits"], Is.EqualTo(25000));
@@ -115,8 +110,8 @@ namespace Tests
       Assert.That(r1["EmployeeName"], Is.EqualTo("Jorge Rojas Rojas"));
       Assert.That(r1["NationalId"], Is.EqualTo("2-2222-2222"));
       Assert.That(r1["EmployeeType"], Is.EqualTo("FullTime"));
-      Assert.That(r1["PaymentPeriod"], Is.EqualTo("2025-10-01 al 2025-10-31"));
-      Assert.That(r1["PaymentDate"], Is.EqualTo("01-11-2025"));
+      Assert.That(r1["PaymentPeriod"], Is.EqualTo("Del 01/10/2025 al 31/10/2025"));
+      Assert.That(r1["PaymentDate"], Is.EqualTo(new DateTime(2025, 11, 01, 12, 0, 0)));
       Assert.That(r1["GrossSalary"], Is.EqualTo(1000000));
       Assert.That(r1["EmployerContributions"], Is.EqualTo(266700));
       Assert.That(r1["EmployeeBenefits"], Is.EqualTo(25000));
