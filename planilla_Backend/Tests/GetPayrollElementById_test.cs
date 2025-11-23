@@ -24,9 +24,9 @@ public class GetPayrollElementById_test
     IPayrollElementQuery getPayrollElement = new PayrollElementQuery(mockRepository.Object);
 
     // Act & Assert
-    var exZero = Assert.ThrowsAsync<ArgumentException>(async () => await getPayrollElement.Execute(payrollElementIdZero));
+    var exZero = Assert.ThrowsAsync<ArgumentException>(async () => await getPayrollElement.GetPayrollElement(payrollElementIdZero));
 
-    var exNegative = Assert.ThrowsAsync<ArgumentException>(async () => await getPayrollElement.Execute(payrollElementIdNegative));
+    var exNegative = Assert.ThrowsAsync<ArgumentException>(async () => await getPayrollElement.GetPayrollElement(payrollElementIdNegative));
 
     // Assert
     Assert.That(exZero.Message, Does.Contain("El parámetro elementId debe ser mayor que cero"));
@@ -48,7 +48,7 @@ public class GetPayrollElementById_test
     IPayrollElementQuery getPayrollElement = new PayrollElementQuery(mockRepository.Object);
 
     // Act
-    PayrollElementEntity? element = await getPayrollElement.Execute(payrollElementId);
+    PayrollElementEntity? element = await getPayrollElement.GetPayrollElement(payrollElementId);
 
     // Assert
     Assert.IsTrue(element != null);
