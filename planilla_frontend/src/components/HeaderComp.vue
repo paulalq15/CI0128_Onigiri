@@ -109,6 +109,8 @@ export default {
         const rows = Array.isArray(data) ? data.slice() : [];
         this.companies = rows;
 
+        this.ensureValidSelectedCompany();
+
        // Si no hay empresa activa, preselecciona la primera y guarda también el NOMBRE
         if (!this.session.user?.companyUniqueId && this.companies.length > 0) {
           const first = this.companies[0];
@@ -140,6 +142,31 @@ export default {
       const curr = this.session.user || {};
       this.session.set({ ...curr, companyUniqueId: selectedCompany.companyUniqueId, companyName: selectedCompany.companyName });
     },
+
+    ensureValidSelectedCompany() {
+      const activeId = this.session.user?.companyUniqueId;
+
+      // Si no hay empresas cargadas
+      if (!this.companies || this.companies.length === 0) {
+        const curr = this.session.user || {};
+        this.session.set({ ...curr, companyUniqueId: null, companyName: null });
+        return;
+      }
+
+      // Si la empresa activa ya no existe
+      const stillExists = this.companies.some(c => c.companyUniqueId === activeId);
+
+      if (!stillExists) {
+        // Seleccionar la primera empresa disponible
+        const newCompany = this.companies[0];
+        const curr = this.session.user || {};
+        this.session.set({
+          ...curr,
+          companyUniqueId: newCompany.companyUniqueId,
+          companyName: newCompany.companyName
+        });
+      }
+    }
   },
 };
 </script>
