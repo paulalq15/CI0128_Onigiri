@@ -1,5 +1,3 @@
-Use [Onigiri_PI];
-
 Create Or Alter Procedure Sproc_delete_empresa(@IdEmpresa Int)
 As
 Begin
@@ -11,7 +9,7 @@ Begin
 		Where IdEmpresa = @IdEmpresa
 	)
 	Begin
-		RAISERROR('No se encontr� la empresa con IdEmpresa = %d', 16, 1, @IdEmpresa);
+		RAISERROR('No se encontró la empresa con IdEmpresa = %d', 16, 1, @IdEmpresa);
 		Return;
 	End;
 
@@ -28,7 +26,7 @@ Begin
 
 			-- Inactivar empresa
 			Update Empresa
-			Set Estado = 'Inactivo'
+			Set Estado = 'Inactivo', isDelete = 1
 			Where IdEmpresa = @IdEmpresa;
 
 			Set @RowsAffected = @RowsAffected + @@ROWCOUNT;
