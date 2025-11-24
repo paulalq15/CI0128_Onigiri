@@ -66,7 +66,7 @@ namespace Planilla_Backend.LayeredArchitecture.Repositories
           FROM ElementoPlanilla
           WHERE
             IdEmpresa = @idCompany
-            and Is_Deleted <> 1";
+            and IsDeleted <> 1";
 
         var elementsList = await connection.QueryAsync<PayrollElementModel>(sqlGetPayrollElements, new { idCompany });
         return elementsList.ToList();
