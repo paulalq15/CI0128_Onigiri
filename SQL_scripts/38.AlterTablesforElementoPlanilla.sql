@@ -1,2 +1,2 @@
-alter table DetalleNomina
-add Is_Deleted bit not null default 0
+alter table ElementoPlanilla
+add IsDeleted bit not null default 0
