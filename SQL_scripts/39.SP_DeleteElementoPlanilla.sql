@@ -27,7 +27,7 @@ BEGIN
               AND FechaFin IS NULL;
 
             UPDATE ElementoPlanilla
-            SET Is_Deleted = 1
+            SET IsDeleted = 1
             WHERE IdElemento = @elementId;
         END
         ELSE
