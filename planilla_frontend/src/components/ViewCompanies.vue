@@ -119,8 +119,6 @@ export default {
       })
       .then((response) => {
         this.updateCompaniesLists(response.data);
-
-        console.log('Fetched companies:', response.data);
       })
       .catch((error) => {
         console.error('Error fetching companies:', error);
@@ -151,9 +149,6 @@ export default {
     updateCompaniesLists(data) {
       this.activeCompanies = data.filter(company => company.state === 'Activo');
       this.inactiveCompanies = data.filter(company => company.state === 'Inactivo');
-
-      console.log('Active companies:', this.activeCompanies);
-      console.log('Inactive companies:', this.inactiveCompanies);
     },
 
     showPopUp(company) {
