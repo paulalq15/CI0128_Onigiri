@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
+using Planilla_Backend.CleanArchitecture.Application.EmailsDTOs;
 using Planilla_Backend.CleanArchitecture.Application.Ports;
 
 namespace Planilla_Backend.CleanArchitecture.Infrastructure
@@ -90,6 +91,36 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       {
         _logger.LogError("Error al eliminar la empresa: \n" + ex.Message);
         return -1;
+      }
+    }
+
+    public async Task<List<DeleteCompanyEmployeeDataDTO>> GetEmployeesEmailsAndUserNameInCómpanyByIdCompany(int companyUniqueId)
+    {
+      try
+      {
+        using var connection = new SqlConnection(_connectionString);
+
+        const string query = @"
+            Select 
+              CONCAT(p.Nombre1, ' ', p.Apellido1) As UserName,
+              u.Correo As EmployeeEmail,
+              e.Nombre AS CompanyName
+            From Empresa e
+            Inner Join UsuariosPorEmpresa upm On upm.IdEmpresa = e.IdEmpresa
+            Inner Join Usuario u On u.IdUsuario = upm.IdUsuario
+            Inner Join Persona p On p.IdPersona = u.IdPersona
+            Where e.IdEmpresa = @companyUniqueId
+              And e.IdCreadoPor <> u.IdUsuario;
+        ";
+
+        var employeesData = await connection.QueryAsync<DeleteCompanyEmployeeDataDTO>(query, new { companyUniqueId });
+
+        return employeesData.ToList();
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError("Error al obtener los correos electrónicos: \n" + ex.Message);
+        return new List<DeleteCompanyEmployeeDataDTO>();
       }
     }
   }
