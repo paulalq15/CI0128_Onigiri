@@ -11,5 +11,6 @@ namespace Planilla_Backend.CleanArchitecture.Application.Ports
     Task<IEnumerable<ReportPayrollPeriodDto>> GetEmployerPayrollPeriodsAsync(int companyId, int top);
     Task<IEnumerable<EmployerHistoryRow>> GetEmployerHistoryCompaniesAsync(int? companyId, int employeeId, DateTime dateFrom, DateTime dateTo, CancellationToken ct = default);
     Task<IEnumerable<EmployerReportByPersonRow>> GetEmployerPayrollByPersonAsync(int companyId, DateTime start, DateTime end, string? employeeType, string? emmployeeNatId, CancellationToken ct);
+    Task<EmployeePayrollHistoryReport> GetEmployeePayrollHistoryInDateRange(int employeeId, DateTime startPayrollDate, DateTime finalPayrollDate);
   }
 }

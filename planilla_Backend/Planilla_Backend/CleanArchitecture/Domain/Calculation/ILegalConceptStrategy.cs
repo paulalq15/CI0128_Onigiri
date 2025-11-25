@@ -6,7 +6,7 @@ namespace Planilla_Backend.CleanArchitecture.Domain.Calculation
   {
     public bool Applicable(ContractModel contract)
     {
-      return contract != null && contract.ContractType == ContractType.FixedSalary;
+      return contract != null && contract.ContractType != EmployeeType.ProfessionalServices;
     }
 
     IEnumerable<PayrollDetailModel> Apply(EmployeePayrollModel employeePayroll, PayrollContext ctx);

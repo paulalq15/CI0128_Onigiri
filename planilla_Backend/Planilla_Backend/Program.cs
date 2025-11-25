@@ -1,8 +1,8 @@
-using Planilla_Backend.CleanArchitecture.Application;
 using Planilla_Backend.CleanArchitecture.Application.Ports;
 using Planilla_Backend.CleanArchitecture.Application.Reports;
 using Planilla_Backend.CleanArchitecture.Application.Services;
 using Planilla_Backend.CleanArchitecture.Application.UseCases;
+using Planilla_Backend.CleanArchitecture.Application.UseCases.company;
 using Planilla_Backend.CleanArchitecture.Domain.Calculation;
 using Planilla_Backend.CleanArchitecture.Infrastructure;
 using Planilla_Backend.CleanArchitecture.Infrastructure.External;
@@ -43,6 +43,7 @@ builder.Services.AddScoped<PersonUserService>();
 
 builder.Services.AddScoped<ICreatePayrollCommand, CreatePayrollCommand>();
 builder.Services.AddScoped<IPayrollRepository, PayrollRepository>();
+builder.Services.AddScoped<IPayrollDbSession, PayrollDbSession>();
 builder.Services.AddScoped<PayrollTemplate, StandardPayrollRun>();
 builder.Services.AddScoped<CalculationFactory>();
 
@@ -58,8 +59,8 @@ builder.Services.AddScoped<ILegalConceptStrategy, LegalConcept_TaxStrategy>();
 
 // Payroll Element
 builder.Services.AddScoped<IPayrollElementRepository, PayrollElementRepositoryCA>();
-builder.Services.AddScoped<IGetPayrollElement, GetPayrollElementById>();
-builder.Services.AddScoped<IUpdatePayrollElement, UpdatePayrollElement>();
+builder.Services.AddScoped<IPayrollElementQuery, PayrollElementQuery>();
+builder.Services.AddScoped<IPayrollElementCommand, PayrollElementCommand>();
 
 // Timesheet
 builder.Services.AddScoped<ITimesheetRepository, TimesheetRepository>();
@@ -78,6 +79,10 @@ builder.Services.AddScoped<IReportGenerator, ReportGenerator_EmployeePayrollHist
 builder.Services.AddScoped<IReportGenerator, ReportGenerator_EmployerPayrollDetail>();
 builder.Services.AddScoped<IReportGenerator, ReportGenerator_EmployerPayrollHistory>();
 builder.Services.AddScoped<IReportGenerator, ReportGenerator_EmployerPayrollByEmployee>();
+
+// Company
+builder.Services.AddScoped<ICompanyRepository, CompanyRepositoryCA>();
+builder.Services.AddScoped<IDeleteCompanyCommand, DeleteCompanyCommand>();
 
 builder.Services.AddControllers();
 builder.Services.AddControllers().AddJsonOptions(options =>

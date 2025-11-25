@@ -144,6 +144,7 @@ namespace Planilla_Backend.LayeredArchitecture.Repositories
           e.FrecuenciaPago AS PaymentFrequency,
           e.DiaPago1 AS PayDay1,
           e.DiaPago2 AS PayDay2,
+          e.Estado As State,
           e.IdCreadoPor AS CreatedBy,
 
           (SELECT COUNT(*) FROM dbo.UsuariosPorEmpresa upe WHERE upe.IdEmpresa = e.IdEmpresa) AS EmployeeCount,

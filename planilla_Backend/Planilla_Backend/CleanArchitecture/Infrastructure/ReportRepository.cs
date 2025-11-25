@@ -264,5 +264,81 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         throw;
       }
     }
+
+    public async Task<EmployeePayrollHistoryReport> GetEmployeePayrollHistoryInDateRange(int employeeId, DateTime startPayrollDate, DateTime finalPayrollDate)
+    {
+      try
+      {
+        using var connection = new SqlConnection(_connectionString);
+
+        const string headerQuery = @"
+            Select Top 1
+                e.Nombre AS CompanyName,
+                e.IdEmpresa AS CompanyId,
+                CONCAT_WS(' ', p.Nombre1, NULLIF(p.Nombre2, ''), p.Apellido1, NULLIF(p.Apellido2, '')) AS EmployeeName,
+                p.IdPersona AS EmployeeId
+            From Persona p
+            Inner Join Usuario u On u.IdPersona = p.IdPersona
+            Inner Join UsuariosPorEmpresa upe On upe.IdUsuario = u.IdUsuario
+            Inner Join Empresa e On e.IdEmpresa = upe.IdEmpresa
+            Where p.IdPersona = @employeeId;
+        ";
+
+        const string getEmpPayHistorySqlQuery = @"
+            Select
+              Case c.Tipo
+                When 'Tiempo Completo' THEN 'FullTime'
+                When 'Medio Tiempo' THEN 'PartTime'
+                When 'Servicios Profesionales' THEN 'ProfessionalServices'
+              End As ContractType,
+              ne.PuestoEnMomento As Role,
+              cp.FechaPago As PaymentDate,
+              ne.MontoBruto As GrossSalary,
+              ISNULL(SUM(
+                CASE 
+                  WHEN dn.Tipo = 'Deduccion Empleado' AND (dn.IdCCSS IS NOT NULL OR dn.IdImpuestoRenta IS NOT NULL) THEN dn.Monto
+                  ELSE 0
+                END), 0) AS LegalDeductions,
+              ISNULL(SUM(
+                CASE 
+                  WHEN dn.Tipo = 'Deduccion Empleado' AND dn.IdElementoAplicado IS NOT NULL THEN dn.Monto
+                  ELSE 0
+                END), 0) AS VoluntaryDeductions,
+              ne.MontoNeto As NetSalary
+            From Persona p
+            Inner Join NominaEmpleado ne On ne.IdEmpleado = p.IdPersona
+            Inner Join ComprobantePago cp On cp.IdNominaEmpleado = ne.IdNominaEmpleado
+            Inner Join NominaEmpresa nem On nem.IdNominaEmpresa = ne.IdNominaEmpresa
+            Inner Join Contrato c On c.IdPersona = p.IdPersona
+            Inner Join DetalleNomina AS dn ON dn.IdNominaEmpleado = ne.IdNominaEmpleado
+            Where p.IdPersona = @employeeId
+              And nem.FechaInicio >= @startPayrollDate
+              And nem.FechaFin <= @finalPayrollDate
+            Group By c.Tipo, ne.PuestoEnMomento, cp.FechaPago, ne.MontoBruto, ne.MontoNeto
+            Order By PaymentDate;";
+
+        var header = await connection.QuerySingleOrDefaultAsync<EmployeePayrollHistoryReport>(
+            headerQuery,
+            new { employeeId });
+
+        if (header == null) return new EmployeePayrollHistoryReport();
+
+        var payrollsList = await connection.QueryAsync<EmployeeHistoryRow>(getEmpPayHistorySqlQuery,
+            new { employeeId, startPayrollDate, finalPayrollDate});
+
+        header.Rows = payrollsList.ToList();
+
+        return header;
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex,
+            "GetEmployeePayrollHistoryInDateRange failed. Id del empleado: " +employeeId +
+            ", fecha inicio: " + startPayrollDate +
+            ", fecha final: " + finalPayrollDate);
+
+        return new EmployeePayrollHistoryReport();
+      }
+    }
   }
 }

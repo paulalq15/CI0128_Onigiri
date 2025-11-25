@@ -29,7 +29,7 @@ public class LegalConcept_CCSSStrategy_test
   public void Applicable_ShouldReturnTrue_WhenContractTypeIsFixedSalary()
   {
     // Arrange
-    var contract = new ContractModel { ContractType = ContractType.FixedSalary };
+    var contract = new ContractModel { ContractType = EmployeeType.FullTime };
 
     // Act
     var result = this.legalConceptStrategy.Applicable(contract);
@@ -42,7 +42,7 @@ public class LegalConcept_CCSSStrategy_test
   public void Applicable_ShouldReturnFalse_WhenContractIsNullOrNotFixedSalary()
   {
     // Arrange
-    var contract = new ContractModel { ContractType = ContractType.ProfessionalServices };
+    var contract = new ContractModel { ContractType = EmployeeType.ProfessionalServices };
 
     // Act
     var resultNull = this.legalConceptStrategy.Applicable(null);

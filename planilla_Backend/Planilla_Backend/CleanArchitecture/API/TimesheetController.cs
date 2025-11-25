@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Planilla_Backend.CleanArchitecture.Application.Services;
-using Planilla_Backend.CleanArchitecture.Application.UseCases;
+using Planilla_Backend.CleanArchitecture.Domain.Entities;
 using Planilla_Backend.LayeredArchitecture.Models;
 using System.Security.Claims;
 

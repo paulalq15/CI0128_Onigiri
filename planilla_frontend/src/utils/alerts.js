@@ -1,4 +1,3 @@
-// alert.js
 
 // Pinia nos permite crear un tipo de alerta global
 import { defineStore } from 'pinia'
@@ -18,4 +17,3 @@ export const useGlobalAlert = defineStore('globalAlert', {
     }
   }
 })
-
