@@ -8,20 +8,67 @@
         </option>
       </select>
     </div>
+
+    <div id="buttons" v-if="reportResult && !isLoading">
+      <LinkButton text="Descargar PDF" @click="downloadPDF" />
+    </div>
+  </div>
+
+  <div id="reportContent" class="report-wrapper">
+    <div v-if="isLoading" class="text-muted text-end">Cargando reporte</div>
+
+    <div v-else-if="reportResult" class="report-card" ref="reportContainer">
+      <div class="report-header mb-4">
+        <div class="row">
+          <div class="col-md-6 mb-2">
+            <div class="label">Nombre de la empresa</div>
+            <div class="value">{{ this.$session.user?.companyName }}</div>
+          </div>
+          <div class="col-md-6 mb-2">
+            <div class="label">Nombre completo del empleado</div>
+            <div class="value">{{ reportResult.reportInfo.EmployerName }}</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-2">
+            <div class="label">Fecha de pago</div>
+            <div class="value">{{ formatDate(reportResult.reportInfo.PaymentDate) }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="report-lines">
+        <div
+          v-for="(row, index) in reportResult.rows"
+          :key="index"
+          class="report-line"
+          :class="lineClasses(row)"
+        >
+          <div class="description">
+            {{ row['Descripción'] }}
+          </div>
+          <div class="amount">
+            {{ fmtCRC(row['Monto']) }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div v-else class="text-muted">No hay datos para mostrar.</div>
   </div>
 </template>
 
 
 <script>
-// import { useSession } from '../../utils/useSession.js';
-// import jsPDF from 'jspdf';
-// import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import URLBaseAPI from '../../axiosAPIInstances.js';
-// import LinkButton from '../LinkButton.vue';
+import LinkButton from '../LinkButton.vue';
 
 export default {
   components: {
-    // LinkButton,
+    LinkButton,
   },
 
   data() {
@@ -33,7 +80,6 @@ export default {
       showToast: false,
       toastMessage: '',
       toastTimeout: 2000,
-      paymentPeriod: '',
     };
   },
 
@@ -111,6 +157,98 @@ export default {
         .finally(() => {
           this.isLoading = false;
         });
+    },
+  
+    fmtCRC(v) {
+      return new Intl.NumberFormat('es-CR', {
+        style: 'currency',
+        currency: 'CRC',
+        currencyDisplay: 'symbol',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(Number(v ?? 0));
+    },
+
+    formatDate(dateString) {
+      if (!dateString) return '';
+
+      const date = new Date(dateString);
+
+      return isNaN(date)
+        ? ''
+        : new Intl.DateTimeFormat('es-CR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+          }).format(date);
+    },
+
+    lineClasses(row) {
+      const desc = (row['Descripción'] || '').toString().toLowerCase();
+
+      return {
+        'line-gross': desc === 'salario bruto',
+        'line-total': desc.includes('total'),
+        'line-net': desc === 'pago neto',
+      };
+    },
+
+    async downloadPDF() {
+      const element = this.$refs.reportContainer;
+      if (!element || !this.reportResult) return;
+
+      const payment = this.reportResult.reportInfo?.PaymentDate;
+      let fileDate = '';
+
+      if (payment) {
+        const d = new Date(payment);
+        if (!isNaN(d)) {
+          const yyyy = d.getFullYear();
+          const mm = String(d.getMonth() + 1).padStart(2, '0');
+          const dd = String(d.getDate()).padStart(2, '0');
+          fileDate = `${yyyy}${mm}${dd}`;
+        }
+      }
+
+      const fileName = fileDate ? `Detalle_planilla_${fileDate}.pdf` : 'Detalle_planilla.pdf';
+      
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+
+      const pageWidth  = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      
+      const sideMargin = 10;
+      const topAfterTitle = 25;
+
+      pdf.setFontSize(14);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('Reporte - Detalle de pago de planilla', pageWidth / 2, 15, { align: 'center' });
+
+      const imgWidth = pageWidth - sideMargin * 2;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      let finalWidth = imgWidth;
+      let finalHeight = imgHeight;
+
+      const availableHeight = pageHeight - topAfterTitle - sideMargin;
+      if (imgHeight > availableHeight) {
+        const ratio = availableHeight / imgHeight;
+        finalWidth = imgWidth * ratio;
+        finalHeight = imgHeight * ratio;
+      }
+
+      const x = (pageWidth - finalWidth) / 2;
+      const y = topAfterTitle;
+
+      pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight);
+      pdf.save(fileName);
     },
   },
 

@@ -21,9 +21,7 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
 
       var report = await repository.GetEmployerPayrollReport(request.PayrollId.Value, request.CompanyId.Value, ct);
 
-      if (report is null) throw new KeyNotFoundException("No se encontró información ...");
-      // if (report.CompanyId != request.CompanyId.Value) throw new KeyNotFoundException("La empresa solicitante no coincide con la empresa registrada en la planilla");
-      // if (report.EmployeeId != request.EmployeeId.Value) throw new KeyNotFoundException("El empleador solicitante no coincide con el empleador registrado en la planilla");
+      if (report is null) throw new KeyNotFoundException("No se encontró información de la planilla seleccionada.");
 
       var rows = BuildRows(report);
 
@@ -37,7 +35,7 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
         {
           ["CompanyName"] = request.CompanyName,
           ["EmployerName"] = report.EmployerName,
-          ["PaymentDate"] = "FALTAAAAA",
+          ["PaymentDate"] = report.PaymentDate,
         }
       };
 
@@ -52,16 +50,19 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
       var benefitsLines = report.Lines.Where(l => l.Category == "Beneficio Empleado").ToList();
 
       AddLines(rows, salaryLines);
+      AddTotalRow(rows, "Total pagos de salarios: ", salaryLines);
 
-      // --- Agregar los totales --- 
-
-      /*
-      rows.Add(new Dictionary<string, object?>
+      if (mandatoryLawPaymentsLines.Any())
       {
-        // ["Descripción"] = "Pago Neto",
-        // ["Categoría"] = "Resumen",
-        // ["Monto"] = report.NetAmount
-      });*/
+        AddLines(rows, mandatoryLawPaymentsLines);
+        AddTotalRow(rows, "Total pagos de ley: ", mandatoryLawPaymentsLines);
+      }
+
+      if (benefitsLines.Any())
+      {
+        AddLines(rows, benefitsLines);
+        AddTotalRow(rows, "Total pagos de beneficios: ", benefitsLines);
+      }
 
       return rows;
     }
@@ -82,13 +83,11 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
     private static void AddTotalRow(
       List<Dictionary<string, object?>> rows,
       string description,
-      string category,
       IEnumerable<PayrollDetailLine> lines)
     {
       rows.Add(new Dictionary<string, object?>
       {
         ["Descripción"] = description,
-        ["Categoría"] = category,
         ["Monto"] = lines.Sum(l => l.Amount)
       });
     }

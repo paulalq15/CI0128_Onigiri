@@ -143,7 +143,12 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
           @"SELECT
               CONCAT_WS(' ', p.Nombre1, NULLIF(p.Nombre2, ''), p.Apellido1, NULLIF(p.Apellido2, '')) AS EmployerName
             FROM Persona p
-            WHERE p.IdPersona = @employerId;";
+            WHERE p.IdPersona = @employerId;
+
+            SELECT
+              FORMAT(ne.FechaInicio, 'dd/MM/yyyy') AS PaymentDate
+            FROM NominaEmpresa ne
+            WHERE ne.IdNominaEmpresa = @payrollId;";
 
         const string detailsQuery =
           @"SELECT
