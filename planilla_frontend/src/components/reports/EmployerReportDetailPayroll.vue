@@ -8,50 +8,31 @@
         </option>
       </select>
     </div>
-
-    <div id="buttons" v-if="reportResult && !isLoading">
-      <LinkButton text="Descargar PDF" @click="downloadPDF" />
-    </div>
   </div>
 
-  <div id="reportContent" class="report-wrapper">
-    <div v-if="isLoading" class="text-muted text-end">Cargando reporte</div>
+  <div id="buttons" v-if="reportResult && !isLoading">
+    <LinkButton text="Descargar PDF" @click="downloadPDF()" />
+  </div>
 
-    <div v-else-if="reportResult" class="report-card" ref="reportContainer">
-      <div class="report-header mb-4">
-        <div class="row">
-          <div class="col-md-6 mb-2">
-            <div class="label">Nombre de la empresa</div>
-            <div class="value">{{ this.$session.user?.companyName }}</div>
-          </div>
-          <div class="col-md-6 mb-2">
-            <div class="label">Nombre completo del empleado</div>
-            <div class="value">{{ reportResult.reportInfo.EmployerName }}</div>
-          </div>
-        </div>
+  <div id="reportContent">
+    <div v-if="isLoading" class="text-muted">Cargando reporte</div>
 
-        <div class="row">
-          <div class="col-md-6 mb-2">
-            <div class="label">Fecha de pago</div>
-            <div class="value">{{ formatDate(reportResult.reportInfo.PaymentDate) }}</div>
-          </div>
-        </div>
-      </div>
+    <div v-else-if="reportResult" ref="reportContainer">
+      <h4>Reporte detalle de pago de planilla (empleador)</h4>
 
-      <div class="report-lines">
-        <div
-          v-for="(row, index) in reportResult.rows"
-          :key="index"
-          class="report-line"
-          :class="lineClasses(row)"
-        >
-          <div class="description">
-            {{ row['Descripción'] }}
-          </div>
-          <div class="amount">
-            {{ fmtCRC(row['Monto']) }}
-          </div>
-        </div>
+      <p><strong>Empresa:</strong> {{ this.$session.user?.companyName }}</p>
+      <p><strong>Empleado:</strong> {{ reportResult.reportInfo.EmployerName }}</p>
+      <p><strong>Fecha de pago:</strong> {{ formatDate(reportResult.reportInfo.PaymentDate) }}</p>
+
+      <div id="reportTable" class="table-responsive">
+        <table class="table">
+          <tbody>
+            <tr v-for="(row, index) in reportResult.rows" :key="index" :class="lineClasses(row)">
+              <td>{{ row['Descripción'] }}</td>
+              <td class="amount">{{ fmtCRC(row['Monto']) }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -267,90 +248,55 @@ export default {
 
 
 <style lang="scss" scoped>
+  #reportFilters {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
 
-#reportFilters {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
-  margin-bottom: 20px;
-}
+  #reportFilters > div {
+    width: 50%;
+    text-align: left;
+  }
 
-#reportFilters > div {
-  flex: 1;
-  text-align: left;
-}
+  #buttons {
+    display: inline-block;
+    margin-bottom: 20px;
+  }
 
-#buttons {
-  margin-top: 4px;
-}
+  #reportContent {
+    background: white;
+    border-radius: 10px;
 
-#buttons :deep(button),
-#buttons button {
-  width: auto;
-  padding: 6px 18px;
-  white-space: nowrap;
-}
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 
-.report-wrapper {
-  max-width: 800px;
-  margin: 0 auto 40px;
-}
+    padding: 20px;
 
-.report-card {
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 12px;
-  padding: 24px 32px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-}
+    width: 100%;
+    align-self: stretch;
+    text-align: left;
+  }
 
-.report-header .label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #666;
-}
+  #reportContent > div[ref="reportContainer"], #reportContent > div {
+    width: 100%;
+  }
 
-.report-header .value {
-  font-size: 1rem;
-}
+  #reportTable .amount {
+    min-width: 180px;
+    text-align: right;
+  }
 
-.report-lines {
-  margin-top: 8px;
-}
+  #reportTable tr.line-gross td,
+  #reportTable tr.line-total td {
+    font-weight: 600;
+  }
 
-.report-line {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  padding: 4px 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
-  font-weight: 400;
-}
-
-.report-line .description {
-  flex: 1;
-  text-align: left;
-}
-
-.report-line .amount {
-  min-width: 180px;
-  text-align: right;
-  font-weight: 400;
-}
-
-.report-line.line-gross .description,
-.report-line.line-gross .amount,
-.report-line.line-total .description,
-.report-line.line-total .amount {
-  font-weight: 600;
-}
-
-.report-line.line-net .description,
-.report-line.line-net .amount {
-  font-weight: 700;
-  font-size: 1.05rem;
-  margin-top: 8px;
-  padding-top: 8px;
-}
+  #reportTable tr.line-net td {
+    font-weight: 700;
+    font-size: 1.05rem;
+    padding-top: 10px;
+  }
 
 </style>
