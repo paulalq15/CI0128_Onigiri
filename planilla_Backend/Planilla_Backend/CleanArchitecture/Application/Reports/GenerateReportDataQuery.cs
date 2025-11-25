@@ -21,7 +21,7 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
 
       var generator = _reportFactory.GetGenerator(request.ReportCode);
 
-      if (generator is null)throw new InvalidOperationException($"No existe un generador configurado para el reporte '{request.ReportCode}'");
+      if (generator is null) throw new InvalidOperationException($"No existe un generador configurado para el reporte '{request.ReportCode}'");
 
       return generator.GenerateAsync(request, _reportRepository, ct);
     }

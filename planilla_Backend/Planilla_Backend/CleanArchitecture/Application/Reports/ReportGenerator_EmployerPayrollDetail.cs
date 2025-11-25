@@ -19,7 +19,7 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
       if (!request.EmployeeId.HasValue || request.EmployeeId.Value <= 0) throw new ArgumentException("El parámetro EmployeeId es requerido y debe ser mayor que cero", nameof(request));
       if (!request.PayrollId.HasValue || request.PayrollId.Value <= 0) throw new ArgumentException("El parámetro PayrollId es requerido y debe ser mayor que cero", nameof(request));
 
-      var report = await repository.GetEmployerPayrollReport(request.CompanyId.Value, ct);
+      var report = await repository.GetEmployerPayrollReport(request.PayrollId.Value, request.CompanyId.Value, ct);
 
       if (report is null) throw new KeyNotFoundException("No se encontró información ...");
       // if (report.CompanyId != request.CompanyId.Value) throw new KeyNotFoundException("La empresa solicitante no coincide con la empresa registrada en la planilla");
@@ -36,8 +36,8 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
         ReportInfo = new Dictionary<string, object?>
         {
           ["CompanyName"] = request.CompanyName,
-          ["EmployerName"] = request.EmployerFullname,
-          // ["PaymentDate"] = report.PaymentDate
+          ["EmployerName"] = report.EmployerName,
+          ["PaymentDate"] = "FALTAAAAA",
         }
       };
 
@@ -46,12 +46,51 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
 
     private static List<Dictionary<string, object?>> BuildRows(EmployerPayrollReport report) {
       var rows = new List<Dictionary<string, object?>>();
+
+      var salaryLines = report.Lines.Where(l => l.Category == "Salario").ToList();
+      var mandatoryLawPaymentsLines = report.Lines.Where(l => l.Category == "Deduccion Empleador").ToList();
+      var benefitsLines = report.Lines.Where(l => l.Category == "Beneficio Empleado").ToList();
+
+      AddLines(rows, salaryLines);
+
+      // --- Agregar los totales --- 
+
+      /*
+      rows.Add(new Dictionary<string, object?>
+      {
+        // ["Descripción"] = "Pago Neto",
+        // ["Categoría"] = "Resumen",
+        // ["Monto"] = report.NetAmount
+      });*/
+
       return rows;
     }
 
-    /*
-    private static void AddLines(List<Dictionary<string, object?>> rows, IEnumerable<PayrollDetailLine> lines) {
-      //
-    }*/
+    private static void AddLines(List<Dictionary<string, object?>> rows, IEnumerable<PayrollDetailLine> lines)
+    {
+      foreach (var line in lines)
+      {
+        rows.Add(new Dictionary<string, object?>
+        {
+          ["Descripción"] = line.Description,
+          ["Categoría"] = line.Category,
+          ["Monto"] = line.Amount
+        });
+      }
+    }
+
+    private static void AddTotalRow(
+      List<Dictionary<string, object?>> rows,
+      string description,
+      string category,
+      IEnumerable<PayrollDetailLine> lines)
+    {
+      rows.Add(new Dictionary<string, object?>
+      {
+        ["Descripción"] = description,
+        ["Categoría"] = category,
+        ["Monto"] = lines.Sum(l => l.Amount)
+      });
+    }
   }
 }

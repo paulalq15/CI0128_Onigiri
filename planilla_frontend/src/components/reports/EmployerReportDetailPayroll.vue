@@ -13,7 +13,7 @@
 
 
 <script>
-import { useSession } from '../../utils/useSession.js';
+// import { useSession } from '../../utils/useSession.js';
 // import jsPDF from 'jspdf';
 // import html2canvas from 'html2canvas';
 import URLBaseAPI from '../../axiosAPIInstances.js';
@@ -33,6 +33,7 @@ export default {
       showToast: false,
       toastMessage: '',
       toastTimeout: 2000,
+      paymentPeriod: '',
     };
   },
 
@@ -74,17 +75,12 @@ export default {
     loadReport() {
       if (!this.selectedPayrollId) return;
 
-      const companyId = this.$session.user?.companyUniqueId;
-      const employeeId = Number(this.$session.user?.personId);
-      const employerFullname = Number(this.$session.user?.fullname);
-      const companyName = this.session.user?.companyName;
-
       const params = {
         reportCode: 'EmployerDetailPayroll',
-        companyId,
-        employeeId,
         payrollId: this.selectedPayrollId,
-        employerFullname
+        employeeId: Number(this.$session.user?.personId),
+        companyId: this.$session.user?.companyUniqueId,
+        companyName: this.$session.user?.companyName,
       };
 
       this.isLoading = true;
