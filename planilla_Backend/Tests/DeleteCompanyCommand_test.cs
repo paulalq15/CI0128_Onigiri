@@ -1,7 +1,9 @@
 ﻿using Moq;
+using Planilla_Backend.CleanArchitecture.Application.EmailsDTOs;
 using Planilla_Backend.CleanArchitecture.Application.Ports;
 using Planilla_Backend.CleanArchitecture.Application.Reports;
 using Planilla_Backend.CleanArchitecture.Application.UseCases.company;
+using Planilla_Backend.LayeredArchitecture.Services.EmailService;
 
 namespace Tests;
 
@@ -9,18 +11,29 @@ public class DeleteCompanyCommand_test
 {
   IDeleteCompanyCommand _deleteCompanyCommand;
   Mock<ICompanyRepository> _CompanyRepositoryMock;
-
-
-
-
-
-
+  Mock<IEmailService> _emailServiceMock;
 
   [SetUp]
   public void Setup()
   {
+    // Mock para la función interna que envía los correos electrónicos a los empleados
+    DeleteCompanyEmployeeDataDTO deleteCompanyEmployeeDataDTO = new DeleteCompanyEmployeeDataDTO
+    {
+      UserName = "Test User",
+      EmployeeEmail = "unitTest@gmail.com",
+      CompanyName = "Test Company"
+    };
+
     _CompanyRepositoryMock = new Mock<ICompanyRepository>();
-    _deleteCompanyCommand = new DeleteCompanyCommand(_CompanyRepositoryMock.Object);
+
+    _CompanyRepositoryMock.Setup(r => r.GetEmployeesEmailsAndUserNameInCómpanyByIdCompany(It.IsAny<int>()))
+        .ReturnsAsync(new List<DeleteCompanyEmployeeDataDTO> { deleteCompanyEmployeeDataDTO });
+
+    _emailServiceMock = new Mock<IEmailService>();
+    _deleteCompanyCommand = new DeleteCompanyCommand(_CompanyRepositoryMock.Object, _emailServiceMock.Object);
+    _emailServiceMock
+        .Setup(es => es.SendEmail(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+        .Returns(Task.CompletedTask);
   }
 
   [Test]
