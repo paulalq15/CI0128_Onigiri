@@ -126,7 +126,7 @@ namespace Planilla_Backend.LayeredArchitecture.Controllers
     [HttpGet("ActivateEmployee")]
     public IActionResult ActivateEmployee(string token)
     {
-      const string frontBaseUrl = "http://localhost:8080/auth/EmployeeActivation";
+      string frontBaseUrl = $"{_frontBaseUrl}/auth/EmployeeActivation";
       string status;
       string? setPwdToken = null;
 
