@@ -2,7 +2,6 @@
   <div class="container p-4">
     <div class="mb-4 pb-4 px-5">
       <h4 v-if="$session.user">Hola, {{ $session.user.fullName }}</h4>
-      <p class="text-muted mb-0">Selecciona lo que quieres hacer hoy</p>
     </div>
 
     <!-- EMPLOYER -->
