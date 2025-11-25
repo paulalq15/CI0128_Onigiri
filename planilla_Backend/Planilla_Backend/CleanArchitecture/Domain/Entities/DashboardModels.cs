@@ -27,8 +27,8 @@
 
   public class EmployerDashboardDto
   {
-    List<EmployerDashboardCostByTypeModel> CostByTypes { get; set; } = new();
-    List<EmployerDashboardCostByMonthModel> CostByMonth { get; set; } = new();
-    List<EmployerDashboardEmployeeCountByTypeModel> EmployeeCountByType { get; set; } = new();
+    public List<EmployerDashboardCostByTypeModel> CostByTypes { get; set; } = new();
+    public List<EmployerDashboardCostByMonthModel> CostByMonth { get; set; } = new();
+    public List<EmployerDashboardEmployeeCountByTypeModel> EmployeeCountByType { get; set; } = new();
   }
 }
