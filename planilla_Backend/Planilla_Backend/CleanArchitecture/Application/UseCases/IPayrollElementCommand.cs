@@ -2,8 +2,9 @@
 
 namespace Planilla_Backend.CleanArchitecture.Application.UseCases
 {
-  public interface IGetPayrollElement
+  public interface IPayrollElementCommand
   {
-    Task<PayrollElementEntity?> Execute(int payElementId);
+    Task<int> Update(PayrollElementEntity payrollElement);
+    Task<int> Delete(int elementId);
   }
 }

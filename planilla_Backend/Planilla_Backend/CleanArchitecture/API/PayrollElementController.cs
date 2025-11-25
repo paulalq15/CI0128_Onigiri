@@ -9,13 +9,13 @@ namespace Planilla_Backend.CleanArchitecture.API
   [ApiController]
   public class PayrollElementController : ControllerBase
   {
-    private IGetPayrollElement getPayrollElementCommand;
-    private IUpdatePayrollElement updatePayrollElementCommand;
+    private IPayrollElementQuery _payrollElementQuery;
+    private IPayrollElementCommand _payrollElementCommand;
 
-    public PayrollElementController(IGetPayrollElement getPayrollElement, IUpdatePayrollElement updatePayrollElement)
+    public PayrollElementController(IPayrollElementQuery payrollElementQuery, IPayrollElementCommand payrollElementCommand)
     {
-      this.getPayrollElementCommand = getPayrollElement;
-      this.updatePayrollElementCommand = updatePayrollElement;
+      _payrollElementQuery = payrollElementQuery;
+      _payrollElementCommand = payrollElementCommand;
     }
 
     [HttpGet("{payrollElementId:int}")]
@@ -23,7 +23,7 @@ namespace Planilla_Backend.CleanArchitecture.API
     {
       try
       {
-        PayrollElementEntity? element = await this.getPayrollElementCommand.Execute(payrollElementId);
+        PayrollElementEntity? element = await this._payrollElementQuery.GetPayrollElement(payrollElementId);
 
         return Ok(element);
       }
@@ -38,7 +38,7 @@ namespace Planilla_Backend.CleanArchitecture.API
     {
       try
       {
-        int affectedRows = await this.updatePayrollElementCommand.Execute(payrollElement);
+        int affectedRows = await this._payrollElementCommand.Update(payrollElement);
 
         if (affectedRows == 0) return NotFound(new { message = "Error al actualizar el elemento de planilla" });
 
@@ -49,5 +49,20 @@ namespace Planilla_Backend.CleanArchitecture.API
         return BadRequest(new { message = ex.Message });
       }
     }
-  }
+
+    [HttpDelete("{payrollElementId:int}")]
+    public async Task<IActionResult> DeletePayrollElement(int payrollElementId)
+    {
+      try
+      {
+        int affectedRows = await this._payrollElementCommand.Delete(payrollElementId);
+        if (affectedRows == 0) return NotFound(new { message = "Error al eliminar el elemento de planilla" });
+        return Ok(new { message = "Elemento de planilla eliminado correctamente" });
+      }
+      catch (ArgumentException ex)
+      {
+        return BadRequest(new { message = ex.Message });
+      }
+    }
+  } // end class
 }
