@@ -1,4 +1,4 @@
-﻿namespace Planilla_Backend.CleanArchitecture.Application.UseCases
+﻿namespace Planilla_Backend.CleanArchitecture.Domain.Entities
 {
   public class WeekHoursCommand
   {

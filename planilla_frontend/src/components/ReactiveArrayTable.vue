@@ -37,8 +37,15 @@
     emits: ['action'],
     methods: {
       handleActionClick(event) {
-        const id = event.target.dataset.id;
-        if (id) this.$emit('action', id);
+        //const id = event.target.dataset.id;
+        //if (id) this.$emit('action', id);
+        const button = event.target.closest('button[data-id]');
+        if (!button) return;
+
+        const id = button.dataset.id;
+        const action = button.dataset.action || null; // "edit" o "delete"
+
+        if (id && action) this.$emit('action', { id, action });
       }
     }
   };
