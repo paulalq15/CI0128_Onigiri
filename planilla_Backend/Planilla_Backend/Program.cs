@@ -59,8 +59,8 @@ builder.Services.AddScoped<ILegalConceptStrategy, LegalConcept_TaxStrategy>();
 
 // Payroll Element
 builder.Services.AddScoped<IPayrollElementRepository, PayrollElementRepositoryCA>();
-builder.Services.AddScoped<IGetPayrollElement, GetPayrollElementById>();
-builder.Services.AddScoped<IUpdatePayrollElement, UpdatePayrollElement>();
+builder.Services.AddScoped<IPayrollElementQuery, PayrollElementQuery>();
+builder.Services.AddScoped<IPayrollElementCommand, PayrollElementCommand>();
 
 // Timesheet
 builder.Services.AddScoped<ITimesheetRepository, TimesheetRepository>();

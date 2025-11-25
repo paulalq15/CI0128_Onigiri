@@ -40,7 +40,7 @@
       <ReactiveObjectTable
         :tableHeader="header"
         :tableElements="filteredElements"
-        @action="editPayrollElement"
+        @action="handleElementAction"
       />     
     </div>
   </div>
@@ -52,11 +52,13 @@
   // Base URL de la API
   import URLBaseAPI from '../axiosAPIInstances.js';
   import { useSession } from '@/utils/useSession';
-  
   import ReactiveObjectTable from './ReactiveArrayTable.vue';
-  
   import { useRouter } from 'vue-router';
+  import { useGlobalAlert } from '@/utils/alerts.js';
+
   const router = useRouter();
+
+  const alert = useGlobalAlert();
   
   const  {user} = useSession();
   var isAdmin = ref(false);
@@ -98,7 +100,6 @@
     await URLBaseAPI.get("/api/Company/GetAllCompaniesSummary")
         .then((response) => {
           companies.value = response.data;
-          console.log("Empresas: ", companies.value);
         })
         .catch();
   }
@@ -112,7 +113,8 @@
             paidBy: e.calculationType === 'API' ? 'Empleador' : e.paidBy,
             type: e.paidBy === 'Empleador' ? 'Beneficio' : 'Deducción',
             ...(userType === 'Empleador' && {
-              action: `<button class="btn btn-sm btn-success" data-id="${e.idElement}">Editar</button>`
+              action: `<button class="btn btn-sm btn-success me-1" data-id="${e.idElement}" data-action="edit">Editar</button>
+                       <button class="btn btn-sm btn-danger" data-id="${e.idElement}" data-action="delete">Eliminar</button>`
             })
           }));
 
@@ -121,14 +123,33 @@
           }
         })
         .catch((error) => {
-          if (error.response) console.log('Error del backend:', error.response.data);
-          else console.log('Error de red:', error.message);
+          if (error.response) alert.show('Error: ' + error.response.data, 'warning'); 
+          else alert.show('Error de red ' + error, 'warning');
         });
   }
 
   function editPayrollElement(PayrollElementId) {
     router.push({ name: 'EditarBeneficioODeduccion', params: { PEId: PayrollElementId}});
   }
+
+  async function deletePayrollElement(PayrollElementId) {
+    try {
+      await URLBaseAPI.delete(`/api/PayrollElement/${PayrollElementId}`);
+      alert.show('Elemento eliminado', 'success');
+      elements.value = elements.value.filter(e => e.idElement != PayrollElementId);
+    } catch (error) {
+      alert.show('Error al eliminar elemento' + error, 'warning');
+    }
+  }
+
+  function handleElementAction({ id, action }) {
+  if (action === "edit") {
+    editPayrollElement(id);
+  } else if (action === "delete") {
+    deletePayrollElement(id);
+  }
+}
+
 </script>
 
 <style lang="scss" scoped>
