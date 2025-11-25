@@ -21,18 +21,22 @@ namespace Planilla_Backend.LayeredArchitecture.Controllers
     private readonly IConfiguration configuration;
     private readonly Utils utils;
     private readonly IEmailService emailService;
+    private readonly string _activationBaseUrl;
+    private readonly string _frontBaseUrl;
     public TokensController(PersonUserService personUserServ, IConfiguration configuration, Utils utils, IEmailService emailService)
     {
       this.personUserService = personUserServ;
       this.configuration = configuration;
       this.utils = utils;
       this.emailService = emailService;
+      _activationBaseUrl = configuration["APP_URLS:ActivationBackendBase"];
+      _frontBaseUrl = configuration["APP_URLS:FrontBaseUrl"];
     }
 
     [HttpGet("ActivateAccount")]
     public IActionResult ActivateAccount(string token)
     {
-      string redirectUrl = "http://localhost:8080/auth/ActivateAccount?status="; // URL base del frontend
+      string redirectUrl = $"{_frontBaseUrl}/auth/ActivateAccount?status="; // URL base del frontend
 
       try
       {
@@ -99,7 +103,7 @@ namespace Planilla_Backend.LayeredArchitecture.Controllers
       ActivationAccountModel activationModel = new ActivationAccountModel
       {
         userName = $"{personUser.Name1} {personUser.Surname1}",
-        activationLink = $"https://localhost:7071/api/Tokens/ActivateAccount?token={token}"
+        activationLink = $"{_activationBaseUrl}/api/Tokens/ActivateAccount?token={token}"
       };
 
       ActivationAccountEmail activationAccountEmail = new ActivationAccountEmail();
@@ -119,7 +123,7 @@ namespace Planilla_Backend.LayeredArchitecture.Controllers
     [HttpGet("ActivateEmployee")]
     public IActionResult ActivateEmployee(string token)
     {
-      const string frontBaseUrl = "http://localhost:8080/auth/EmployeeActivation";
+      string frontBaseUrl = $"{_frontBaseUrl}/auth/EmployeeActivation";
       string status;
       string? setPwdToken = null;
 
