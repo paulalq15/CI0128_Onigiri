@@ -10,13 +10,13 @@ namespace Planilla_Backend.CleanArchitecture.Application.Dashboards
     {
       _dashboardRepo = dashboardRepo;
     }
-    public async Task<EmployerDashboardDto> GetDashboardAsync(int employerId)
+    public async Task<EmployerDashboardDto> GetDashboardAsync(int companyId)
     {
-      if (employerId <= 0) throw new ArgumentOutOfRangeException(nameof(employerId));
+      if (companyId <= 0) throw new ArgumentOutOfRangeException(nameof(companyId));
 
-      var costByTypeTask = _dashboardRepo.GetEmployerDashboardCostByType(employerId);
-      var costByMonthTask = _dashboardRepo.GetEmployerDashboardCostByMonth(employerId);
-      var employeeCountTask = _dashboardRepo.GetEmployerDashboardEmployeeCountByType(employerId);
+      var costByTypeTask = _dashboardRepo.GetEmployerDashboardCostByType(companyId);
+      var costByMonthTask = _dashboardRepo.GetEmployerDashboardCostByMonth(companyId);
+      var employeeCountTask = _dashboardRepo.GetEmployerDashboardEmployeeCountByType(companyId);
 
       await Task.WhenAll(costByTypeTask, costByMonthTask, employeeCountTask);
 
