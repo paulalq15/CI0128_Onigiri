@@ -15,12 +15,14 @@ namespace Planilla_Backend.LayeredArchitecture.Controllers
     private readonly PersonUserService personUserService;
     private readonly IEmailService emailService;
     private readonly Utils utils;
+    private readonly string _activationBaseUrl;
 
-    public PersonUserController(PersonUserService personUserServ, IEmailService emailService, Utils utils)
+    public PersonUserController(PersonUserService personUserServ, IEmailService emailService, Utils utils, IConfiguration configuration)
     {
       personUserService = personUserServ;
       this.emailService = emailService;
       this.utils = utils;
+      _activationBaseUrl = configuration["APP_URLS:ActivationBackendBase"];
     }
 
     [HttpPost("register")]
@@ -44,7 +46,7 @@ namespace Planilla_Backend.LayeredArchitecture.Controllers
           //Generar token de activación
           string token = this.utils.GenerateJWToken(idPerson);
 
-          activationModel.activationLink = $"https://localhost:7071/api/Tokens/ActivateAccount?token={token}";
+          activationModel.activationLink = $"{_activationBaseUrl}/api/Tokens/ActivateAccount?token={token}";
 
           // Enviar correo
           try
