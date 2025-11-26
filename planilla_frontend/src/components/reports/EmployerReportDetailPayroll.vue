@@ -1,6 +1,19 @@
 <template>
   <div id="reportFilters">
     <div>
+      <label for="selectCompany" class="form-label fw-bold">Empresa</label>
+      <select id="selectCompany" class="form-select" v-model.number="selectedCompanyId">
+        <option 
+          v-for="company in companies" 
+          :key="company.companyUniqueId" 
+          :value="company.companyUniqueId"
+          >
+          {{ company.companyName }}
+        </option>
+      </select>
+    </div>
+
+    <div>
       <label for="selectPeriod" class="form-label fw-bold">Periodo</label>
       <select id="selectPeriod" class="form-select" v-model="selectedPayrollId">
         <option v-for="payroll in payrollList" :key="payroll.payrollId" :value="payroll.payrollId">
@@ -55,6 +68,9 @@ export default {
 
   data() {
     return {
+      companies: [],
+      selectedCompanyId: null,
+      loadingCompanies: false,
       payrollList: [],
       selectedPayrollId: null,
       reportResult: null,
@@ -63,8 +79,28 @@ export default {
   },
 
   methods: {
+    async fetchCompanies() {
+      this.loadingCompanies = true;
+      try {
+        const userId = this.$session.user?.userId;
+        
+        if (!userId) {
+          this.companies = [];
+          return;
+        }
+        
+        const { data } = await URLBaseAPI.get(`/api/Company/by-user/${userId}?onlyActive=false`);
+        const rows = Array.isArray(data) ? data.slice() : [];
+        this.companies = rows;
+      } catch (err) {
+        const alert = useGlobalAlert();
+        alert.show('Error al cargar empresas para el filtro.', 'warning');
+      } finally {
+        this.loadingCompanies = false;
+      }
+    },
     getPayrollList() {
-      const companyId = this.$session.user?.companyUniqueId;
+      const companyId = this.selectedCompanyId || this.$session.user?.companyUniqueId;
 
       URLBaseAPI.get('/api/Reports/employer/payroll-periods', {
         params: {
@@ -94,7 +130,7 @@ export default {
     loadReport() {
       if (!this.selectedPayrollId) return;
 
-      const companyId = this.$session.user?.companyUniqueId;
+      const companyId = this.selectedCompanyId || this.$session.user?.companyUniqueId;
       const employeeId = Number(this.$session.user?.personId);
 
       const params = {
@@ -217,14 +253,26 @@ export default {
   },
 
   watch: {
+    selectedCompanyId() {
+      this.getPayrollList();
+    },
     selectedPayrollId() {
       this.loadReport();
     },
   },
 
   mounted() {
-    this.getPayrollList();
-  },
+  const userCompanyId = Number(this.$session.user?.companyUniqueId || 0);
+
+  this.fetchCompanies().then(() => {
+    if (userCompanyId) {
+      this.selectedCompanyId = userCompanyId;
+    } else if (this.companies.length > 0) {
+      this.selectedCompanyId = this.companies[0].companyUniqueId;
+    }
+  });
+},
+
 }
 
 </script>
