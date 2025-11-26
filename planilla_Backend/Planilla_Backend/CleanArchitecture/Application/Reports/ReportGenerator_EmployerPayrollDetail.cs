@@ -1,5 +1,4 @@
 ﻿using Planilla_Backend.CleanArchitecture.Application.Ports;
-using Planilla_Backend.CleanArchitecture.Domain.Entities;
 using Planilla_Backend.CleanArchitecture.Domain.Reports;
 
 namespace Planilla_Backend.CleanArchitecture.Application.Reports
@@ -19,8 +18,7 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
       if (!request.EmployeeId.HasValue || request.EmployeeId.Value <= 0) throw new ArgumentException("El parámetro EmployeeId es requerido y debe ser mayor que cero", nameof(request));
       if (!request.PayrollId.HasValue || request.PayrollId.Value <= 0) throw new ArgumentException("El parámetro PayrollId es requerido y debe ser mayor que cero", nameof(request));
 
-      var report = await repository.GetEmployerPayrollReport(request.PayrollId.Value, request.CompanyId.Value, ct);
-
+      var report = await repository.GetEmployerPayrollReport(request.PayrollId.Value, request.EmployeeId.Value, ct);
       if (report is null) throw new KeyNotFoundException("No se encontró información de la planilla seleccionada.");
 
       var rows = BuildRows(report);
@@ -29,13 +27,13 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
       {
         ReportCode = ReportCodes.EmployerDetailPayroll,
         DisplayName = "Detalle de pago de planilla",
-        Columns = new List<string> { "", "Monto" },
+        Columns = new List<string> { "Descripción", "Categoría", "Monto" },
         Rows = rows,
         ReportInfo = new Dictionary<string, object?>
         {
-          ["CompanyName"] = request.CompanyName,
+          ["CompanyName"] = report.CompanyName,
           ["EmployerName"] = report.EmployerName,
-          ["PaymentDate"] = report.PaymentDate,
+          ["PaymentDate"] = report.PaymentDate
         }
       };
 
@@ -49,20 +47,30 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
       var mandatoryLawPaymentsLines = report.Lines.Where(l => l.Category == "Deduccion Empleador").ToList();
       var benefitsLines = report.Lines.Where(l => l.Category == "Beneficio Empleado").ToList();
 
-      AddLines(rows, salaryLines);
-      AddTotalRow(rows, "Total pagos de salarios: ", salaryLines);
+      if (salaryLines.Any())
+      {
+        AddLines(rows, salaryLines);
+        AddTotalRow(rows, "Total salarios: ", "Salario", salaryLines);
+      }
 
       if (mandatoryLawPaymentsLines.Any())
       {
         AddLines(rows, mandatoryLawPaymentsLines);
-        AddTotalRow(rows, "Total pagos de ley: ", mandatoryLawPaymentsLines);
+        AddTotalRow(rows, "Total pagos de ley: ", "Deduccion Empleador", mandatoryLawPaymentsLines);
       }
 
       if (benefitsLines.Any())
       {
         AddLines(rows, benefitsLines);
-        AddTotalRow(rows, "Total pagos de beneficios: ", benefitsLines);
+        AddTotalRow(rows, "Total beneficios: ", "Beneficio Empleado", benefitsLines);
       }
+
+      rows.Add(new Dictionary<string, object?>
+      {
+        ["Descripción"] = "Costo total empleador",
+        ["Categoría"] = "Resumen",
+        ["Monto"] = report.Cost
+      });
 
       return rows;
     }
@@ -83,11 +91,13 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
     private static void AddTotalRow(
       List<Dictionary<string, object?>> rows,
       string description,
+      string category,
       IEnumerable<PayrollDetailLine> lines)
     {
       rows.Add(new Dictionary<string, object?>
       {
         ["Descripción"] = description,
+        ["Categoría"] = category,
         ["Monto"] = lines.Sum(l => l.Amount)
       });
     }
