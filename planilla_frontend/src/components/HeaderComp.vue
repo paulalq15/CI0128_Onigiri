@@ -141,6 +141,7 @@ export default {
       if (!selectedCompany) return;
       const curr = this.session.user || {};
       this.session.set({ ...curr, companyUniqueId: selectedCompany.companyUniqueId, companyName: selectedCompany.companyName });
+      window.location.reload();
     },
 
     ensureValidSelectedCompany() {
