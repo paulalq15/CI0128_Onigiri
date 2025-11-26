@@ -7,6 +7,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { isAuthed, getUser } from './session';
 import { useSession } from './utils/useSession'
 import App from './App.vue';
+import VueApexCharts from 'vue3-apexcharts';
 import AuthLayout from './layouts/AuthLayout.vue';
 import RegisterPage from './components/RegisterPage.vue';
 import LoginForm from './components/LoginForm.vue';
@@ -111,4 +112,6 @@ const session = useSession()
 app.config.globalProperties.$session = session
 app.use(router);
 app.use(createPinia());
+app.use(VueApexCharts);
+app.component('ApexChartComponent', VueApexCharts);
 app.mount('#app');

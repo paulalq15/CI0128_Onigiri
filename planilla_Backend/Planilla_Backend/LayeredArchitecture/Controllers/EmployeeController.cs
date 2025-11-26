@@ -13,12 +13,14 @@ public class EmployeeController : ControllerBase
   private readonly EmployeeService _employeeService;
   private readonly IEmailService _emailService;
   private readonly Utils _tokenUtil;
+  private readonly string _activationBaseUrl;
 
-  public EmployeeController(EmployeeService employeeService, IEmailService emailService, Utils tokenUtil)
+  public EmployeeController(EmployeeService employeeService, IEmailService emailService, Utils tokenUtil, IConfiguration configuration)
   {
     _employeeService = employeeService;
     _emailService = emailService;
     _tokenUtil = tokenUtil;
+    _activationBaseUrl = configuration["APP_URLS:ActivationBackendBase"];
   }
 
   [HttpPost]
@@ -37,7 +39,7 @@ public class EmployeeController : ControllerBase
       //Generar token de activación
       string token = this._tokenUtil.GenerateJWToken(personId);
 
-      activationModel.activationLink = $"https://localhost:7071/api/Tokens/ActivateEmployee?token={token}";
+      activationModel.activationLink = $"{_activationBaseUrl}/api/Tokens/ActivateEmployee?token={token}";
 
       // Enviar correo
       try
