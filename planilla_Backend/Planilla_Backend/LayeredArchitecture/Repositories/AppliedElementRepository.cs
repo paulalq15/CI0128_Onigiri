@@ -32,8 +32,7 @@ namespace Planilla_Backend.Repositories
               ea.CantidadDependientes AS AmountDependents
             FROM dbo.ElementoAplicado ea
             JOIN dbo.ElementoPlanilla ep ON ea.IdElemento = ep.IdElemento
-            WHERE ea.IdUsuario = @employeeId
-            AND ea.TipoElemento = 'Beneficio';";
+            WHERE ea.IdUsuario = @employeeId;";
 
             using var connection = new SqlConnection(_connectionString);
 
