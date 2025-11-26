@@ -172,9 +172,7 @@ export default {
     },
 
     filterAppliedElements() {
-      return this.appliedElements.filter((applied) =>
-        this.benefitElementIds.has(applied.elementId)
-      );
+      return this.appliedElements.filter((applied) => this.isActiveOrEndingThisMonth(applied));
     },
   },
 
@@ -245,10 +243,8 @@ export default {
     },
 
     getTotalActiveAppliedBenefits() {
-      const benefitIds = new Set(this.filteredBenefits.map((b) => b.idElement));
-      return this.appliedElements.filter(
-        (el) => el.status === 'Activo' && benefitIds.has(el.elementId)
-      ).length;
+      //const benefitIds = new Set(this.filteredBenefits.map((b) => b.idElement));
+      return this.appliedElements.filter((el) => this.isActiveOrEndingThisMonth(el)).length;
     },
 
     getTotalActiveBenefits() {
@@ -357,6 +353,31 @@ export default {
         }
       }
     },
+
+    isActiveOrEndingThisMonth(el) {
+
+      // Si está activo, siempre cuenta
+      if (el.status === 'Activo') return true;
+
+      // Si no es inactivo, no cuenta
+      if (el.status !== 'Inactivo') return false;
+
+      // Si es inactivo, revisamos endDate
+      if (!el.endDate) return false;
+
+      const end = new Date(el.endDate);
+      if (isNaN(end.getTime())) {
+        console.warn('endDate inválido en AppliedElement:', el.endDate, el);
+        return false;
+      }
+
+      const now = new Date();
+      const sameYear = end.getFullYear() === now.getFullYear();
+      const sameMonth = end.getMonth() === now.getMonth(); // 0–11
+
+      return sameYear && sameMonth;
+    },
+
   },
 
   created() {
