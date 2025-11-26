@@ -77,10 +77,20 @@ public class EmployeeController : ControllerBase
   }
 
   [HttpDelete]
-  public async Task<IActionResult> deleteEmployee([FromBody] int employeeId) {
+  public async Task<IActionResult> DeleteEmployee([FromBody] int employeeId) {
     if (employeeId <= 0)
     {
-      return BadRequest("El parámetro employeeId no es un valor válido");
+      return BadRequest("El parámetro employeeId no tiene un valor válido");
+    }
+
+    bool performSoftDelete = await _employeeService.CheckIfEmployeeHasPayments(employeeId);
+
+    if (performSoftDelete) {
+      Console.WriteLine("SOFT DELETE!!!");
+    }
+
+    else {
+      Console.WriteLine("HARD DELETE!!!");
     }
 
     return Ok();

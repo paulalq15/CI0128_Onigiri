@@ -94,7 +94,7 @@ function goEdit(emp) {
 async function deleteEmployee(employee) {
   if (confirm("¿Seguro que desea eliminar al empleado " + employee.name1 + " " + employee.surname1 + "?")) {
     try {
-      await URLBaseAPI.delete(`/api/Employee/deleteEmployee?idUser=${employee.idUser}`);
+      await URLBaseAPI.delete(`/api/Employee/DeleteEmployee?idUser=${employee.idUser}`);
 
       const alert = useGlobalAlert();
       alert.show('Empleado eliminada exitosamente', 'success');

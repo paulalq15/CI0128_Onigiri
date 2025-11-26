@@ -346,5 +346,18 @@ namespace Planilla_Backend.LayeredArchitecture.Repositories
         throw;
       }
     }
+
+    public async Task<bool> CheckIfEmployeeHasPayments(int employeeId)
+    {
+      using var connection = new SqlConnection(_connectionString);
+      await connection.OpenAsync();
+
+      const string query = @"
+        SELECT CASE WHEN EXISTS(
+            SELECT 1 FROM NominaEmpleado WHERE IdEmpleado = @employeeId
+        ) THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END";
+
+       return await connection.QuerySingleAsync<bool>(query, new { employeeId });
+    }
   }
 }

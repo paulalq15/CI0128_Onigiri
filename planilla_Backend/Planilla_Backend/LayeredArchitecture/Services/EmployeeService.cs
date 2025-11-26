@@ -39,9 +39,8 @@ namespace Planilla_Backend.LayeredArchitecture.Services
       return await _employeeRepo.UpdateByEmployer(employerId, employeeId, employeeModel, ct);
     }
 
-
-
-
-
+    public async Task<bool> CheckIfEmployeeHasPayments(int employeeId) {
+      return await _employeeRepo.CheckIfEmployeeHasPayments(employeeId);
+    }
   }
 }
