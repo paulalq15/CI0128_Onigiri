@@ -31,7 +31,6 @@ namespace Planilla_Backend.LayeredArchitecture.Controllers
       this.configuration = configuration;
       this.utils = utils;
       this.emailService = emailService;
-
       _activationBaseUrl = configuration["APP_URLS:ActivationBackendBase"];
       _frontBaseUrl = configuration["APP_URLS:FrontBaseUrl"];
     }

@@ -6,6 +6,7 @@ using Planilla_Backend.CleanArchitecture.Application.UseCases.company;
 using Planilla_Backend.CleanArchitecture.Domain.Calculation;
 using Planilla_Backend.CleanArchitecture.Infrastructure;
 using Planilla_Backend.CleanArchitecture.Infrastructure.External;
+using Planilla_Backend.CleanArchitecture.Application.Dashboards;
 using Planilla_Backend.LayeredArchitecture.Repositories;
 using Planilla_Backend.LayeredArchitecture.Services;
 using Planilla_Backend.LayeredArchitecture.Services.EmailService;
@@ -83,6 +84,10 @@ builder.Services.AddScoped<IReportGenerator, ReportGenerator_EmployerPayrollByEm
 // Company
 builder.Services.AddScoped<ICompanyRepository, CompanyRepositoryCA>();
 builder.Services.AddScoped<IDeleteCompanyCommand, DeleteCompanyCommand>();
+
+// Dashboard
+builder.Services.AddScoped<IEmployerDashboardQuery, EmployerDashboardQuery>();
+builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
 
 builder.Services.AddControllers();
 builder.Services.AddControllers().AddJsonOptions(options =>

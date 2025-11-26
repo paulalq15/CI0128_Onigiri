@@ -23,6 +23,7 @@ namespace Planilla_Backend.CleanArchitecture.API
         var result = await _query.GenerateReportAsync(request, ct);
         return Ok(result);
       }
+
       catch (Exception ex)
       {
         return Error.FromException(this, ex, HttpContext.Request.Path);
@@ -33,6 +34,13 @@ namespace Planilla_Backend.CleanArchitecture.API
     public async Task<ActionResult<IEnumerable<ReportPayrollPeriodDto>>> GetEmployeePayrollPeriods([FromQuery] int companyId, [FromQuery] int employeeId, [FromQuery] int top = 10)
     {
       var periods = await _query.GetEmployeePayrollPeriodsAsync(companyId, employeeId, top);
+      return Ok(periods);
+    }
+
+    [HttpGet("employer/payroll-periods")]
+    public async Task<ActionResult<IEnumerable<ReportPayrollPeriodDto>>> GetEmployerPayrollPeriods([FromQuery] int companyId, [FromQuery] int top = 10)
+    {
+      var periods = await _query.GetEmployerPayrollPeriodsAsync(companyId, top);
       return Ok(periods);
     }
   }

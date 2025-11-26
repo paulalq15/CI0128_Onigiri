@@ -3,7 +3,6 @@ using Microsoft.Data.SqlClient;
 using System.Data;
 using Planilla_Backend.CleanArchitecture.Application.Ports;
 using Planilla_Backend.CleanArchitecture.Application.Reports;
-using Planilla_Backend.CleanArchitecture.Domain.Entities;
 using Planilla_Backend.CleanArchitecture.Domain.Reports;
 
 namespace Planilla_Backend.CleanArchitecture.Infrastructure
@@ -41,6 +40,32 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       catch (Exception ex)
       {
         _logger.LogError(ex, "GetEmployeePayrollPeriodsAsync failed. companyId: {CompanyId}", companyId);
+        throw;
+      }
+    }
+
+    public async Task<IEnumerable<ReportPayrollPeriodDto>> GetEmployerPayrollPeriodsAsync(int companyId, int top)
+    {
+      try
+      {
+        using var connection = new SqlConnection(_connectionString);
+        const string query =
+          @"SELECT TOP(@top)
+            IdNominaEmpresa AS PayrollId,
+            FechaInicio AS DateFrom,
+            FechaFin AS DateTo,
+            FORMAT(FechaInicio, 'dd/MM/yyyy') + ' - ' + FORMAT(FechaFin, 'dd/MM/yyyy') AS PeriodLabel
+          FROM NominaEmpresa
+          WHERE IdEmpresa = @companyId
+          ORDER BY FechaInicio DESC;";
+
+        var payrolls = await connection.QueryAsync<ReportPayrollPeriodDto>(query, new { companyId, top });
+        return payrolls;
+      }
+
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, "GetEmployerPayrollPeriodsAsync failed. companyId: {CompanyId}", companyId);
         throw;
       }
     }
@@ -102,6 +127,74 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       catch (Exception ex)
       {
         _logger.LogError(ex, "GetEmployeePayrollReportAsync failed. PayrollId: {payrollId}", payrollId);
+        throw;
+      }
+    }
+
+    public async Task<EmployerPayrollReport> GetEmployerPayrollReport(int payrollId, int employerId, CancellationToken ct = default)
+    {
+      try
+      {
+        using var connection = new SqlConnection(_connectionString);
+
+        const string headerQuery = @"
+            SELECT TOP (1)
+              e.Nombre AS CompanyName,
+              CONCAT_WS(' ', p.Nombre1, NULLIF(p.Nombre2, ''), p.Apellido1, NULLIF(p.Apellido2, '')) AS EmployerName,
+              cp.FechaPago AS PaymentDate,
+              nem.Costo AS Cost
+            FROM NominaEmpresa AS nem
+            INNER JOIN Empresa AS e ON e.IdEmpresa = nem.IdEmpresa
+            INNER JOIN UsuariosPorEmpresa AS upe ON upe.IdEmpresa = e.IdEmpresa
+            INNER JOIN Usuario AS u ON u.IdUsuario = upe.IdUsuario
+            INNER JOIN Persona AS p ON p.IdPersona = u.IdPersona
+            INNER JOIN NominaEmpleado AS ne ON ne.IdNominaEmpresa = nem.IdNominaEmpresa
+            INNER JOIN ComprobantePago AS cp ON cp.IdNominaEmpleado = ne.IdNominaEmpleado
+            WHERE p.IdPersona = @employerId
+              AND nem.IdNominaEmpresa = @payrollId
+            ORDER BY cp.FechaPago DESC;";
+
+        const string detailsQuery =
+          @"SELECT
+            dn.Descripcion AS Description,
+            dn.Tipo AS Category,
+            SUM(dn.Monto) AS Amount
+          FROM NominaEmpresa neEmp
+
+          JOIN NominaEmpleado ne
+            ON ne.IdNominaEmpresa = neEmp.IdNominaEmpresa
+          JOIN DetalleNomina dn
+            ON dn.IdNominaEmpleado = ne.IdNominaEmpleado
+          JOIN Persona p
+            ON p.IdPersona = ne.IdEmpleado
+          JOIN Contrato c
+            ON c.IdPersona = ne.IdEmpleado
+          AND c.FechaInicio <= neEmp.FechaFin
+          AND (c.FechaFin IS NULL OR c.FechaFin >= neEmp.FechaInicio)
+          WHERE
+            neEmp.IdNominaEmpresa = @payrollId
+          AND dn.Tipo IN ('Salario', 'Deduccion Empleador', 'Beneficio Empleado')
+          GROUP BY
+            dn.Descripcion,
+            dn.Tipo
+          ORDER BY
+            dn.Tipo,
+            dn.Descripcion;";
+
+        var header = await connection.QuerySingleOrDefaultAsync<EmployerPayrollReport>(new CommandDefinition(headerQuery, new { payrollId, employerId }, cancellationToken: ct));
+
+        if (header == null) throw new KeyNotFoundException("No se encontró información de la planilla seleccionada");
+
+        var detailLines = await connection.QueryAsync<PayrollDetailLine>(new CommandDefinition(detailsQuery, new { payrollId }, cancellationToken: ct));
+
+        header.Lines = detailLines.ToList();
+
+        return header;
+      }
+
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, "GetEmployerPayrollReportAsync failed. PayrollId: {payrollId}", payrollId);
         throw;
       }
     }
