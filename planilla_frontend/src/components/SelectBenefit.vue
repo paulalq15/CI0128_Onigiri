@@ -97,7 +97,7 @@
               <button
                 class="btn btn-danger btn-sm"
                 @click="
-                  this.deactivateAppliedElement(appliedElement.elementId, appliedElement.status)
+                  this.deactivateAppliedElement(appliedElement.appliedElementId, appliedElement.status)
                 "
               >
                 Desactivar
@@ -135,6 +135,59 @@
         </tbody>
       </table>
     </div>
+
+    <div
+      v-if="showExtraDataModal"
+      class="modal fade show d-block"
+      tabindex="-1"
+      style="background-color: rgba(0, 0, 0, 0.4);"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Datos adicionales del beneficio</h5>
+            <button type="button" class="btn-close" @click="cancelExtraData"></button>
+          </div>
+
+          <div class="modal-body">
+            <p class="mb-3">
+              {{ pendingBenefit ? pendingBenefit.elementName : '' }}
+            </p>
+
+            <div v-if="extraFieldType === 'dependents'">
+              <label class="form-label">Cantidad de dependientes</label>
+              <input
+                type="number"
+                min="1"
+                class="form-control"
+                v-model.number="tempAmountDependents"
+              />
+              <small class="text-muted">Debe ser un número entero mayor que cero.</small>
+            </div>
+
+            <div v-else-if="extraFieldType === 'plan'">
+              <label class="form-label">Tipo de plan</label>
+              <select class="form-select" v-model="tempPlanType">
+                <option value="">Seleccione una opción</option>
+                <option value="A">Plan A</option>
+                <option value="B">Plan B</option>
+                <option value="C">Plan C</option>
+              </select>
+              <small class="text-muted">Solo se permiten planes A, B o C.</small>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" @click="cancelExtraData">
+              Cancelar
+            </button>
+            <button type="button" class="btn btn-primary" @click="confirmExtraData">
+              Confirmar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Message for other type of user trying to access this page: -->
@@ -146,10 +199,14 @@
 <script>
 import URLBaseAPI from '../axiosAPIInstances.js';
 import { getUser } from '../session.js';
+import { useGlobalAlert } from '@/utils/alerts.js';
 
 export default {
   name: 'BenefitsList',
-
+  setup() {
+    const alert = useGlobalAlert();
+    return { alert };
+  },
   data() {
     return {
       benefits: [],
@@ -159,6 +216,12 @@ export default {
       maxCompanyBenefits: 0,
       companyId: null,
       user: null,
+
+      showExtraDataModal: false,
+      pendingBenefit: null,
+      extraFieldType: null,
+      tempAmountDependents: null,
+      tempPlanType: '',
     };
   },
 
@@ -172,8 +235,10 @@ export default {
     },
 
     filterAppliedElements() {
-      return this.appliedElements.filter((applied) =>
-        this.benefitElementIds.has(applied.elementId)
+      return this.appliedElements.filter(
+        (applied) =>
+          this.benefitElementIds.has(applied.elementId) &&
+          this.isActiveOrEndingThisMonth(applied)
       );
     },
   },
@@ -186,15 +251,19 @@ export default {
         );
         this.companyId = response.data;
         this.getBenefits();
-        this.maxCompanyBenefits = this.getCompanyTotalBenefitsElements();
+        this.getCompanyTotalBenefitsElements();
       } catch (error) {
-        console.error('Error getting companyId:', error);
+        const isNotFound = error?.response?.status === 404;
+        const msg = isNotFound
+          ? 'No se encontró la empresa del usuario.'
+          : 'Error al obtener la empresa del usuario.';
+        this.alert.show(msg, 'warning');
       }
     },
 
     getBenefits() {
       if (!this.companyId) {
-        console.warn('CompanyId is not set yet');
+        this.alert.show('Aún no se ha definido la empresa del usuario.', 'warning');
         return;
       }
 
@@ -208,8 +277,8 @@ export default {
           this.benefits = response.data;
         })
 
-        .catch((error) => {
-          console.error('Error fetching benefits:', error);
+        .catch(() => {
+          this.alert.show('Error al obtener los beneficios.', 'warning');
         });
     },
 
@@ -219,8 +288,8 @@ export default {
           this.maxCompanyBenefits = response.data;
         })
 
-        .catch((error) => {
-          console.error('Error getting applied elements:', error);
+        .catch(() => {
+          this.alert.show('Error al obtener el máximo de beneficios de la empresa.', 'warning');
         });
     },
 
@@ -230,8 +299,8 @@ export default {
           this.appliedElements = response.data;
         })
 
-        .catch((error) => {
-          console.error('Error getting applied elements:', error);
+        .catch(() => {
+          this.alert.show('Error al obtener los beneficios aplicados.', 'warning');
         });
     },
 
@@ -245,10 +314,7 @@ export default {
     },
 
     getTotalActiveAppliedBenefits() {
-      const benefitIds = new Set(this.filteredBenefits.map((b) => b.idElement));
-      return this.appliedElements.filter(
-        (el) => el.status === 'Activo' && benefitIds.has(el.elementId)
-      ).length;
+      return this.filterAppliedElements.length;
     },
 
     getTotalActiveBenefits() {
@@ -256,65 +322,104 @@ export default {
     },
 
     addAppliedElement(benefit) {
-      // Verify if the employee reached the max ammount of benefits:
-      if (this.maxCompanyBenefits - this.getTotalActiveAppliedBenefits() == 0) {
-        alert('ALERTA: Se llegó al máximo de beneficios activos disponibles.');
+      if (this.maxCompanyBenefits - this.getTotalActiveAppliedBenefits() === 0) {
+        this.alert.show('Se llegó al máximo de beneficios activos disponibles.', 'warning');
         return;
       }
 
-      // Verify that the benefit hasn't been selected yet:
       const alreadySelected = this.appliedElements.some(
-        (applied) => applied.elementName == benefit.elementName && applied.status == 'Activo'
+        (applied) =>
+          applied.elementName === benefit.elementName && applied.status === 'Activo'
       );
 
       if (alreadySelected) {
-        alert('Este beneficio ya está seleccionado.');
+        this.alert.show('Este beneficio ya está seleccionado.', 'warning');
         return;
       }
 
       if (!this.user || !this.user.userId) {
-        alert('User ID no está definido');
+        this.alert.show('El usuario actual no está definido.', 'warning');
         return;
       }
 
       if (!benefit.idElement) {
-        alert('ERROR: benefit.idElement no está definido.');
+        this.alert.show('El beneficio no tiene un identificador válido.', 'warning');
+        return;
+      }
+
+      if (benefit.calculationType === 'API') {
+        if (benefit.calculationValue === 2) {
+          // Seguro privado: dependientes
+          this.pendingBenefit = benefit;
+          this.extraFieldType = 'dependents';
+          this.tempAmountDependents = null;
+          this.tempPlanType = '';
+          this.showExtraDataModal = true;
+          return;
+        }
+
+        if (benefit.calculationValue === 3) {
+          // Pensión voluntaria: plan A, B o C
+          this.pendingBenefit = benefit;
+          this.extraFieldType = 'plan';
+          this.tempAmountDependents = null;
+          this.tempPlanType = '';
+          this.showExtraDataModal = true;
+          return;
+        }
+      }
+
+      // Si no requiere datos extra, se envía directo
+      this.submitAppliedElement(benefit, null, null);
+    },
+
+    confirmExtraData() {
+      if (!this.pendingBenefit) {
+        this.cancelExtraData();
         return;
       }
 
       let amountDependents = null;
       let planType = null;
 
-      // Verify if the deduction is an API:
-      if (benefit.calculationType === 'API') {
-        // Seguro Privado:
-        if (benefit.calculationValue === 2) {
-          amountDependents = prompt('Ingrese la cantidad de dependientes: ');
+      if (this.extraFieldType === 'dependents') {
+        amountDependents = this.tempAmountDependents;
 
-          // if (!Number.isInteger(amountDependents)) {
-          if (amountDependents === parseInt(amountDependents, 10)) {
-            alert('ERROR: la cantidad de dependientes debe ser un número entero.');
-            return;
-          }
-
-          if (amountDependents <= 0) {
-            alert('ERROR: la cantidad de dependientes debe ser superior a 0.');
-            return;
-          }
-        }
-
-        // Pensión Voluntaria:
-        if (benefit.calculationValue === 3) {
-          planType = prompt('Ingrese el tipo de plan:');
-
-          if (planType != 'A' && planType != 'B' && planType != 'C') {
-            alert('ERROR: el tipo de plan debe ser A, B o C.');
-            return;
-          }
+        if (
+          amountDependents == null ||
+          !Number.isInteger(amountDependents) ||
+          amountDependents <= 0
+        ) {
+          this.alert.show(
+            'La cantidad de dependientes debe ser un número entero mayor que cero.',
+            'warning'
+          );
+          return;
         }
       }
 
-      // Make a POST request to add the new applied element:
+      if (this.extraFieldType === 'plan') {
+        planType = (this.tempPlanType || '').toUpperCase();
+
+        if (!['A', 'B', 'C'].includes(planType)) {
+          this.alert.show('El tipo de plan debe ser A, B o C.', 'warning');
+          return;
+        }
+      }
+
+      this.submitAppliedElement(this.pendingBenefit, amountDependents, planType);
+      this.cancelExtraData();
+    },
+
+    cancelExtraData() {
+      this.showExtraDataModal = false;
+      this.pendingBenefit = null;
+      this.extraFieldType = null;
+      this.tempAmountDependents = null;
+      this.tempPlanType = '';
+    },
+
+    submitAppliedElement(benefit, amountDependents, planType) {
       URLBaseAPI.post('/api/AppliedElement/addAppliedElement', {
         UserId: this.user.userId,
         ElementId: benefit.idElement,
@@ -322,41 +427,56 @@ export default {
         AmountDependents: amountDependents,
         PlanType: planType,
       })
-
-        .then((response) => {
-          alert('Beneficio agregado exitosamente.');
-
-          // Update the appliedElements list and totals after the successful addition:
-          this.appliedElements.push(response.data);
-          window.location.reload();
+        .then(() => {
+          this.alert.show('Beneficio agregado exitosamente.', 'warning');
+          this.getAppliedElements();
         })
-
-        .catch((error) => {
-          console.error('Error adding applied element:', error);
-          alert('Error al agregar el beneficio.');
+        .catch(() => {
+          this.alert.show('Error al agregar el beneficio.', 'warning');
         });
     },
 
     async deactivateAppliedElement(appliedElementId, status) {
-      if (status == 'Inactivo') {
-        alert('El elemento seleccionado ya está inactivo.');
+      if (status === 'Inactivo') {
+        this.alert.show('El elemento seleccionado ya está inactivo.', 'warning');
         return;
       }
 
       try {
         await URLBaseAPI.post('/api/AppliedElement/deactivateAppliedElement', {
-          ElementId: appliedElementId,
+          appliedElementId: appliedElementId,
         });
 
-        window.location.reload();
-      } catch (error) {
-        if (error.code === 'ECONNABORTED') {
-          console.error('Request aborted or timed out');
-        } else {
-          console.error('Error in request:', error.message);
-        }
+        this.alert.show('Beneficio desactivado correctamente.', 'warning');
+        this.getAppliedElements();
+      } catch {
+        this.alert.show('Error al desactivar el beneficio.', 'warning');
       }
     },
+
+    isActiveOrEndingThisMonth(el) {
+
+      // Si está activo, siempre cuenta
+      if (el.status === 'Activo') return true;
+
+      // Si no es inactivo, no cuenta
+      if (el.status !== 'Inactivo') return false;
+
+      // Si es inactivo, revisamos endDate
+      if (!el.endDate) return false;
+
+      const end = new Date(el.endDate);
+      if (isNaN(end.getTime())) {
+        return false;
+      }
+
+      const now = new Date();
+      const sameYear = end.getFullYear() === now.getFullYear();
+      const sameMonth = end.getMonth() === now.getMonth(); // 0–11
+
+      return sameYear && sameMonth;
+    },
+
   },
 
   created() {
