@@ -178,10 +178,7 @@ export default {
     },
 
     filteredAppliedElements() {
-      return this.appliedElements.filter(
-        (applied) =>
-          this.deductionElementIds.has(applied.elementId) && this.isActiveOrEndingThisMonth(applied)
-      );
+      return this.appliedElements.filter((applied) => this.isActiveOrEndingThisMonth(applied));
     },
   },
 
@@ -344,6 +341,7 @@ export default {
     },
 
     isActiveOrEndingThisMonth(el) {
+      if (el.elementType !== 'Deduccion') return false;
       if (el.status === 'Activo') return true;
       if (el.status !== 'Inactivo') return false;
       if (!el.endDate) return false;
