@@ -9,10 +9,20 @@ namespace Planilla_Backend.CleanArchitecture.API
   public class DashboardController : ControllerBase
   {
     private readonly IEmployerDashboardQuery _employerDashboardQuery;
-    public DashboardController(IEmployerDashboardQuery employerDashboardQuery)
+    private readonly IEmployerDashboardQuery _employeeDashboardQuery;
+
+    public DashboardController(IEmployerDashboardQuery employerDashboardQuery, IEmployerDashboardQuery employeeDashboardQuery)
     {
       _employerDashboardQuery = employerDashboardQuery;
+      _employeeDashboardQuery = employeeDashboardQuery;
     }
+
+    /*
+    public DashboardController(IEmployerDashboardQuery employeeDashboardQuery)
+    {
+      _employeeDashboardQuery = employeeDashboardQuery;
+    }*/
+
     [HttpGet("employer/{companyId:int}")]
     public async Task<IActionResult> GetEmployerDashboard([FromRoute] int companyId)
     {
@@ -21,6 +31,22 @@ namespace Planilla_Backend.CleanArchitecture.API
         var dashboard = await _employerDashboardQuery.GetDashboardAsync(companyId);
         return Ok(dashboard);
       }
+
+      catch (Exception ex)
+      {
+        return BadRequest(new { message = ex.Message });
+      }
+    }
+
+    [HttpGet("employee/{employeeId:int}")]
+    public async Task<IActionResult> GetEmployeeDashboard([FromRoute] int employeeId)
+    {
+      try
+      {
+        var dashboard = await _employeeDashboardQuery.GetDashboardAsync(employeeId);
+        return Ok(dashboard);
+      }
+
       catch (Exception ex)
       {
         return BadRequest(new { message = ex.Message });
