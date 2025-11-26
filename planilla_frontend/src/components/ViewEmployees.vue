@@ -55,6 +55,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import URLBaseAPI from '../axiosAPIInstances.js';
 import { getUser } from '../session.js';
+import PopUp from './alerts/PopUp.vue';
 
 const router = useRouter();
 const employees = ref([]);
@@ -90,10 +91,19 @@ function goEdit(emp) {
   router.push({ name: 'ModifyEmployees', query: { personId } });
 }
 
-function deleteEmployee(employee) {
+async function deleteEmployee(employee) {
   if (confirm("¿Seguro que desea eliminar al empleado " + employee.name1 + " " + employee.surname1 + "?")) {
-    return employee;
-  } 
+    try {
+      await URLBaseAPI.delete(`/api/Employee/deleteEmployee?idUser=${employee.idUser}`);
+
+      const alert = useGlobalAlert();
+      alert.show('Empleado eliminada exitosamente', 'success');
+    }
+
+    catch (error) {
+      console.error('Error: ', error);
+    }
+  }
 
   else {
     return;

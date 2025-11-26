@@ -75,4 +75,14 @@ public class EmployeeController : ControllerBase
     var ok = await _employeeService.UpdateAsEmployer(employerId, personId, body, ct);
     return ok ? NoContent() : BadRequest("No se pudo actualizar.");
   }
+
+  [HttpDelete]
+  public async Task<IActionResult> deleteEmployee([FromBody] int employeeId) {
+    if (employeeId <= 0)
+    {
+      return BadRequest("El parámetro employeeId no es un valor válido");
+    }
+
+    return Ok();
+  }
 }
