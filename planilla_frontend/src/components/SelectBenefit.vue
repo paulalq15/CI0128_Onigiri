@@ -97,7 +97,7 @@
               <button
                 class="btn btn-danger btn-sm"
                 @click="
-                  this.deactivateAppliedElement(appliedElement.elementId, appliedElement.status)
+                  this.deactivateAppliedElement(appliedElement.appliedElementId, appliedElement.status)
                 "
               >
                 Desactivar
@@ -444,7 +444,7 @@ export default {
 
       try {
         await URLBaseAPI.post('/api/AppliedElement/deactivateAppliedElement', {
-          ElementId: appliedElementId,
+          appliedElementId: appliedElementId,
         });
 
         this.alert.show('Beneficio desactivado correctamente.', 'warning');

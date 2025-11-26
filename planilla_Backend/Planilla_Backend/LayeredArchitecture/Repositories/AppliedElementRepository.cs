@@ -81,7 +81,7 @@ namespace Planilla_Backend.Repositories
             const string query = @"
               UPDATE dbo.ElementoAplicado
               SET FechaFin = GETDATE()
-              WHERE IdElemento = @IdElemento;
+              WHERE IdElementoAplicado = @IdElementoAplicado;
             ";
 
             try
@@ -89,7 +89,7 @@ namespace Planilla_Backend.Repositories
                 using var connection = new SqlConnection(_connectionString);
                 using var command = new SqlCommand(query, connection);
 
-                command.Parameters.Add(new SqlParameter("@IdElemento", appliedElement.ElementId));
+                command.Parameters.Add(new SqlParameter("@IdElementoAplicado", appliedElement.AppliedElementId));
 
                 connection.Open();
                 command.ExecuteNonQuery();

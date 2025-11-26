@@ -113,7 +113,7 @@
           <td>
             <button
               class="btn btn-danger btn-sm"
-              @click="deactivateAppliedElement(appliedElement.elementId, appliedElement.status)"
+              @click="deactivateAppliedElement(appliedElement.appliedElementId, appliedElement.status)"
             >
               Desactivar
             </button>
@@ -333,7 +333,7 @@ export default {
 
       try {
         await URLBaseAPI.post('/api/AppliedElement/deactivateAppliedElement', {
-          ElementId: appliedElementId,
+          appliedElementId: appliedElementId,
         });
 
         this.alert.show('Deducción desactivada correctamente.', 'warning');
