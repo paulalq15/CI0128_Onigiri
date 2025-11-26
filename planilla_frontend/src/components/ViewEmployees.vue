@@ -17,6 +17,7 @@
             <th>Puesto</th>
             <th>Departamento</th>
             <th>Acciones</th>
+            <th></th>
           </tr>
         </thead>
 
@@ -35,6 +36,11 @@
             <td>
               <button class="btn btn-sm btn-primary" @click="goEdit(employee)">
                 Editar
+              </button>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-danger" @click="deleteEmployee(employee)">
+                Eliminar
               </button>
             </td>
           </tr>
@@ -58,7 +64,9 @@ function formatDate(d) { return new Date(d).toLocaleDateString(); }
 
 async function getEmployees() {
   const u = getUser();
+
   if (!u) return;
+
   user.value = u;
 
   try {
@@ -82,5 +90,16 @@ function goEdit(emp) {
   router.push({ name: 'ModifyEmployees', query: { personId } });
 }
 
+function deleteEmployee(employee) {
+  if (confirm("¿Seguro que desea eliminar al empleado " + employee.name1 + " " + employee.surname1 + "?")) {
+    return employee;
+  } 
+
+  else {
+    return;
+  }
+}
+
 onMounted(getEmployees);
+
 </script>
