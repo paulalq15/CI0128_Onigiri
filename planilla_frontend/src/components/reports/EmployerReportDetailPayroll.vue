@@ -20,8 +20,8 @@
     <div v-else-if="reportResult" ref="reportContainer">
       <h4>Reporte detalle de pago de planilla (empleador)</h4>
 
-      <p><strong>Empresa:</strong> {{ this.$session.user?.companyName }}</p>
-      <p><strong>Empleado:</strong> {{ reportResult.reportInfo.EmployerName }}</p>
+      <p><strong>Empresa:</strong> {{ reportResult.reportInfo.CompanyName }}</p>
+      <p><strong>Empleador:</strong> {{ reportResult.reportInfo.EmployerName }}</p>
       <p><strong>Fecha de pago:</strong> {{ formatDate(reportResult.reportInfo.PaymentDate) }}</p>
 
       <div id="reportTable" class="table-responsive">
@@ -46,6 +46,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import URLBaseAPI from '../../axiosAPIInstances.js';
 import LinkButton from '../LinkButton.vue';
+import { useGlobalAlert } from '@/utils/alerts.js';
 
 export default {
   components: {
@@ -58,9 +59,6 @@ export default {
       selectedPayrollId: null,
       reportResult: null,
       isLoading: false,
-      showToast: false,
-      toastMessage: '',
-      toastTimeout: 2000,
     };
   },
 
@@ -88,26 +86,22 @@ export default {
               ? data
               : (data && (data.message || data.detail)) || 'Error cargando las últimas planillas';
 
-          this.toastMessage = msg;
-          this.toastType = 'bg-danger';
-          this.showToast = true;
-
-          setTimeout(function () {
-            this.showToast = false;
-
-          }, this.toastTimeout);
+          const alert = useGlobalAlert();
+          alert.show(msg, 'warning');
         });
     },
 
     loadReport() {
       if (!this.selectedPayrollId) return;
 
+      const companyId = this.$session.user?.companyUniqueId;
+      const employeeId = Number(this.$session.user?.personId);
+
       const params = {
         reportCode: 'EmployerDetailPayroll',
+        companyId,
+        employeeId,
         payrollId: this.selectedPayrollId,
-        employeeId: Number(this.$session.user?.personId),
-        companyId: this.$session.user?.companyUniqueId,
-        companyName: this.$session.user?.companyName,
       };
 
       this.isLoading = true;
@@ -124,14 +118,8 @@ export default {
               ? data
               : (data && (data.message || data.detail)) || 'Error cargando el detalle de planilla';
 
-          this.toastMessage = msg;
-          this.toastType = 'bg-danger';
-          this.showToast = true;
-
-          setTimeout(function () {
-            this.showToast = false;
-          }, this.toastTimeout);
-
+          const alert = useGlobalAlert();
+          alert.show(msg, 'warning');
           this.reportResult = null;
         })
 
@@ -168,9 +156,8 @@ export default {
       const desc = (row['Descripción'] || '').toString().toLowerCase();
 
       return {
-        'line-gross': desc === 'salario bruto',
         'line-total': desc.includes('total'),
-        'line-net': desc === 'pago neto',
+        'line-cost': desc === 'costo total empleador',
       };
     },
 
@@ -207,10 +194,6 @@ export default {
       
       const sideMargin = 10;
       const topAfterTitle = 25;
-
-      pdf.setFontSize(14);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('Reporte - Detalle de pago de planilla', pageWidth / 2, 15, { align: 'center' });
 
       const imgWidth = pageWidth - sideMargin * 2;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
@@ -288,12 +271,11 @@ export default {
     text-align: right;
   }
 
-  #reportTable tr.line-gross td,
   #reportTable tr.line-total td {
     font-weight: 600;
   }
 
-  #reportTable tr.line-net td {
+  #reportTable tr.line-cost td {
     font-weight: 700;
     font-size: 1.05rem;
     padding-top: 10px;

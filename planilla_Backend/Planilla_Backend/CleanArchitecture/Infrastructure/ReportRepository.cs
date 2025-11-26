@@ -3,9 +3,7 @@ using Microsoft.Data.SqlClient;
 using System.Data;
 using Planilla_Backend.CleanArchitecture.Application.Ports;
 using Planilla_Backend.CleanArchitecture.Application.Reports;
-using Planilla_Backend.CleanArchitecture.Domain.Entities;
 using Planilla_Backend.CleanArchitecture.Domain.Reports;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Planilla_Backend.CleanArchitecture.Infrastructure
 {
@@ -139,16 +137,22 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
       {
         using var connection = new SqlConnection(_connectionString);
 
-        const string headerQuery =
-          @"SELECT
-              CONCAT_WS(' ', p.Nombre1, NULLIF(p.Nombre2, ''), p.Apellido1, NULLIF(p.Apellido2, '')) AS EmployerName
-            FROM Persona p
-            WHERE p.IdPersona = @employerId;
-
-            SELECT
-              FORMAT(ne.FechaInicio, 'dd/MM/yyyy') AS PaymentDate
-            FROM NominaEmpresa ne
-            WHERE ne.IdNominaEmpresa = @payrollId;";
+        const string headerQuery = @"
+            SELECT TOP (1)
+              e.Nombre AS CompanyName,
+              CONCAT_WS(' ', p.Nombre1, NULLIF(p.Nombre2, ''), p.Apellido1, NULLIF(p.Apellido2, '')) AS EmployerName,
+              cp.FechaPago AS PaymentDate,
+              nem.Costo AS Cost
+            FROM NominaEmpresa AS nem
+            INNER JOIN Empresa AS e ON e.IdEmpresa = nem.IdEmpresa
+            INNER JOIN UsuariosPorEmpresa AS upe ON upe.IdEmpresa = e.IdEmpresa
+            INNER JOIN Usuario AS u ON u.IdUsuario = upe.IdUsuario
+            INNER JOIN Persona AS p ON p.IdPersona = u.IdPersona
+            INNER JOIN NominaEmpleado AS ne ON ne.IdNominaEmpresa = nem.IdNominaEmpresa
+            INNER JOIN ComprobantePago AS cp ON cp.IdNominaEmpleado = ne.IdNominaEmpleado
+            WHERE p.IdPersona = @employerId
+              AND nem.IdNominaEmpresa = @payrollId
+            ORDER BY cp.FechaPago DESC;";
 
         const string detailsQuery =
           @"SELECT

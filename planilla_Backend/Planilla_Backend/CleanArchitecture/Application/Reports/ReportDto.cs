@@ -21,8 +21,6 @@ namespace Planilla_Backend.CleanArchitecture.Application.Reports
     public EmployeeType? EmployeeType { get; set; }
     public DateTime? DateFrom { get; set; }
     public DateTime? DateTo { get; set; }
-    public string? CompanyName { get; set; }
-    public string? EmployerFullname { get; set; }
   }
 
   public class ReportResultDto
