@@ -9,19 +9,13 @@ namespace Planilla_Backend.CleanArchitecture.API
   public class DashboardController : ControllerBase
   {
     private readonly IEmployerDashboardQuery _employerDashboardQuery;
-    private readonly IEmployerDashboardQuery _employeeDashboardQuery;
+    private readonly IEmployeeDashboardQuery _employeeDashboardQuery;
 
-    public DashboardController(IEmployerDashboardQuery employerDashboardQuery, IEmployerDashboardQuery employeeDashboardQuery)
+    public DashboardController(IEmployerDashboardQuery employerDashboardQuery, IEmployeeDashboardQuery employeeDashboardQuery)
     {
       _employerDashboardQuery = employerDashboardQuery;
       _employeeDashboardQuery = employeeDashboardQuery;
     }
-
-    /*
-    public DashboardController(IEmployerDashboardQuery employeeDashboardQuery)
-    {
-      _employeeDashboardQuery = employeeDashboardQuery;
-    }*/
 
     [HttpGet("employer/{companyId:int}")]
     public async Task<IActionResult> GetEmployerDashboard([FromRoute] int companyId)

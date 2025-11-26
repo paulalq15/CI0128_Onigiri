@@ -111,11 +111,12 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         var connection = new SqlConnection(_connectionString);
 
         const string query = @"
-          SELECT TOP 3
+          SELECT TOP 1
             ne.MontoBruto AS GrossSalary,
             ne.MontoNeto AS NetSalary
           FROM NominaEmpleado ne
-          WHERE IdEmpleado = @employeeId;";
+          WHERE IdEmpleado = @employeeId
+          ORDER BY ne.IdNominaEmpresa DESC;";
 
         var rows = await connection.QueryAsync<EmployeeDashboardEmployeeFiguresPerMonth>(query, new { EmployeeId = employeeId });
         var result = rows.ToList();

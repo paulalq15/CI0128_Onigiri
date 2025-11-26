@@ -4,6 +4,6 @@ namespace Planilla_Backend.CleanArchitecture.Application.Dashboards
 {
     public interface IEmployeeDashboardQuery
     {
-        Task<EmployeeDashboardDto> GetDashboardAsync(int companyId);
+        Task<EmployeeDashboardDto> GetDashboardAsync(int employeeId);
     }
 }

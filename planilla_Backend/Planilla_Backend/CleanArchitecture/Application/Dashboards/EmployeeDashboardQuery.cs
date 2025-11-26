@@ -6,6 +6,7 @@ namespace Planilla_Backend.CleanArchitecture.Application.Dashboards
     public class EmployeeDashboardQuery : IEmployeeDashboardQuery
     {
         private readonly IDashboardRepository _dashboardRepo;
+
         public EmployeeDashboardQuery(IDashboardRepository dashboardRepo)
         {
             _dashboardRepo = dashboardRepo;
@@ -15,7 +16,7 @@ namespace Planilla_Backend.CleanArchitecture.Application.Dashboards
         {
             if (employeeId <= 0) throw new ArgumentOutOfRangeException(nameof(employeeId));
 
-            var employeeFiguresPerMonth = _dashboardRepo.GetEmployeeFiguresPerMonth(employeeId);
+            var employeeFiguresPerMonth = this._dashboardRepo.GetEmployeeFiguresPerMonth(employeeId);
 
             await Task.WhenAll(employeeFiguresPerMonth);
 
