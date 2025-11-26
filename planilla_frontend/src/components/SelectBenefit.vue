@@ -235,7 +235,11 @@ export default {
     },
 
     filterAppliedElements() {
-      return this.appliedElements.filter((applied) => this.isActiveOrEndingThisMonth(applied));
+      return this.appliedElements.filter(
+        (applied) =>
+          this.benefitElementIds.has(applied.elementId) &&
+          this.isActiveOrEndingThisMonth(applied)
+      );
     },
   },
 
@@ -310,7 +314,7 @@ export default {
     },
 
     getTotalActiveAppliedBenefits() {
-      return this.appliedElements.filter((el) => this.isActiveOrEndingThisMonth(el)).length;
+      return this.filterAppliedElements.length;
     },
 
     getTotalActiveBenefits() {
