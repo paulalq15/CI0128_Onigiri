@@ -408,10 +408,8 @@ namespace Planilla_Backend.LayeredArchitecture.Repositories
 
          await connection.ExecuteAsync("DELETE FROM ElementoAplicado WHERE IdUsuario = @userId", new { userId }, transaction);
          await connection.ExecuteAsync("DELETE FROM UsuariosPorEmpresa WHERE IdUsuario = @userId", new { userId }, transaction);
-         await connection.ExecuteAsync("DELETE FROM ComprobantePago WHERE IdCreadoPor = @idPersona", new { idPersona }, transaction);
-         await connection.ExecuteAsync("DELETE FROM HojaHoras WHERE IdEmpleado = @idPersona OR IdAprovador = @idPersona", new { idPersona }, transaction);
-         await connection.ExecuteAsync("DELETE FROM HistorialLaboral WHERE IdEmpleado = @idPersona OR IdModificadoPor = @idPersona", new { idPersona }, transaction);
-         await connection.ExecuteAsync("DELETE FROM NominaEmpleado WHERE IdEmpleado = @idPersona", new { idPersona }, transaction);
+         await connection.ExecuteAsync("DELETE FROM HojaHoras WHERE IdEmpleado = @idPersona", new { idPersona }, transaction);
+         await connection.ExecuteAsync("DELETE FROM HistorialLaboral WHERE IdEmpleado = @idPersona", new { idPersona }, transaction);
          await connection.ExecuteAsync("DELETE FROM Contrato WHERE IdPersona = @idPersona", new { idPersona }, transaction);
          await connection.ExecuteAsync("DELETE FROM Direccion WHERE IdPersona = @idPersona", new { idPersona }, transaction);
          await connection.ExecuteAsync("DELETE FROM Usuario WHERE IdUsuario = @userId", new { userId }, transaction);
