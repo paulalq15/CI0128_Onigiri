@@ -1,0 +1,1508 @@
+{
+  "id": "a9a56255-724c-4dc9-9844-10160e215f4b",
+  "version": "2.0",
+  "name": "Reportes",
+  "url": "https://planillaonigiri.netlify.app",
+  "tests": [{
+    "id": "dababca8-ba6b-4b34-97bf-b3ea175be55c",
+    "name": "DescargarReportesEmpleadoSetiembre",
+    "commands": [{
+      "id": "fbddc721-b667-4382-bbc6-a371a444cd6a",
+      "comment": "",
+      "command": "open",
+      "target": "/auth/Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "31a14863-5d5a-4e6e-bb2d-5edc76149cf6",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1051x893",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "d7091328-ce41-47b0-8866-e273cd8c7654",
+      "comment": "",
+      "command": "assertEditable",
+      "target": "id=email",
+      "targets": [
+        ["id=email", "id"],
+        ["css=#email", "css:finder"],
+        ["xpath=//input[@id='email']", "xpath:attributes"],
+        ["xpath=//div[@id='authLayout']/main/div/div/div/form/div/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "decdfb4f-8c53-407a-aa65-1702cf2cf257",
+      "comment": "",
+      "command": "type",
+      "target": "id=email",
+      "targets": [
+        ["id=email", "id"],
+        ["css=#email", "css:finder"],
+        ["xpath=//input[@id='email']", "xpath:attributes"],
+        ["xpath=//div[@id='authLayout']/main/div/div/div/form/div/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "juan@test.com"
+    }, {
+      "id": "099d5f44-0d2a-4d55-8489-c79ac9268938",
+      "comment": "",
+      "command": "assertEditable",
+      "target": "id=password",
+      "targets": [
+        ["id=password", "id"],
+        ["css=#password", "css:finder"],
+        ["xpath=//input[@id='password']", "xpath:attributes"],
+        ["xpath=//div[@id='authLayout']/main/div/div/div/form/div[2]/div/input", "xpath:idRelative"],
+        ["xpath=//div[2]/div/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "b098d23c-9d7b-4f57-9849-24ec67e7413b",
+      "comment": "",
+      "command": "type",
+      "target": "id=password",
+      "targets": [
+        ["id=password", "id"],
+        ["css=#password", "css:finder"],
+        ["xpath=//input[@id='password']", "xpath:attributes"],
+        ["xpath=//div[@id='authLayout']/main/div/div/div/form/div[2]/div/input", "xpath:idRelative"],
+        ["xpath=//div[2]/div/input", "xpath:position"]
+      ],
+      "value": "Pass123."
+    }, {
+      "id": "2841d4b0-bcc4-4c2a-bff7-11a76fc9149c",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "css=.btn-custom",
+      "targets": [
+        ["css=.btn-custom", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//div[@id='authLayout']/main/div/div/div/form/div[5]/button", "xpath:idRelative"],
+        ["xpath=//div[5]/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Ingresar')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "062bcc0a-10ae-471a-911b-32fb1fd29872",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.btn-custom",
+      "targets": [
+        ["css=.btn-custom", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//div[@id='authLayout']/main/div/div/div/form/div[5]/button", "xpath:idRelative"],
+        ["xpath=//div[5]/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Ingresar')]", "xpath:innerText"]
+      ],
+      "value": "Ingresar"
+    }, {
+      "id": "211286b2-4b7d-49fc-895c-9f9b33e29c47",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn-custom",
+      "targets": [
+        ["css=.btn-custom", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//div[@id='authLayout']/main/div/div/div/form/div[5]/button", "xpath:idRelative"],
+        ["xpath=//div[5]/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Ingresar')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "75089050-f8bd-4eb1-8553-cad5a876a860",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=h4",
+      "targets": [
+        ["css=h4", "css:finder"],
+        ["xpath=//div[@id='webpageLayout']/main/div/div/h4", "xpath:idRelative"],
+        ["xpath=//h4", "xpath:position"],
+        ["xpath=//h4[contains(.,'Hola, Juan Solano Solano')]", "xpath:innerText"]
+      ],
+      "value": "Hola, Juan Solano Solano"
+    }, {
+      "id": "26dee6bc-5b2a-48c0-9c76-83e56c47b954",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "css=.bi-list",
+      "targets": [
+        ["css=.bi-list", "css:finder"],
+        ["xpath=//header[@id='headerComp']/ul/li/button/i", "xpath:idRelative"],
+        ["xpath=//i", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "3e7a7269-d436-4bef-befe-ab2882b5fdf5",
+      "comment": "",
+      "command": "click",
+      "target": "css=.bi-list",
+      "targets": [
+        ["css=.bi-list", "css:finder"],
+        ["xpath=//header[@id='headerComp']/ul/li/button/i", "xpath:idRelative"],
+        ["xpath=//i", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "a8ea68e6-adef-4368-83d5-608442bd67f3",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=sidebarLabel",
+      "targets": [
+        ["id=sidebarLabel", "id"],
+        ["css=#sidebarLabel", "css:finder"],
+        ["xpath=//h5[@id='sidebarLabel']", "xpath:attributes"],
+        ["xpath=//div[@id='appSidebar']/div/h5", "xpath:idRelative"],
+        ["xpath=//h5", "xpath:position"],
+        ["xpath=//h5[contains(.,'Empresa PI')]", "xpath:innerText"]
+      ],
+      "value": "Empresa PI"
+    }, {
+      "id": "b5f85dc6-9b00-4a86-8f0f-247972f71c2f",
+      "comment": "",
+      "command": "storeText",
+      "target": "id=sidebarLabel",
+      "targets": [
+        ["id=sidebarLabel", "id"],
+        ["css=#sidebarLabel", "css:finder"],
+        ["xpath=//h5[@id='sidebarLabel']", "xpath:attributes"],
+        ["xpath=//div[@id='appSidebar']/div/h5", "xpath:idRelative"],
+        ["xpath=//h5", "xpath:position"],
+        ["xpath=//h5[contains(.,'Empresa PI')]", "xpath:innerText"]
+      ],
+      "value": "empresa"
+    }, {
+      "id": "1b24ccd2-e557-4d8a-b689-eaa0215645c7",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.offcanvas-body > div > span",
+      "targets": [
+        ["css=.offcanvas-body > div > span", "css:finder"],
+        ["xpath=//div[@id='appSidebar']/div[2]/div/span", "xpath:idRelative"],
+        ["xpath=//div/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Juan Solano Solano')]", "xpath:innerText"]
+      ],
+      "value": "Juan Solano Solano"
+    }, {
+      "id": "835e0fe9-a083-442e-aa14-f9d3ccd6ee3f",
+      "comment": "",
+      "command": "storeText",
+      "target": "css=.offcanvas-body > div > span",
+      "targets": [
+        ["css=.offcanvas-body > div > span", "css:finder"],
+        ["xpath=//div[@id='appSidebar']/div[2]/div/span", "xpath:idRelative"],
+        ["xpath=//div/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Juan Solano Solano')]", "xpath:innerText"]
+      ],
+      "value": "empleado"
+    }, {
+      "id": "cd5cbb6a-d7a0-4cc3-9751-2928d9254a32",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "css=.my-3:nth-child(6) .flex-grow-1",
+      "targets": [
+        ["css=.my-3:nth-child(6) .flex-grow-1", "css:finder"],
+        ["xpath=//ul[@id='sidebar-accordion']/li[6]/button/span", "xpath:idRelative"],
+        ["xpath=//li[6]/button/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Reportes')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "7dd1c103-b795-48c6-817e-41d0fccbf587",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.my-3:nth-child(6) .flex-grow-1",
+      "targets": [
+        ["css=.my-3:nth-child(6) .flex-grow-1", "css:finder"],
+        ["xpath=//ul[@id='sidebar-accordion']/li[6]/button/span", "xpath:idRelative"],
+        ["xpath=//li[6]/button/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Reportes')]", "xpath:innerText"]
+      ],
+      "value": "Reportes"
+    }, {
+      "id": "8e4020aa-d18e-4ab9-acce-1b1cc2ef9bb3",
+      "comment": "",
+      "command": "click",
+      "target": "css=.my-3:nth-child(6) .flex-grow-1",
+      "targets": [
+        ["css=.my-3:nth-child(6) .flex-grow-1", "css:finder"],
+        ["xpath=//ul[@id='sidebar-accordion']/li[6]/button/span", "xpath:idRelative"],
+        ["xpath=//li[6]/button/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Reportes')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "957b9dcd-f2b3-47d5-bb73-2f78470bbe94",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=#report-collapse .px-2",
+      "targets": [
+        ["css=#report-collapse .px-2", "css:finder"],
+        ["xpath=//div[@id='report-collapse']/ul/li/a/span", "xpath:idRelative"],
+        ["xpath=//li[6]/div/ul/li/a/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Ver Reportes')]", "xpath:innerText"]
+      ],
+      "value": "Ver Reportes"
+    }, {
+      "id": "d65ffb4a-fdd5-47fd-8975-5909a73e5338",
+      "comment": "",
+      "command": "click",
+      "target": "css=#report-collapse .px-2",
+      "targets": [
+        ["css=#report-collapse .px-2", "css:finder"],
+        ["xpath=//div[@id='report-collapse']/ul/li/a/span", "xpath:idRelative"],
+        ["xpath=//li[6]/div/ul/li/a/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Ver Reportes')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "194a8704-2b35-429d-9122-8855dab04ae9",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "id=selectReports",
+      "targets": [
+        ["id=selectReports", "id"],
+        ["css=#selectReports", "css:finder"],
+        ["xpath=//select[@id='selectReports']", "xpath:attributes"],
+        ["xpath=//div[@id='webpageLayout']/main/div/div/select", "xpath:idRelative"],
+        ["xpath=//select", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "8bbceef8-8a2f-4373-9632-36e0869fcb4a",
+      "comment": "",
+      "command": "click",
+      "target": "id=selectReports",
+      "targets": [
+        ["id=selectReports", "id"],
+        ["css=#selectReports", "css:finder"],
+        ["xpath=//select[@id='selectReports']", "xpath:attributes"],
+        ["xpath=//div[@id='webpageLayout']/main/div/div/select", "xpath:idRelative"],
+        ["xpath=//select", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "15bc1759-4530-41cb-aedb-917729aa1ea0",
+      "comment": "",
+      "command": "select",
+      "target": "id=selectReports",
+      "targets": [],
+      "value": "label=Detalle de pago de planilla"
+    }, {
+      "id": "da9d29c6-7fee-4be9-97c2-dece03748355",
+      "comment": "",
+      "command": "waitForText",
+      "target": "css=h4",
+      "targets": [
+        ["css=h4", "css:finder"],
+        ["xpath=//div[@id='reportContent']/div/h4", "xpath:idRelative"],
+        ["xpath=//h4", "xpath:position"],
+        ["xpath=//h4[contains(.,'Reporte detalle de pago de planilla')]", "xpath:innerText"]
+      ],
+      "value": "Reporte detalle de pago de planilla"
+    }, {
+      "id": "76615b9b-4906-4426-a927-eb12eeae7575",
+      "comment": "",
+      "command": "select",
+      "target": "id=selectPeriod",
+      "targets": [],
+      "value": "label=01 septiembre 2025 - 30 septiembre 2025"
+    }, {
+      "id": "870cb54c-7315-4716-ad80-478013af3bb5",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=p:nth-child(2)",
+      "targets": [
+        ["css=p:nth-child(2)", "css:finder"],
+        ["xpath=//div[@id='reportContent']/div/p", "xpath:idRelative"],
+        ["xpath=//p", "xpath:position"],
+        ["xpath=//p[contains(.,'Empresa: Empresa PI')]", "xpath:innerText"]
+      ],
+      "value": "Empresa: ${empresa}"
+    }, {
+      "id": "988520bd-7a8c-4fda-b1ce-678f3e346496",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=p:nth-child(3)",
+      "targets": [
+        ["css=p:nth-child(3)", "css:finder"],
+        ["xpath=//div[@id='reportContent']/div/p[2]", "xpath:idRelative"],
+        ["xpath=//p[2]", "xpath:position"],
+        ["xpath=//p[contains(.,'Empleado: Juan Solano Solano')]", "xpath:innerText"]
+      ],
+      "value": "Empleado: ${empleado}"
+    }, {
+      "id": "9c643d29-cac2-4639-85ed-1309f8f33d6e",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=p:nth-child(4)",
+      "targets": [
+        ["css=p:nth-child(4)", "css:finder"],
+        ["xpath=//div[@id='reportContent']/div/p[3]", "xpath:idRelative"],
+        ["xpath=//p[3]", "xpath:position"],
+        ["xpath=//p[contains(.,'Tipo de contrato: Tiempo completo')]", "xpath:innerText"]
+      ],
+      "value": "Tipo de contrato: Tiempo completo"
+    }, {
+      "id": "a704743b-3d86-47d0-ab6d-dbdf0ac65e8c",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=p:nth-child(5)",
+      "targets": [
+        ["css=p:nth-child(5)", "css:finder"],
+        ["xpath=//div[@id='reportContent']/div/p[4]", "xpath:idRelative"],
+        ["xpath=//p[4]", "xpath:position"],
+        ["xpath=//p[contains(.,'Fecha de pago: 30/09/2025')]", "xpath:innerText"]
+      ],
+      "value": "Fecha de pago: 30/09/2025"
+    }, {
+      "id": "c397bba9-3e35-46c1-9623-0f5ab7e12058",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.line-net > .amount",
+      "targets": [
+        ["css=.line-net > .amount", "css:finder"],
+        ["xpath=//div[@id='reportTable']/table/tbody/tr[11]/td[2]", "xpath:idRelative"],
+        ["xpath=//tr[11]/td[2]", "xpath:position"],
+        ["xpath=//td[contains(.,'₡2 601 650,00')]", "xpath:innerText"]
+      ],
+      "value": "₡2 601 650,00"
+    }, {
+      "id": "dd26054c-3ff5-46f0-ba97-d02494d859e1",
+      "comment": "",
+      "command": "storeText",
+      "target": "css=.line-net > .amount",
+      "targets": [
+        ["css=.line-net > .amount", "css:finder"],
+        ["xpath=//div[@id='reportTable']/table/tbody/tr[11]/td[2]", "xpath:idRelative"],
+        ["xpath=//tr[11]/td[2]", "xpath:position"],
+        ["xpath=//td[contains(.,'₡2 601 650,00')]", "xpath:innerText"]
+      ],
+      "value": "PagoNetoSetiembre"
+    }, {
+      "id": "e92d460e-4ed2-47ab-b575-d61ad327a469",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "css=.btn-lg",
+      "targets": [
+        ["css=.btn-lg", "css:finder"],
+        ["xpath=(//button[@type='button'])[3]", "xpath:attributes"],
+        ["xpath=//div[@id='buttons']/button", "xpath:idRelative"],
+        ["xpath=//div[2]/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Descargar PDF')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "78fa39f0-7f0a-45b3-93c6-3ed97aba0cb5",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.btn-lg",
+      "targets": [
+        ["css=.btn-lg", "css:finder"],
+        ["xpath=(//button[@type='button'])[3]", "xpath:attributes"],
+        ["xpath=//div[@id='buttons']/button", "xpath:idRelative"],
+        ["xpath=//div[2]/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Descargar PDF')]", "xpath:innerText"]
+      ],
+      "value": "Descargar PDF"
+    }, {
+      "id": "cf6887f4-736e-4436-b942-c8c3736db09f",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn-lg",
+      "targets": [
+        ["css=.btn-lg", "css:finder"],
+        ["xpath=(//button[@type='button'])[3]", "xpath:attributes"],
+        ["xpath=//div[@id='buttons']/button", "xpath:idRelative"],
+        ["xpath=//div[2]/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Descargar PDF')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "d9904794-3663-4546-b9b9-3543333d2227",
+      "comment": "",
+      "command": "click",
+      "target": "id=selectReports",
+      "targets": [
+        ["id=selectReports", "id"],
+        ["css=#selectReports", "css:finder"],
+        ["xpath=//select[@id='selectReports']", "xpath:attributes"],
+        ["xpath=//div[@id='webpageLayout']/main/div/div/select", "xpath:idRelative"],
+        ["xpath=//select", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "02d7d087-75c0-4d5a-857f-447660aef776",
+      "comment": "",
+      "command": "select",
+      "target": "id=selectReports",
+      "targets": [],
+      "value": "label=Histórico de pago de planilla"
+    }, {
+      "id": "54c3c1cb-e539-4861-b347-59c765fec19a",
+      "comment": "",
+      "command": "waitForText",
+      "target": "css=h4",
+      "targets": [
+        ["css=h4", "css:finder"],
+        ["xpath=//div[@id='reportContent']/h4", "xpath:idRelative"],
+        ["xpath=//h4", "xpath:position"],
+        ["xpath=//h4[contains(.,'Reporte histórico pago de planilla')]", "xpath:innerText"]
+      ],
+      "value": "Reporte histórico pago de planilla"
+    }, {
+      "id": "4b462364-0a82-45a1-a737-e7c6e61410c0",
+      "comment": "",
+      "command": "click",
+      "target": "id=dateFrom",
+      "targets": [
+        ["id=dateFrom", "id"],
+        ["css=#dateFrom", "css:finder"],
+        ["xpath=//input[@id='dateFrom']", "xpath:attributes"],
+        ["xpath=//div[@id='reportFilters']/div/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "14aa4b13-ae00-4c7d-93ef-939a6115eb6a",
+      "comment": "",
+      "command": "executeScript",
+      "target": "var el = document.getElementById('dateFrom'); el.value = '2025-09-01'; el.dispatchEvent(new Event('input', { bubbles: true }));",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "97a120c0-215d-493b-8d01-4ccca2939e5f",
+      "comment": "",
+      "command": "click",
+      "target": "id=dateTo",
+      "targets": [
+        ["id=dateTo", "id"],
+        ["css=#dateTo", "css:finder"],
+        ["xpath=//input[@id='dateTo']", "xpath:attributes"],
+        ["xpath=//div[@id='reportFilters']/div[2]/input", "xpath:idRelative"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "cbc25f5c-94b4-419a-85d2-35a3276d4c5e",
+      "comment": "",
+      "command": "executeScript",
+      "target": "var el = document.getElementById('dateTo'); el.value = '2025-09-30'; el.dispatchEvent(new Event('input', { bubbles: true }));",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "e58731a9-e188-420c-b432-0ebd902aac07",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=p:nth-child(2)",
+      "targets": [
+        ["css=p:nth-child(2)", "css:finder"],
+        ["xpath=//div[@id='reportContent']/p", "xpath:idRelative"],
+        ["xpath=//p", "xpath:position"],
+        ["xpath=//p[contains(.,'Empresa: Empresa PI')]", "xpath:innerText"]
+      ],
+      "value": "Empresa: ${empresa}"
+    }, {
+      "id": "23848517-cb99-4b0f-a7ab-dc0540e79b76",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=p:nth-child(3)",
+      "targets": [
+        ["css=p:nth-child(3)", "css:finder"],
+        ["xpath=//div[@id='reportContent']/p[2]", "xpath:idRelative"],
+        ["xpath=//p[2]", "xpath:position"],
+        ["xpath=//p[contains(.,'Empleado: Juan Solano Solano')]", "xpath:innerText"]
+      ],
+      "value": "Empleado: ${empleado}"
+    }, {
+      "id": "11979d10-bedf-442d-82e9-12d0238c4691",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=p:nth-child(4)",
+      "targets": [
+        ["css=p:nth-child(3)", "css:finder"],
+        ["xpath=//div[@id='reportContent']/p[2]", "xpath:idRelative"],
+        ["xpath=//p[2]", "xpath:position"],
+        ["xpath=//p[contains(.,'Empleado: Juan Solano Solano')]", "xpath:innerText"]
+      ],
+      "value": "Fecha inicial: 01/09/2025"
+    }, {
+      "id": "9d351e49-269f-4d5d-a9ab-ad0acf61681b",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=p:nth-child(5)",
+      "targets": [
+        ["css=p:nth-child(3)", "css:finder"],
+        ["xpath=//div[@id='reportContent']/p[2]", "xpath:idRelative"],
+        ["xpath=//p[2]", "xpath:position"],
+        ["xpath=//p[contains(.,'Empleado: Juan Solano Solano')]", "xpath:innerText"]
+      ],
+      "value": "Fecha final: 30/09/2025"
+    }, {
+      "id": "940531b4-498b-4c69-b4e0-525181a8d764",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=tr:nth-child(1) > td:nth-child(7)",
+      "targets": [
+        ["css=tr:nth-child(1) > td:nth-child(7)", "css:finder"],
+        ["xpath=//div[@id='reportTable']/table/tbody/tr/td[7]", "xpath:idRelative"],
+        ["xpath=//td[7]", "xpath:position"],
+        ["xpath=//td[contains(.,'₡2 601 650,00')]", "xpath:innerText"]
+      ],
+      "value": "${PagoNetoSetiembre}"
+    }, {
+      "id": "8097be9f-065f-4557-8984-3f2ea7889ba5",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "css=.btn-lg",
+      "targets": [
+        ["css=.btn-lg", "css:finder"],
+        ["xpath=(//button[@type='button'])[3]", "xpath:attributes"],
+        ["xpath=//div[@id='buttons']/button", "xpath:idRelative"],
+        ["xpath=//div[2]/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Descargar Excel')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "db24ee06-84ba-44b1-9dfd-205a49703ef6",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.btn-lg",
+      "targets": [
+        ["css=.btn-lg", "css:finder"],
+        ["xpath=(//button[@type='button'])[3]", "xpath:attributes"],
+        ["xpath=//div[@id='buttons']/button", "xpath:idRelative"],
+        ["xpath=//div[2]/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Descargar Excel')]", "xpath:innerText"]
+      ],
+      "value": "Descargar Excel"
+    }, {
+      "id": "c1f33bf5-dd38-4b7f-9328-9288075c700d",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn-lg",
+      "targets": [
+        ["css=.btn-lg", "css:finder"],
+        ["xpath=(//button[@type='button'])[3]", "xpath:attributes"],
+        ["xpath=//div[@id='buttons']/button", "xpath:idRelative"],
+        ["xpath=//div[2]/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Descargar Excel')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "a691f95f-762a-4ee3-ad44-f41c59d8926f",
+      "comment": "",
+      "command": "click",
+      "target": "css=.bi-list",
+      "targets": [
+        ["css=.bi-list", "css:finder"],
+        ["xpath=//header[@id='headerComp']/ul/li/button/i", "xpath:idRelative"],
+        ["xpath=//i", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "99539e9e-b4ce-4344-9b91-ad019e3a11d3",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.link-body-emphasis > .gap-2 > span",
+      "targets": [
+        ["css=.link-body-emphasis > .gap-2 > span", "css:finder"],
+        ["xpath=//ul[@id='sidebar-accordion']/li[2]/a/div/span", "xpath:idRelative"],
+        ["xpath=//a/div/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Página principal')]", "xpath:innerText"]
+      ],
+      "value": "Página principal"
+    }, {
+      "id": "8451c55e-6080-40ea-ae4d-55be0cdcf03f",
+      "comment": "",
+      "command": "click",
+      "target": "css=.link-body-emphasis > .gap-2 > span",
+      "targets": [
+        ["css=.link-body-emphasis > .gap-2 > span", "css:finder"],
+        ["xpath=//ul[@id='sidebar-accordion']/li[2]/a/div/span", "xpath:idRelative"],
+        ["xpath=//a/div/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Página principal')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "06c00bea-3fa7-431a-8a1b-31a9229a41b0",
+      "comment": "",
+      "command": "click",
+      "target": "css=.bi-list",
+      "targets": [
+        ["css=.bi-list", "css:finder"],
+        ["xpath=//header[@id='headerComp']/ul/li/button/i", "xpath:idRelative"],
+        ["xpath=//i", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "2e97fb96-13c2-445d-ab33-0db550344e6d",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.nav-link > .gap-2 > span",
+      "targets": [
+        ["css=.nav-link > .gap-2 > span", "css:finder"],
+        ["xpath=//ul[@id='sidebar-accordion']/li[8]/button/div/span", "xpath:idRelative"],
+        ["xpath=//button/div/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Cerrar sesión')]", "xpath:innerText"]
+      ],
+      "value": "Cerrar sesión"
+    }, {
+      "id": "22b11587-494d-4896-aa1c-446c163c3d51",
+      "comment": "",
+      "command": "click",
+      "target": "css=.nav-link > .gap-2 > span",
+      "targets": [
+        ["css=.nav-link > .gap-2 > span", "css:finder"],
+        ["xpath=//ul[@id='sidebar-accordion']/li[8]/button/div/span", "xpath:idRelative"],
+        ["xpath=//button/div/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Cerrar sesión')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }]
+  }, {
+    "id": "b87b0b88-3d3c-41da-99f2-0ba51403dfd8",
+    "name": "DescargarReportesEmpleador",
+    "commands": [{
+      "id": "e878af08-0334-456d-bb7f-08da53d21187",
+      "comment": "",
+      "command": "open",
+      "target": "/auth/Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "501c1749-159f-4078-8e47-ceaf97350658",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1053x895",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "406c20d6-d5e2-4aa0-abbf-f99d22c41b97",
+      "comment": "",
+      "command": "type",
+      "target": "id=email",
+      "targets": [
+        ["id=email", "id"],
+        ["css=#email", "css:finder"],
+        ["xpath=//input[@id='email']", "xpath:attributes"],
+        ["xpath=//div[@id='authLayout']/main/div/div/div/form/div/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "empleador@test.com"
+    }, {
+      "id": "bd2fe7cf-2d5c-48c1-8a8f-fe18a1fdee95",
+      "comment": "",
+      "command": "type",
+      "target": "id=password",
+      "targets": [
+        ["id=password", "id"],
+        ["css=#password", "css:finder"],
+        ["xpath=//input[@id='password']", "xpath:attributes"],
+        ["xpath=//div[@id='authLayout']/main/div/div/div/form/div[2]/div/input", "xpath:idRelative"],
+        ["xpath=//div[2]/div/input", "xpath:position"]
+      ],
+      "value": "Pass123."
+    }, {
+      "id": "e0952a70-fb27-4bd7-b30c-9977fddecac2",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.btn-custom",
+      "targets": [
+        ["css=.btn-custom", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//div[@id='authLayout']/main/div/div/div/form/div[5]/button", "xpath:idRelative"],
+        ["xpath=//div[5]/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Ingresar')]", "xpath:innerText"]
+      ],
+      "value": "Ingresar"
+    }, {
+      "id": "8edf0a6e-2079-44e4-9dc3-7cb13d104959",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn-custom",
+      "targets": [
+        ["css=.btn-custom", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//div[@id='authLayout']/main/div/div/div/form/div[5]/button", "xpath:idRelative"],
+        ["xpath=//div[5]/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Ingresar')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "a078d9b4-2290-45d7-989a-1987e42e0412",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=h4",
+      "targets": [
+        ["css=h4", "css:finder"],
+        ["xpath=//div[@id='webpageLayout']/main/div/div/h4", "xpath:idRelative"],
+        ["xpath=//h4", "xpath:position"],
+        ["xpath=//h4[contains(.,'Hola, Paula Lopez Quesada')]", "xpath:innerText"]
+      ],
+      "value": "Hola, Paula Lopez Quesada"
+    }, {
+      "id": "15a86572-e5f4-42eb-bead-31ddcc2d88b3",
+      "comment": "",
+      "command": "storeText",
+      "target": "css=.fw-medium:nth-child(1)",
+      "targets": [
+        ["css=.fw-medium:nth-child(1)", "css:finder"],
+        ["xpath=//header[@id='headerComp']/ul/li/div/button/span", "xpath:idRelative"],
+        ["xpath=//button/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Empresa PI')]", "xpath:innerText"]
+      ],
+      "value": "empresa"
+    }, {
+      "id": "fd8e55f0-e7c9-4b84-9c98-35fd62867970",
+      "comment": "",
+      "command": "click",
+      "target": "css=.bi-list",
+      "targets": [
+        ["css=.bi-list", "css:finder"],
+        ["xpath=//header[@id='headerComp']/ul/li[2]/button/i", "xpath:idRelative"],
+        ["xpath=//i", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "e26b6610-28b6-4cda-b9d0-eb9bcf6e7144",
+      "comment": "",
+      "command": "verifyText",
+      "target": "id=sidebarLabel",
+      "targets": [
+        ["id=sidebarLabel", "id"],
+        ["css=#sidebarLabel", "css:finder"],
+        ["xpath=//h5[@id='sidebarLabel']", "xpath:attributes"],
+        ["xpath=//div[@id='appSidebar']/div/h5", "xpath:idRelative"],
+        ["xpath=//h5", "xpath:position"],
+        ["xpath=//h5[contains(.,'Empresa PI')]", "xpath:innerText"]
+      ],
+      "value": "${empresa}"
+    }, {
+      "id": "784489d6-9035-4a56-ba6e-fc5682d4c660",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.offcanvas-body > div > span",
+      "targets": [
+        ["css=.offcanvas-body > div > span", "css:finder"],
+        ["xpath=//div[@id='appSidebar']/div[2]/div/span", "xpath:idRelative"],
+        ["xpath=//div/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Paula Lopez Quesada')]", "xpath:innerText"]
+      ],
+      "value": "Paula Lopez Quesada"
+    }, {
+      "id": "76383363-16cc-4ab8-a4ae-551ced2ab029",
+      "comment": "",
+      "command": "storeText",
+      "target": "css=.offcanvas-body > div > span",
+      "targets": [
+        ["css=.offcanvas-body > div > span", "css:finder"],
+        ["xpath=//div[@id='appSidebar']/div[2]/div/span", "xpath:idRelative"],
+        ["xpath=//div/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Paula Lopez Quesada')]", "xpath:innerText"]
+      ],
+      "value": "empleador"
+    }, {
+      "id": "bef007e8-0090-414d-84fd-71e5956a03b3",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.my-3:nth-child(6) .flex-grow-1",
+      "targets": [
+        ["css=.my-3:nth-child(6) .flex-grow-1", "css:finder"],
+        ["xpath=//ul[@id='sidebar-accordion']/li[6]/button/span", "xpath:idRelative"],
+        ["xpath=//li[6]/button/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Reportes')]", "xpath:innerText"]
+      ],
+      "value": "Reportes"
+    }, {
+      "id": "48931f06-c7b0-4474-9489-c3706588fe5b",
+      "comment": "",
+      "command": "click",
+      "target": "css=.my-3:nth-child(6) .flex-grow-1",
+      "targets": [
+        ["css=.my-3:nth-child(6) .flex-grow-1", "css:finder"],
+        ["xpath=//ul[@id='sidebar-accordion']/li[6]/button/span", "xpath:idRelative"],
+        ["xpath=//li[6]/button/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Reportes')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "ddb9249a-2bfb-4bdb-857e-3c7ad3639413",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=#report-collapse .px-2",
+      "targets": [
+        ["css=#report-collapse .px-2", "css:finder"],
+        ["xpath=//div[@id='report-collapse']/ul/li/a/span", "xpath:idRelative"],
+        ["xpath=//li[6]/div/ul/li/a/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Ver Reportes')]", "xpath:innerText"]
+      ],
+      "value": "Ver Reportes"
+    }, {
+      "id": "d3678d37-658d-4e0c-9ebe-a83ea4aa2eee",
+      "comment": "",
+      "command": "click",
+      "target": "css=#report-collapse .px-2",
+      "targets": [
+        ["css=#report-collapse .px-2", "css:finder"],
+        ["xpath=//div[@id='report-collapse']/ul/li/a/span", "xpath:idRelative"],
+        ["xpath=//li[6]/div/ul/li/a/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Ver Reportes')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "e6f87dc3-f1bb-4971-a865-c49909687ee2",
+      "comment": "",
+      "command": "click",
+      "target": "id=selectReports",
+      "targets": [
+        ["id=selectReports", "id"],
+        ["css=#selectReports", "css:finder"],
+        ["xpath=//select[@id='selectReports']", "xpath:attributes"],
+        ["xpath=//div[@id='webpageLayout']/main/div/div/select", "xpath:idRelative"],
+        ["xpath=//select", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "14983d2a-f1bb-4346-9007-dd21dc05a1b2",
+      "comment": "",
+      "command": "select",
+      "target": "id=selectReports",
+      "targets": [],
+      "value": "label=Detalle de pago de planilla"
+    }, {
+      "id": "577b7129-6ed3-49c4-bebe-6485ae4d6cce",
+      "comment": "",
+      "command": "waitForText",
+      "target": "css=h4",
+      "targets": [
+        ["css=h4", "css:finder"],
+        ["xpath=//div[@id='reportContent']/div/h4", "xpath:idRelative"],
+        ["xpath=//h4", "xpath:position"],
+        ["xpath=//h4[contains(.,'Reporte detalle de pago de planilla (empleador)')]", "xpath:innerText"]
+      ],
+      "value": "Reporte detalle de pago de planilla (empleador)"
+    }, {
+      "id": "5661d8bf-71ea-4a5a-8152-4cc26ebb8f4f",
+      "comment": "",
+      "command": "click",
+      "target": "id=selectCompany",
+      "targets": [
+        ["id=selectCompany", "id"],
+        ["css=#selectCompany", "css:finder"],
+        ["xpath=//select[@id='selectCompany']", "xpath:attributes"],
+        ["xpath=//div[@id='reportFilters']/div/select", "xpath:idRelative"],
+        ["xpath=//div/div/div/select", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "5360be3d-d7c4-4bed-8ea1-a880a3ea731a",
+      "comment": "",
+      "command": "select",
+      "target": "id=selectCompany",
+      "targets": [],
+      "value": "label=${empresa}"
+    }, {
+      "id": "bd63da00-ceb4-4f82-90d4-bbf25a45d55f",
+      "comment": "",
+      "command": "click",
+      "target": "id=selectPeriod",
+      "targets": [
+        ["id=selectPeriod", "id"],
+        ["css=#selectPeriod", "css:finder"],
+        ["xpath=//select[@id='selectPeriod']", "xpath:attributes"],
+        ["xpath=//div[@id='reportFilters']/div[2]/select", "xpath:idRelative"],
+        ["xpath=//div[2]/select", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "681bcfa4-4ea6-4af0-aaf4-07aafb3cbf95",
+      "comment": "",
+      "command": "select",
+      "target": "id=selectPeriod",
+      "targets": [],
+      "value": "label=01/09/2025 - 30/09/2025"
+    }, {
+      "id": "3fa349a6-4192-4273-b9b9-1848dbde05f4",
+      "comment": "",
+      "command": "waitForText",
+      "target": "css=h4",
+      "targets": [
+        ["css=h4", "css:finder"],
+        ["xpath=//div[@id='reportContent']/div/h4", "xpath:idRelative"],
+        ["xpath=//h4", "xpath:position"],
+        ["xpath=//h4[contains(.,'Reporte detalle de pago de planilla (empleador)')]", "xpath:innerText"]
+      ],
+      "value": "Reporte detalle de pago de planilla (empleador)"
+    }, {
+      "id": "8a9843f9-169c-4ac9-b367-6a1728821976",
+      "comment": "",
+      "command": "verifyText",
+      "target": "css=p:nth-child(2)",
+      "targets": [
+        ["css=p:nth-child(2)", "css:finder"],
+        ["xpath=//div[@id='reportContent']/div/p", "xpath:idRelative"],
+        ["xpath=//p", "xpath:position"],
+        ["xpath=//p[contains(.,'Empresa: Empresa PI')]", "xpath:innerText"]
+      ],
+      "value": "Empresa: ${empresa}"
+    }, {
+      "id": "3ca5ace5-3298-456b-b450-9acfb4ed4bef",
+      "comment": "",
+      "command": "verifyText",
+      "target": "css=p:nth-child(3)",
+      "targets": [
+        ["css=p:nth-child(3)", "css:finder"],
+        ["xpath=//div[@id='reportContent']/div/p[2]", "xpath:idRelative"],
+        ["xpath=//p[2]", "xpath:position"],
+        ["xpath=//p[contains(.,'Empleador: Paula Lopez Quesada')]", "xpath:innerText"]
+      ],
+      "value": "Empleador: ${empleador}"
+    }, {
+      "id": "de2d32d9-fc71-4f59-809d-55f3db75f8cf",
+      "comment": "",
+      "command": "verifyText",
+      "target": "css=p:nth-child(4)",
+      "targets": [
+        ["css=p:nth-child(4)", "css:finder"],
+        ["xpath=//div[@id='reportContent']/div/p[3]", "xpath:idRelative"],
+        ["xpath=//p[3]", "xpath:position"],
+        ["xpath=//p[contains(.,'Fecha de pago: 30/09/2025')]", "xpath:innerText"]
+      ],
+      "value": "Fecha de pago: 30/09/2025"
+    }, {
+      "id": "abaec245-1dbf-4127-837f-1f6c491ca8b2",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.line-cost > .amount",
+      "targets": [
+        ["css=.line-cost > .amount", "css:finder"],
+        ["xpath=//div[@id='reportTable']/table/tbody/tr[20]/td[2]", "xpath:idRelative"],
+        ["xpath=//tr[20]/td[2]", "xpath:position"],
+        ["xpath=//td[contains(.,'₡7 590 050,00')]", "xpath:innerText"]
+      ],
+      "value": "₡7 590 050,00"
+    }, {
+      "id": "1eb47268-0050-464c-8f2d-ff04eb3aaff0",
+      "comment": "",
+      "command": "storeText",
+      "target": "css=.line-cost > .amount",
+      "targets": [
+        ["css=.line-cost > .amount", "css:finder"],
+        ["xpath=//div[@id='reportTable']/table/tbody/tr[20]/td[2]", "xpath:idRelative"],
+        ["xpath=//tr[20]/td[2]", "xpath:position"],
+        ["xpath=//td[contains(.,'₡7 590 050,00')]", "xpath:innerText"]
+      ],
+      "value": "CostoSetiembre"
+    }, {
+      "id": "6e532b1f-7c9f-4c48-8df8-5003b56314db",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "css=.btn-lg",
+      "targets": [
+        ["css=.btn-lg", "css:finder"],
+        ["xpath=(//button[@type='button'])[4]", "xpath:attributes"],
+        ["xpath=//div[@id='buttons']/button", "xpath:idRelative"],
+        ["xpath=//div[2]/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Descargar PDF')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "b4ffc546-fbe9-4cc0-98c7-6ebe7570ca2b",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.btn-lg",
+      "targets": [
+        ["css=.btn-lg", "css:finder"],
+        ["xpath=(//button[@type='button'])[4]", "xpath:attributes"],
+        ["xpath=//div[@id='buttons']/button", "xpath:idRelative"],
+        ["xpath=//div[2]/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Descargar PDF')]", "xpath:innerText"]
+      ],
+      "value": "Descargar PDF"
+    }, {
+      "id": "38e6b0c8-8900-4803-85c5-dfef7057f4f5",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn-lg",
+      "targets": [
+        ["css=.btn-lg", "css:finder"],
+        ["xpath=(//button[@type='button'])[4]", "xpath:attributes"],
+        ["xpath=//div[@id='buttons']/button", "xpath:idRelative"],
+        ["xpath=//div[2]/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Descargar PDF')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "1858c76a-6e2b-4d26-aa33-e1a08f4d6fce",
+      "comment": "",
+      "command": "click",
+      "target": "id=selectReports",
+      "targets": [
+        ["id=selectReports", "id"],
+        ["css=#selectReports", "css:finder"],
+        ["xpath=//select[@id='selectReports']", "xpath:attributes"],
+        ["xpath=//div[@id='webpageLayout']/main/div/div/select", "xpath:idRelative"],
+        ["xpath=//select", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "62021f57-f9fd-44db-bbca-dc6dc52369bd",
+      "comment": "",
+      "command": "select",
+      "target": "id=selectReports",
+      "targets": [],
+      "value": "label=Histórico de pago de planilla"
+    }, {
+      "id": "8ef34017-782f-480f-9ef8-97cda3a9454b",
+      "comment": "",
+      "command": "waitForText",
+      "target": "css=h4",
+      "targets": [
+        ["css=h4", "css:finder"],
+        ["xpath=//div[@id='reportContent']/h4", "xpath:idRelative"],
+        ["xpath=//h4", "xpath:position"],
+        ["xpath=//h4[contains(.,'Reporte histórico pago de planilla')]", "xpath:innerText"]
+      ],
+      "value": "Reporte histórico pago de planilla"
+    }, {
+      "id": "df4fa240-2f2f-4eca-8e67-7102b3d2dcd9",
+      "comment": "",
+      "command": "click",
+      "target": "id=selectCompany",
+      "targets": [
+        ["id=selectCompany", "id"],
+        ["css=#selectCompany", "css:finder"],
+        ["xpath=//select[@id='selectCompany']", "xpath:attributes"],
+        ["xpath=//div[@id='reportFilters']/div/select", "xpath:idRelative"],
+        ["xpath=//div/div/div/select", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "161edce2-ff59-4712-a53e-98ec37881f52",
+      "comment": "",
+      "command": "select",
+      "target": "id=selectCompany",
+      "targets": [],
+      "value": "label=${empresa}"
+    }, {
+      "id": "d211cbeb-0120-4ebe-8567-1ed9a444030e",
+      "comment": "",
+      "command": "click",
+      "target": "id=dateFrom",
+      "targets": [
+        ["id=dateFrom", "id"],
+        ["css=#dateFrom", "css:finder"],
+        ["xpath=//input[@id='dateFrom']", "xpath:attributes"],
+        ["xpath=//div[@id='reportFilters']/div[2]/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "ec089b5e-9641-4359-8778-0c9a9661eaef",
+      "comment": "",
+      "command": "executeScript",
+      "target": "var el = document.getElementById('dateFrom'); el.value = '2025-09-01'; el.dispatchEvent(new Event('input', { bubbles: true }));",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "452b7720-a2c0-484e-987d-a061f3303c6d",
+      "comment": "",
+      "command": "click",
+      "target": "id=dateTo",
+      "targets": [
+        ["id=dateTo", "id"],
+        ["css=#dateTo", "css:finder"],
+        ["xpath=//input[@id='dateTo']", "xpath:attributes"],
+        ["xpath=//div[@id='reportFilters']/div[3]/input", "xpath:idRelative"],
+        ["xpath=//div[3]/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "a021690a-07db-498a-850f-7565237bedc6",
+      "comment": "",
+      "command": "executeScript",
+      "target": "var el = document.getElementById('dateTo'); el.value = '2025-09-30'; el.dispatchEvent(new Event('input', { bubbles: true }));",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "289203ee-6eca-4425-8779-d2e2824d289e",
+      "comment": "",
+      "command": "waitForText",
+      "target": "css=h4",
+      "targets": [
+        ["css=h4", "css:finder"],
+        ["xpath=//div[@id='reportContent']/h4", "xpath:idRelative"],
+        ["xpath=//h4", "xpath:position"],
+        ["xpath=//h4[contains(.,'Reporte histórico pago de planilla')]", "xpath:innerText"]
+      ],
+      "value": "Reporte histórico pago de planilla"
+    }, {
+      "id": "2cbf5578-581c-49ac-a469-4a2a4284e4c6",
+      "comment": "",
+      "command": "verifyText",
+      "target": "css=p:nth-child(2)",
+      "targets": [
+        ["css=p:nth-child(2)", "css:finder"],
+        ["xpath=//div[@id='reportContent']/p", "xpath:idRelative"],
+        ["xpath=//p", "xpath:position"],
+        ["xpath=//p[contains(.,'Empresa: Empresa PI')]", "xpath:innerText"]
+      ],
+      "value": "Empresa: Empresa PI"
+    }, {
+      "id": "263350b0-0bcb-4c18-9b3f-b44f39dd8d68",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=p:nth-child(3)",
+      "targets": [
+        ["css=p:nth-child(3)", "css:finder"],
+        ["xpath=//div[@id='reportContent']/p[2]", "xpath:idRelative"],
+        ["xpath=//p[2]", "xpath:position"],
+        ["xpath=//p[contains(.,'Fecha inicial: 01/09/2025')]", "xpath:innerText"]
+      ],
+      "value": "Fecha inicial: 01/09/2025"
+    }, {
+      "id": "2a6c74dd-ff86-4bdb-974c-374fc10ff640",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=p:nth-child(4)",
+      "targets": [
+        ["css=p:nth-child(4)", "css:finder"],
+        ["xpath=//div[@id='reportContent']/p[3]", "xpath:idRelative"],
+        ["xpath=//p[3]", "xpath:position"],
+        ["xpath=//p[contains(.,'Fecha final: 30/09/2025')]", "xpath:innerText"]
+      ],
+      "value": "Fecha final: 30/09/2025"
+    }, {
+      "id": "49d5a594-88e1-4ecd-8596-93d1496df54d",
+      "comment": "",
+      "command": "verifyText",
+      "target": "css=tr:nth-child(1) > td:nth-child(8)",
+      "targets": [
+        ["css=tr:nth-child(1) > td:nth-child(8)", "css:finder"],
+        ["xpath=//div[@id='reportTable']/table/tbody/tr/td[8]", "xpath:idRelative"],
+        ["xpath=//td[8]", "xpath:position"],
+        ["xpath=//td[contains(.,'₡7 590 050,00')]", "xpath:innerText"]
+      ],
+      "value": "${CostoSetiembre}"
+    }, {
+      "id": "26d46456-9256-40f8-95e1-52ab2a6abf46",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "css=.btn-lg",
+      "targets": [
+        ["css=.btn-lg", "css:finder"],
+        ["xpath=(//button[@type='button'])[4]", "xpath:attributes"],
+        ["xpath=//div[@id='buttons']/button", "xpath:idRelative"],
+        ["xpath=//div[2]/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Descargar Excel')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "7bc46f1c-660d-4334-bbba-f5272783c7c1",
+      "comment": "",
+      "command": "verifyText",
+      "target": "css=.btn-lg",
+      "targets": [
+        ["css=.btn-lg", "css:finder"],
+        ["xpath=(//button[@type='button'])[4]", "xpath:attributes"],
+        ["xpath=//div[@id='buttons']/button", "xpath:idRelative"],
+        ["xpath=//div[2]/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Descargar Excel')]", "xpath:innerText"]
+      ],
+      "value": "Descargar Excel"
+    }, {
+      "id": "d8ea00cf-d4c7-4eaf-bc40-9b0b1a76010d",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn-lg",
+      "targets": [
+        ["css=.btn-lg", "css:finder"],
+        ["xpath=(//button[@type='button'])[4]", "xpath:attributes"],
+        ["xpath=//div[@id='buttons']/button", "xpath:idRelative"],
+        ["xpath=//div[2]/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Descargar Excel')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "f2f1b518-d4d5-4f78-b6c8-d69e5062d513",
+      "comment": "",
+      "command": "click",
+      "target": "id=selectReports",
+      "targets": [
+        ["id=selectReports", "id"],
+        ["css=#selectReports", "css:finder"],
+        ["xpath=//select[@id='selectReports']", "xpath:attributes"],
+        ["xpath=//div[@id='webpageLayout']/main/div/div/select", "xpath:idRelative"],
+        ["xpath=//select", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "c13d5d5e-f3b3-4b6e-b969-e6428b959a69",
+      "comment": "",
+      "command": "select",
+      "target": "id=selectReports",
+      "targets": [],
+      "value": "label=Detalle de Planilla Por Empleado"
+    }, {
+      "id": "d1f8ffa5-20e4-4e2a-914f-48e373e47346",
+      "comment": "",
+      "command": "waitForText",
+      "target": "css=h4",
+      "targets": [
+        ["css=h4", "css:finder"],
+        ["xpath=//div[@id='reportContent']/h4", "xpath:idRelative"],
+        ["xpath=//h4", "xpath:position"],
+        ["xpath=//h4[contains(.,'Detalle de Planilla Por Empleado')]", "xpath:innerText"]
+      ],
+      "value": "Detalle de Planilla Por Empleado"
+    }, {
+      "id": "8bcae4dc-7a31-4bf1-8a10-ceda4e9f041b",
+      "comment": "",
+      "command": "click",
+      "target": "id=Company",
+      "targets": [
+        ["id=Company", "id"],
+        ["css=#Company", "css:finder"],
+        ["xpath=//select[@id='Company']", "xpath:attributes"],
+        ["xpath=//div[@id='reportFilters']/div/select", "xpath:idRelative"],
+        ["xpath=//div/div/div/select", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "3ee6a8f0-c3fe-4aa8-9bcc-3d822ea355be",
+      "comment": "",
+      "command": "select",
+      "target": "id=Company",
+      "targets": [],
+      "value": "label=${empresa}"
+    }, {
+      "id": "1fbf9aad-b7be-497a-8304-9d11988f6277",
+      "comment": "",
+      "command": "click",
+      "target": "id=EmployeeType",
+      "targets": [
+        ["id=EmployeeType", "id"],
+        ["css=#EmployeeType", "css:finder"],
+        ["xpath=//select[@id='EmployeeType']", "xpath:attributes"],
+        ["xpath=//div[@id='reportFilters']/div[2]/select", "xpath:idRelative"],
+        ["xpath=//div[2]/select", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "9959f192-2429-44d0-805c-7ae927338745",
+      "comment": "",
+      "command": "select",
+      "target": "id=EmployeeType",
+      "targets": [],
+      "value": "label=Tiempo Completo"
+    }, {
+      "id": "b6e0c217-de5f-45c7-8c2b-54a88112cd39",
+      "comment": "",
+      "command": "click",
+      "target": "id=StartDate",
+      "targets": [
+        ["id=StartDate", "id"],
+        ["css=#StartDate", "css:finder"],
+        ["xpath=//input[@id='StartDate']", "xpath:attributes"],
+        ["xpath=//div[@id='reportFilters']/div[4]/input", "xpath:idRelative"],
+        ["xpath=//div[4]/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "d16253e7-48c1-4d50-a1c7-7aa13af9d0ee",
+      "comment": "",
+      "command": "executeScript",
+      "target": "var el = document.getElementById('StartDate'); el.value = '2025-09-01'; el.dispatchEvent(new Event('input', { bubbles: true }));",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "74403b07-254a-4248-b5dc-ed11311d33f7",
+      "comment": "",
+      "command": "click",
+      "target": "id=EndDate",
+      "targets": [
+        ["id=EndDate", "id"],
+        ["css=#EndDate", "css:finder"],
+        ["xpath=//input[@id='EndDate']", "xpath:attributes"],
+        ["xpath=//div[@id='reportFilters']/div[5]/input", "xpath:idRelative"],
+        ["xpath=//div[5]/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "654aedb0-c1dd-455a-a575-4f673a564594",
+      "comment": "",
+      "command": "executeScript",
+      "target": "var el = document.getElementById('EndDate'); el.value = '2025-09-30'; el.dispatchEvent(new Event('input', { bubbles: true }));",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "6d2b3a59-7460-4eca-bc86-1661ce32c14e",
+      "comment": "",
+      "command": "waitForText",
+      "target": "css=h4",
+      "targets": [
+        ["css=h4", "css:finder"],
+        ["xpath=//div[@id='reportContent']/h4", "xpath:idRelative"],
+        ["xpath=//h4", "xpath:position"],
+        ["xpath=//h4[contains(.,'Detalle de Planilla Por Empleado')]", "xpath:innerText"]
+      ],
+      "value": "Detalle de Planilla Por Empleado"
+    }, {
+      "id": "2afbdc40-5982-4625-ac59-4814236e58e5",
+      "comment": "",
+      "command": "verifyText",
+      "target": "css=p:nth-child(2)",
+      "targets": [
+        ["css=p:nth-child(2)", "css:finder"],
+        ["xpath=//div[@id='reportContent']/p", "xpath:idRelative"],
+        ["xpath=//p", "xpath:position"],
+        ["xpath=//p[contains(.,'Empresa: Empresa PI Quincenal')]", "xpath:innerText"]
+      ],
+      "value": "Empresa: ${empresa}"
+    }, {
+      "id": "4e5916cd-0ae4-4362-bf7f-3085ab5c4599",
+      "comment": "",
+      "command": "verifyText",
+      "target": "css=p:nth-child(3)",
+      "targets": [
+        ["css=p:nth-child(3)", "css:finder"],
+        ["xpath=//div[@id='reportContent']/p[2]", "xpath:idRelative"],
+        ["xpath=//p[2]", "xpath:position"],
+        ["xpath=//p[contains(.,'Empleador: Paula Lopez Quesada')]", "xpath:innerText"]
+      ],
+      "value": "Empleador: ${empleador}"
+    }, {
+      "id": "c231bcfe-b81f-4ce3-a49d-9a25994ce6a6",
+      "comment": "",
+      "command": "verifyText",
+      "target": "css=.totals-row > td:nth-child(9)",
+      "targets": [
+        ["css=.totals-row > td:nth-child(9)", "css:finder"],
+        ["xpath=//div[@id='reportTable']/table/tbody/tr[4]/td[9]", "xpath:idRelative"],
+        ["xpath=//tr[4]/td[9]", "xpath:position"],
+        ["xpath=//td[contains(.,'₡7 590 050,00')]", "xpath:innerText"]
+      ],
+      "value": "${CostoSetiembre}"
+    }, {
+      "id": "2a601e2a-fa66-4f80-ba80-d4aa39a59ff2",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "css=.btn-lg",
+      "targets": [
+        ["css=.btn-lg", "css:finder"],
+        ["xpath=(//button[@type='button'])[4]", "xpath:attributes"],
+        ["xpath=//div[@id='buttons']/button", "xpath:idRelative"],
+        ["xpath=//div[2]/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Descargar Excel')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "75f14d2f-753b-4651-9d11-499c25c77fe5",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.btn-lg",
+      "targets": [
+        ["css=.btn-lg", "css:finder"],
+        ["xpath=(//button[@type='button'])[4]", "xpath:attributes"],
+        ["xpath=//div[@id='buttons']/button", "xpath:idRelative"],
+        ["xpath=//div[2]/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Descargar Excel')]", "xpath:innerText"]
+      ],
+      "value": "Descargar Excel"
+    }, {
+      "id": "725df06c-4971-4cbf-9230-9406b14f04ff",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn-lg",
+      "targets": [
+        ["css=.btn-lg", "css:finder"],
+        ["xpath=(//button[@type='button'])[4]", "xpath:attributes"],
+        ["xpath=//div[@id='buttons']/button", "xpath:idRelative"],
+        ["xpath=//div[2]/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Descargar Excel')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "88c9db4e-a1be-40c9-97ed-b99d02aa9007",
+      "comment": "",
+      "command": "click",
+      "target": "css=.bi-list",
+      "targets": [
+        ["css=.bi-list", "css:finder"],
+        ["xpath=//header[@id='headerComp']/ul/li[2]/button/i", "xpath:idRelative"],
+        ["xpath=//i", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "da48e709-ef18-4799-b2a1-fbb168bfc545",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.link-body-emphasis > .gap-2",
+      "targets": [
+        ["css=.link-body-emphasis > .gap-2", "css:finder"],
+        ["xpath=//ul[@id='sidebar-accordion']/li[2]/a/div", "xpath:idRelative"],
+        ["xpath=//a/div", "xpath:position"]
+      ],
+      "value": "Página principal"
+    }, {
+      "id": "a5f90d39-a867-4abf-ab6b-ffe049fce14c",
+      "comment": "",
+      "command": "click",
+      "target": "css=.link-body-emphasis > .gap-2",
+      "targets": [
+        ["css=.link-body-emphasis > .gap-2", "css:finder"],
+        ["xpath=//ul[@id='sidebar-accordion']/li[2]/a/div", "xpath:idRelative"],
+        ["xpath=//a/div", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "7b0fa255-918a-41f3-ab33-6b4f9d4325d9",
+      "comment": "",
+      "command": "click",
+      "target": "css=.bi-list",
+      "targets": [
+        ["css=.bi-list", "css:finder"],
+        ["xpath=//header[@id='headerComp']/ul/li[2]/button/i", "xpath:idRelative"],
+        ["xpath=//i", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "9b1bafee-770e-47a3-a99e-3d67bfd1aad2",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.nav-link > .gap-2 > span",
+      "targets": [
+        ["css=.nav-link > .gap-2 > span", "css:finder"],
+        ["xpath=//ul[@id='sidebar-accordion']/li[8]/button/div/span", "xpath:idRelative"],
+        ["xpath=//button/div/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Cerrar sesión')]", "xpath:innerText"]
+      ],
+      "value": "Cerrar sesión"
+    }, {
+      "id": "67f57142-8eef-4c56-ac7a-ab8b379f459b",
+      "comment": "",
+      "command": "click",
+      "target": "css=.nav-link > .gap-2 > span",
+      "targets": [
+        ["css=.nav-link > .gap-2 > span", "css:finder"],
+        ["xpath=//ul[@id='sidebar-accordion']/li[8]/button/div/span", "xpath:idRelative"],
+        ["xpath=//button/div/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Cerrar sesión')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }]
+  }],
+  "suites": [{
+    "id": "dda13460-edff-4f40-89d2-7e47e19a0c08",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": ["dababca8-ba6b-4b34-97bf-b3ea175be55c"]
+  }],
+  "urls": ["https://planillaonigiri.netlify.app/"],
+  "plugins": []
+}

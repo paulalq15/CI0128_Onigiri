@@ -9,6 +9,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
   {
     private readonly string _connectionString;
     private readonly ILogger<ReportRepository> _logger;
+
     public DashboardRepository(IConfiguration config, ILogger<ReportRepository> logger)
     {
       _connectionString = config.GetConnectionString("OnigiriContext");
@@ -102,5 +103,32 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
         throw;
       }
     }
-  } // end class
+
+    public async Task<List<EmployeeDashboardEmployeeFiguresPerMonth>> GetEmployeeFiguresPerMonth(int employeeId)
+    {
+      try
+      {
+        var connection = new SqlConnection(_connectionString);
+
+        const string query = @"
+          SELECT TOP 1
+            ne.MontoBruto AS GrossSalary,
+            ne.MontoNeto AS NetSalary
+          FROM NominaEmpleado ne
+          WHERE IdEmpleado = @employeeId
+          ORDER BY ne.IdNominaEmpresa DESC;";
+
+        var rows = await connection.QueryAsync<EmployeeDashboardEmployeeFiguresPerMonth>(query, new { EmployeeId = employeeId });
+        var result = rows.ToList();
+
+        return result;
+      }
+
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, "Error obteniendo conteo de empleados por tipo: {CompanyId}", employeeId);
+        throw;
+      }
+    }
+  }
 }

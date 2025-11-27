@@ -31,4 +31,15 @@
     public List<EmployerDashboardCostByMonthModel> CostByMonth { get; set; } = new();
     public List<EmployerDashboardEmployeeCountByTypeModel> EmployeeCountByType { get; set; } = new();
   }
+
+  public class EmployeeDashboardEmployeeFiguresPerMonth
+  {
+    public int GrossSalary { get; set; } = new();
+    public int NetSalary { get; set; } = new();
+  }
+
+  public class EmployeeDashboardDto
+  {
+    public List<EmployeeDashboardEmployeeFiguresPerMonth> EmployeeFiguresPerMonth { get; set; } = new();
+  }
 }
