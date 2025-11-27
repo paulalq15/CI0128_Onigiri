@@ -77,23 +77,9 @@ public class EmployeeController : ControllerBase
     return ok ? NoContent() : BadRequest("No se pudo actualizar.");
   }
 
-  [HttpDelete("{employeeId:int}")]
-  public async Task<IActionResult> DeleteEmployee(int employeeId) {
-    if (employeeId <= 0)
-    {
-      return BadRequest("El parámetro employeeId no tiene un valor válido");
-    }
-
-    bool performSoftDelete = await _employeeService.CheckIfEmployeeHasPayments(employeeId);
-
-    if (performSoftDelete) {
-      await _employeeService.SoftDeleteEmployee(employeeId);
-    }
-
-    else {
-      await _employeeService.HardDeleteEmployee(employeeId);
-    }
-
+  [HttpDelete("{userId:int}")]
+  public async Task<IActionResult> DeleteEmployee(int userId) {
+    await _employeeService.DeleteEmployee(userId);
     return Ok();
   }
 }
