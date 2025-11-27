@@ -1,0 +1,240 @@
+{
+  "id": "8b1c2ad1-9768-436e-96e5-2481ae63d7dc",
+  "version": "2.0",
+  "name": "UITestModifyEmployee",
+  "url": "https://planillaonigiri.netlify.app/",
+  "tests": [{
+    "id": "900253bb-6716-4930-8cde-76da15f4ae25",
+    "name": "UITestModifyEmployee",
+    "commands": [{
+      "id": "7b03be59-6814-4728-b9ed-019f63ce2b5a",
+      "comment": "",
+      "command": "open",
+      "target": "/auth/Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "b6bc9462-5e1e-4783-84ea-6c06c02a13dc",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "886x701",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "d58a21d0-f7c5-481b-8d3d-994ff886c2d7",
+      "comment": "",
+      "command": "click",
+      "target": "id=email",
+      "targets": [
+        ["id=email", "id"],
+        ["css=#email", "css:finder"],
+        ["xpath=//input[@id='email']", "xpath:attributes"],
+        ["xpath=//div[@id='authLayout']/main/div/div/div/form/div/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "c7abe7d2-ad92-4b11-99c0-c61e4303973b",
+      "comment": "",
+      "command": "type",
+      "target": "id=email",
+      "targets": [
+        ["id=email", "id"],
+        ["css=#email", "css:finder"],
+        ["xpath=//input[@id='email']", "xpath:attributes"],
+        ["xpath=//div[@id='authLayout']/main/div/div/div/form/div/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "empleador@email.com"
+    }, {
+      "id": "d75dd989-4a17-4a24-bbec-5a52e2192c11",
+      "comment": "",
+      "command": "click",
+      "target": "id=password",
+      "targets": [
+        ["id=password", "id"],
+        ["css=#password", "css:finder"],
+        ["xpath=//input[@id='password']", "xpath:attributes"],
+        ["xpath=//div[@id='authLayout']/main/div/div/div/form/div[2]/div/input", "xpath:idRelative"],
+        ["xpath=//div[2]/div/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "403a3f07-b182-430e-99f9-f63fcf5a8c2e",
+      "comment": "",
+      "command": "type",
+      "target": "id=password",
+      "targets": [
+        ["id=password", "id"],
+        ["css=#password", "css:finder"],
+        ["xpath=//input[@id='password']", "xpath:attributes"],
+        ["xpath=//div[@id='authLayout']/main/div/div/div/form/div[2]/div/input", "xpath:idRelative"],
+        ["xpath=//div[2]/div/input", "xpath:position"]
+      ],
+      "value": "Pass123."
+    }, {
+      "id": "00ae64f6-3913-4e11-84a1-14636394cab9",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn-custom",
+      "targets": [
+        ["css=.btn-custom", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//div[@id='authLayout']/main/div/div/div/form/div[5]/button", "xpath:idRelative"],
+        ["xpath=//div[5]/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Ingresar')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "967846e3-9adf-445d-b5d8-42e9264edb8a",
+      "comment": "",
+      "command": "click",
+      "target": "css=.bi-list",
+      "targets": [
+        ["css=.bi-list", "css:finder"],
+        ["xpath=//header[@id='headerComp']/ul/li[2]/button/i", "xpath:idRelative"],
+        ["xpath=//i", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "fdf9d965-62a8-4bf4-9db8-60ae4c9325cd",
+      "comment": "",
+      "command": "click",
+      "target": "css=.my-3:nth-child(4) .flex-grow-1",
+      "targets": [
+        ["css=.my-3:nth-child(4) .flex-grow-1", "css:finder"],
+        ["xpath=//ul[@id='sidebar-accordion']/li[4]/button/span", "xpath:idRelative"],
+        ["xpath=//li[4]/button/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Empleados')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "f1903189-8197-4380-a38d-d6809de83061",
+      "comment": "",
+      "command": "click",
+      "target": "css=#employee-collapse li:nth-child(1) .px-2",
+      "targets": [
+        ["css=#employee-collapse li:nth-child(1) .px-2", "css:finder"],
+        ["xpath=//div[@id='employee-collapse']/ul/li/a/span", "xpath:idRelative"],
+        ["xpath=//li[4]/div/ul/li/a/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Ver Empleados')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "53b3ab1e-0d32-4728-bf79-70423d3b922a",
+      "comment": "",
+      "command": "click",
+      "target": "css=tr:nth-child(1) .btn",
+      "targets": [
+        ["css=tr:nth-child(1) .btn", "css:finder"],
+        ["xpath=//div[@id='webpageLayout']/main/div/div/table/tbody/tr/td[11]/button", "xpath:idRelative"],
+        ["xpath=//td[11]/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Editar')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "0a497431-bc0d-4db9-baf3-2e8d1d579a22",
+      "comment": "",
+      "command": "click",
+      "target": "id=surname2E",
+      "targets": [
+        ["id=surname2E", "id"],
+        ["css=#surname2E", "css:finder"],
+        ["xpath=//input[@id='surname2E']", "xpath:attributes"],
+        ["xpath=//div[@id='webpageLayout']/main/div/div/form/div[4]/input", "xpath:idRelative"],
+        ["xpath=//div[4]/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "95015278-1610-40df-9c7a-7a600ec83c5d",
+      "comment": "",
+      "command": "type",
+      "target": "id=surname2E",
+      "targets": [
+        ["id=surname2E", "id"],
+        ["css=#surname2E", "css:finder"],
+        ["xpath=//input[@id='surname2E']", "xpath:attributes"],
+        ["xpath=//div[@id='webpageLayout']/main/div/div/form/div[4]/input", "xpath:idRelative"],
+        ["xpath=//div[4]/input", "xpath:position"]
+      ],
+      "value": " Verstappen"
+    }, {
+      "id": "d1cc5e48-ccf9-41fe-99ba-58650279b89d",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn:nth-child(2)",
+      "targets": [
+        ["css=.btn:nth-child(2)", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//div[@id='webpageLayout']/main/div/div/form/div[15]/button[2]", "xpath:idRelative"],
+        ["xpath=//button[2]", "xpath:position"],
+        ["xpath=//button[contains(.,'Guardar')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "a19a7964-c4a0-4a7f-ad8e-4ac310ec6cf6",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn-close:nth-child(1)",
+      "targets": [
+        ["css=.btn-close:nth-child(1)", "css:finder"],
+        ["xpath=(//button[@type='button'])[5]", "xpath:attributes"],
+        ["xpath=//div[@id='app']/div[2]/button", "xpath:idRelative"],
+        ["xpath=//div[2]/button", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "d29c41db-1013-4112-aaf9-5214478ff628",
+      "comment": "",
+      "command": "click",
+      "target": "css=.bi-list",
+      "targets": [
+        ["css=.bi-list", "css:finder"],
+        ["xpath=//header[@id='headerComp']/ul/li[2]/button/i", "xpath:idRelative"],
+        ["xpath=//i", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "fb358ff4-efb5-43fa-8a91-859adfaf7d46",
+      "comment": "",
+      "command": "click",
+      "target": "css=#employee-collapse li:nth-child(1) .px-2",
+      "targets": [
+        ["css=#employee-collapse li:nth-child(1) .px-2", "css:finder"],
+        ["xpath=//div[@id='employee-collapse']/ul/li/a/span", "xpath:idRelative"],
+        ["xpath=//li[4]/div/ul/li/a/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Ver Empleados')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "5ed976e3-8f5a-43c1-9bb3-f0f96b62e845",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=tr:nth-child(1) > td:nth-child(5)",
+      "targets": [
+        ["css=tr:nth-child(1) > td:nth-child(5)", "css:finder"],
+        ["xpath=//div[@id='webpageLayout']/main/div/div/table/tbody/tr/td[5]", "xpath:idRelative"],
+        ["xpath=//td[5]", "xpath:position"],
+        ["xpath=//td[contains(.,'Verstappen')]", "xpath:innerText"]
+      ],
+      "value": "Verstappen"
+    }, {
+      "id": "c47a13af-58dc-4d6e-9504-7d02f903c3af",
+      "comment": "",
+      "command": "assertText",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }]
+  }],
+  "suites": [{
+    "id": "3dff19f5-e992-4142-8063-a93ca532a975",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": ["900253bb-6716-4930-8cde-76da15f4ae25"]
+  }],
+  "urls": ["http://localhost:8080/"],
+  "plugins": []
+}
