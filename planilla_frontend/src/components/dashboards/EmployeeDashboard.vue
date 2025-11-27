@@ -36,7 +36,7 @@ export default {
 
   setup() {
     const session = useSession()
-    const employeeId = session.user?.userId ?? 0
+    const employeeId = session.user?.personId ?? 0
     const alert = useGlobalAlert()
 
     const employeeFiguresPerMonth = ref([])
