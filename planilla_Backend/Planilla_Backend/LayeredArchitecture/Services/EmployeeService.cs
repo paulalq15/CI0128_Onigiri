@@ -43,8 +43,12 @@ namespace Planilla_Backend.LayeredArchitecture.Services
       return await _employeeRepo.CheckIfEmployeeHasPayments(employeeId);
     }
 
-    public async void SoftDeleteEmployee(int employeeId) {
-      _employeeRepo.SoftDeleteEmployee(employeeId);
+    public async Task SoftDeleteEmployee(int employeeId) {
+      await _employeeRepo.SoftDeleteEmployee(employeeId);
+    }
+
+    public async Task HardDeleteEmployee(int employeeId) {
+      await _employeeRepo.HardDeleteEmployee(employeeId);
     }
   }
 }
