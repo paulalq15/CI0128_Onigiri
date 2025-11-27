@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Planilla_Backend.LayeredArchitecture.Models;
 using Planilla_Backend.LayeredArchitecture.Repositories;
 
@@ -39,9 +40,17 @@ namespace Planilla_Backend.LayeredArchitecture.Services
       return await _employeeRepo.UpdateByEmployer(employerId, employeeId, employeeModel, ct);
     }
 
+    public async Task DeleteEmployee(int userId) {
 
+      bool performSoftDelete = await _employeeRepo.CheckIfEmployeeHasPayments(userId); ;
 
+      if (performSoftDelete) {
+        await _employeeRepo.SoftDeleteEmployee(userId);
+      }
 
-
+      else {
+        await _employeeRepo.HardDeleteEmployee(userId);
+      }
+    }
   }
 }

@@ -69,6 +69,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
               JOIN Empresa AS e ON ue.IdEmpresa = e.IdEmpresa
             WHERE e.IdEmpresa = @companyId
               AND p.TipoPersona IN ('Empleado', 'Aprobador')
+              AND p.IsDeleted = 0
               AND p.IdPersona IN (
 	              SELECT h.IdEmpleado
 	              FROM HojaHoras AS h
@@ -284,6 +285,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
           @"SELECT COUNT(1)
             FROM NominaEmpresa
             WHERE IdEmpresa = @companyId AND FechaInicio = @dateFrom AND FechaFin = @dateTo";
+
         var count = await connection.ExecuteScalarAsync<int>(sql, new { companyId, dateFrom, dateTo }, transaction: tx);
         return count > 0;
       }

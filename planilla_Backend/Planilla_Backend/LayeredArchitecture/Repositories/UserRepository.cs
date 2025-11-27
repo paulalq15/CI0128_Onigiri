@@ -53,7 +53,8 @@ namespace Planilla_Backend.LayeredArchitecture.Repositories
         JOIN dbo.Persona p 
           ON p.IdPersona = u.IdPersona
         WHERE u.Correo = @Email
-          AND u.Estado = 'Activo';
+          AND u.Estado = 'Activo'
+          AND u.IsDeleted = 0;
       ";
 
       using var conn = new SqlConnection(_connectionString);

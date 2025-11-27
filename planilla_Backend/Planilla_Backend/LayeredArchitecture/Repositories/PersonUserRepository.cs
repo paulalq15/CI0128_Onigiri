@@ -122,7 +122,7 @@ namespace Planilla_Backend.LayeredArchitecture.Repositories
                 JOIN Usuario u ON upe.IdUsuario = u.IdUsuario
                 JOIN Persona p ON u.IdPersona = p.IdPersona
                 JOIN Contrato c ON p.IdPersona = c.IdPersona
-              WHERE upe.IdEmpresa = @companyId;
+              WHERE upe.IdEmpresa = @companyId AND u.IsDeleted = 0;
              ";
 
       using var connection = new SqlConnection(_connectionString);

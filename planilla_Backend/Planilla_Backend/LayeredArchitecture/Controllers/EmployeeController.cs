@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Mvc;
 using Planilla_Backend.LayeredArchitecture.Models;
 using Planilla_Backend.LayeredArchitecture.Services;
@@ -74,5 +75,11 @@ public class EmployeeController : ControllerBase
   {
     var ok = await _employeeService.UpdateAsEmployer(employerId, personId, body, ct);
     return ok ? NoContent() : BadRequest("No se pudo actualizar.");
+  }
+
+  [HttpDelete("{userId:int}")]
+  public async Task<IActionResult> DeleteEmployee(int userId) {
+    await _employeeService.DeleteEmployee(userId);
+    return Ok();
   }
 }

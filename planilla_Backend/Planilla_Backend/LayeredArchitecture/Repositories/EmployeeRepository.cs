@@ -346,5 +346,94 @@ namespace Planilla_Backend.LayeredArchitecture.Repositories
         throw;
       }
     }
+
+    public async Task<bool> CheckIfEmployeeHasPayments(int userId)
+    {
+      using var connection = new SqlConnection(_connectionString);
+      await connection.OpenAsync();
+
+      const string query = @"
+          SELECT CASE WHEN EXISTS(
+            SELECT 1
+            FROM NominaEmpleado ne
+            INNER JOIN Usuario u ON u.IdPersona = ne.IdEmpleado
+            WHERE u.IdUsuario = @userId
+        ) THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END;";
+
+       return await connection.QuerySingleAsync<bool>(query, new { userId });
+    }
+
+    public async Task SoftDeleteEmployee(int userId)
+    {
+      using var connection = new SqlConnection(_connectionString);
+      await connection.OpenAsync();
+
+      using var transaction = connection.BeginTransaction(System.Data.IsolationLevel.ReadCommitted);
+
+      try
+      {
+        const string query = @"
+          UPDATE Usuario
+          SET IsDeleted = 1, Estado = 'Inactivo'
+          WHERE IdUsuario = @userId;
+
+          UPDATE p
+          SET p.IsDeleted = 1
+          FROM Persona p
+          INNER JOIN Usuario u ON u.IdPersona = p.IdPersona
+          WHERE u.IdUsuario = @userId;
+
+          UPDATE ElementoAplicado
+          SET FechaFin = GETDATE()
+          WHERE IdUsuario = @userId;
+
+          UPDATE c
+          SET c.FechaFin = GETDATE()
+          FROM Contrato c
+          INNER JOIN Persona p ON c.IdPersona = p.IdPersona
+          INNER JOIN Usuario u ON u.IdPersona = p.IdPersona
+          WHERE u.IdUsuario = @userId;
+          ";
+
+        await connection.ExecuteAsync(query, new { userId }, transaction);
+        await transaction.CommitAsync();
+      }
+
+      catch
+      {
+        await transaction.RollbackAsync();
+        throw;
+      }
+    }
+
+    public async Task HardDeleteEmployee(int userId)
+    {
+      using var connection = new SqlConnection(_connectionString);
+      await connection.OpenAsync();
+      using var transaction = connection.BeginTransaction(System.Data.IsolationLevel.ReadCommitted);
+
+      try
+      {
+        var idPersona = await connection.QuerySingleAsync<int>(
+        "SELECT IdPersona FROM Usuario WHERE IdUsuario = @userId", new { userId }, transaction);
+
+         await connection.ExecuteAsync("DELETE FROM ElementoAplicado WHERE IdUsuario = @userId", new { userId }, transaction);
+         await connection.ExecuteAsync("DELETE FROM UsuariosPorEmpresa WHERE IdUsuario = @userId", new { userId }, transaction);
+         await connection.ExecuteAsync("DELETE FROM HojaHoras WHERE IdEmpleado = @idPersona", new { idPersona }, transaction);
+         await connection.ExecuteAsync("DELETE FROM HistorialLaboral WHERE IdEmpleado = @idPersona", new { idPersona }, transaction);
+         await connection.ExecuteAsync("DELETE FROM Contrato WHERE IdPersona = @idPersona", new { idPersona }, transaction);
+         await connection.ExecuteAsync("DELETE FROM Direccion WHERE IdPersona = @idPersona", new { idPersona }, transaction);
+         await connection.ExecuteAsync("DELETE FROM Usuario WHERE IdUsuario = @userId", new { userId }, transaction);
+         await connection.ExecuteAsync("DELETE FROM Persona WHERE IdPersona = @idPersona", new { idPersona }, transaction);
+
+         await transaction.CommitAsync();
+      }
+
+      catch
+      {
+        await transaction.RollbackAsync();
+        throw;
+      }
+    }
   }
 }
