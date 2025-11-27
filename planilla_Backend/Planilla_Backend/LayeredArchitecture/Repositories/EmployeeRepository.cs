@@ -374,8 +374,7 @@ namespace Planilla_Backend.LayeredArchitecture.Repositories
       {
         const string query = @"
           UPDATE Usuario
-          SET IsDeleted = 1
-          SET Estado = 'Inactivo'
+          SET IsDeleted = 1, Estado = 'Inactivo'
           WHERE IdUsuario = @userId;
 
           UPDATE p
