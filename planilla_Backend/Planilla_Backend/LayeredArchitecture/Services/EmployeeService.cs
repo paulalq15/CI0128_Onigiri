@@ -42,5 +42,9 @@ namespace Planilla_Backend.LayeredArchitecture.Services
     public async Task<bool> CheckIfEmployeeHasPayments(int employeeId) {
       return await _employeeRepo.CheckIfEmployeeHasPayments(employeeId);
     }
+
+    public async void SoftDeleteEmployee(int employeeId) {
+      _employeeRepo.SoftDeleteEmployee(employeeId);
+    }
   }
 }

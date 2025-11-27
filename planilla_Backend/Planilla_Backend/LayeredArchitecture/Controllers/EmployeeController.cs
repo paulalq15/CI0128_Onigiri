@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Mvc;
 using Planilla_Backend.LayeredArchitecture.Models;
 using Planilla_Backend.LayeredArchitecture.Services;
@@ -76,8 +77,8 @@ public class EmployeeController : ControllerBase
     return ok ? NoContent() : BadRequest("No se pudo actualizar.");
   }
 
-  [HttpDelete]
-  public async Task<IActionResult> DeleteEmployee([FromBody] int employeeId) {
+  [HttpDelete("{employeeId:int}")]
+  public async Task<IActionResult> DeleteEmployee(int employeeId) {
     if (employeeId <= 0)
     {
       return BadRequest("El parámetro employeeId no tiene un valor válido");
@@ -87,10 +88,12 @@ public class EmployeeController : ControllerBase
 
     if (performSoftDelete) {
       Console.WriteLine("SOFT DELETE!!!");
+      _employeeService.SoftDeleteEmployee(employeeId);
     }
 
     else {
       Console.WriteLine("HARD DELETE!!!");
+      // await _employeeService.HardDeleteEmployee(employeeId);
     }
 
     return Ok();

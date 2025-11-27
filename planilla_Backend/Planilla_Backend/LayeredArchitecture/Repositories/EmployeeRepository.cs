@@ -359,5 +359,17 @@ namespace Planilla_Backend.LayeredArchitecture.Repositories
 
        return await connection.QuerySingleAsync<bool>(query, new { employeeId });
     }
+
+    public async void SoftDeleteEmployee(int userId) {
+      using var connection = new SqlConnection(_connectionString);
+      await connection.OpenAsync();
+
+      const string query = @"
+        UPDATE Usuario
+        SET IsDeleted = 1
+        WHERE IdUsuario = @userId;";
+
+      await connection.ExecuteAsync(query, new { userId });
+    }
   }
 }
