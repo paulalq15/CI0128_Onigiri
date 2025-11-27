@@ -88,12 +88,12 @@ public class EmployeeController : ControllerBase
 
     if (performSoftDelete) {
       Console.WriteLine("SOFT DELETE!!!");
-      _employeeService.SoftDeleteEmployee(employeeId);
+      await _employeeService.SoftDeleteEmployee(employeeId);
     }
 
     else {
       Console.WriteLine("HARD DELETE!!!");
-      // await _employeeService.HardDeleteEmployee(employeeId);
+      await _employeeService.HardDeleteEmployee(employeeId);
     }
 
     return Ok();

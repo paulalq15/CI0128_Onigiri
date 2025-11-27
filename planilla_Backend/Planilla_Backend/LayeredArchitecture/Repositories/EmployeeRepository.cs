@@ -360,16 +360,61 @@ namespace Planilla_Backend.LayeredArchitecture.Repositories
        return await connection.QuerySingleAsync<bool>(query, new { employeeId });
     }
 
-    public async void SoftDeleteEmployee(int userId) {
+    public async Task SoftDeleteEmployee(int userId)
+    {
       using var connection = new SqlConnection(_connectionString);
       await connection.OpenAsync();
 
-      const string query = @"
-        UPDATE Usuario
-        SET IsDeleted = 1
-        WHERE IdUsuario = @userId;";
+      using var transaction = connection.BeginTransaction(System.Data.IsolationLevel.ReadCommitted);
 
-      await connection.ExecuteAsync(query, new { userId });
+      try
+      {
+        const string query = @"
+            UPDATE Usuario
+            SET IsDeleted = 1
+            WHERE IdUsuario = @userId;";
+
+        await connection.ExecuteAsync(query, new { userId }, transaction);
+        await transaction.CommitAsync();
+      }
+
+      catch
+      {
+        await transaction.RollbackAsync();
+        throw;
+      }
+    }
+
+    public async Task HardDeleteEmployee(int userId)
+    {
+      using var connection = new SqlConnection(_connectionString);
+      await connection.OpenAsync();
+      using var transaction = connection.BeginTransaction(System.Data.IsolationLevel.ReadCommitted);
+
+      try
+      {
+        var idPersona = await connection.QuerySingleAsync<int>(
+        "SELECT IdPersona FROM Usuario WHERE IdUsuario = @userId", new { userId }, transaction);
+
+         await connection.ExecuteAsync("DELETE FROM ElementoAplicado WHERE IdUsuario = @userId", new { userId }, transaction);
+         await connection.ExecuteAsync("DELETE FROM UsuariosPorEmpresa WHERE IdUsuario = @userId", new { userId }, transaction);
+         await connection.ExecuteAsync("DELETE FROM ComprobantePago WHERE IdCreadoPor = @idPersona", new { idPersona }, transaction);
+         await connection.ExecuteAsync("DELETE FROM HojaHoras WHERE IdEmpleado = @idPersona OR IdAprovador = @idPersona", new { idPersona }, transaction);
+         await connection.ExecuteAsync("DELETE FROM HistorialLaboral WHERE IdEmpleado = @idPersona OR IdModificadoPor = @idPersona", new { idPersona }, transaction);
+         await connection.ExecuteAsync("DELETE FROM NominaEmpleado WHERE IdEmpleado = @idPersona", new { idPersona }, transaction);
+         await connection.ExecuteAsync("DELETE FROM Contrato WHERE IdPersona = @idPersona", new { idPersona }, transaction);
+         await connection.ExecuteAsync("DELETE FROM Direccion WHERE IdPersona = @idPersona", new { idPersona }, transaction);
+         await connection.ExecuteAsync("DELETE FROM Usuario WHERE IdUsuario = @userId", new { userId }, transaction);
+         await connection.ExecuteAsync("DELETE FROM Persona WHERE IdPersona = @idPersona", new { idPersona }, transaction);
+
+         await transaction.CommitAsync();
+      }
+
+      catch
+      {
+        await transaction.RollbackAsync();
+        throw;
+      }
     }
   }
 }
