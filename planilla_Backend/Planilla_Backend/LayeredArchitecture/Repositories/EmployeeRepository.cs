@@ -370,9 +370,13 @@ namespace Planilla_Backend.LayeredArchitecture.Repositories
       try
       {
         const string query = @"
-            UPDATE Usuario
-            SET IsDeleted = 1
-            WHERE IdUsuario = @userId;";
+          UPDATE Usuario
+          SET IsDeleted = 1
+          WHERE IdUsuario = @userId;
+
+          UPDATE ElementoAplicado
+          SET FechaFin = GETDATE()
+          WHERE IdUsuario = @userId;";
 
         await connection.ExecuteAsync(query, new { userId }, transaction);
         await transaction.CommitAsync();

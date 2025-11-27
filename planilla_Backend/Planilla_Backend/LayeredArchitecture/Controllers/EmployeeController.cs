@@ -87,12 +87,10 @@ public class EmployeeController : ControllerBase
     bool performSoftDelete = await _employeeService.CheckIfEmployeeHasPayments(employeeId);
 
     if (performSoftDelete) {
-      Console.WriteLine("SOFT DELETE!!!");
       await _employeeService.SoftDeleteEmployee(employeeId);
     }
 
     else {
-      Console.WriteLine("HARD DELETE!!!");
       await _employeeService.HardDeleteEmployee(employeeId);
     }
 
