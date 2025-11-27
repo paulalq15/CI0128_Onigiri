@@ -27,5 +27,5 @@ namespace Planilla_Backend.CleanArchitecture.Application.Dashboards
         EmployeeCountByType = employeeCountTask.Result
       };
     }
-  } // end class
+  }
 }

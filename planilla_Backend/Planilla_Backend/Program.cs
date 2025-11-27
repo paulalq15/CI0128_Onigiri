@@ -87,13 +87,16 @@ builder.Services.AddScoped<IDeleteCompanyCommand, DeleteCompanyCommand>();
 
 // Dashboard
 builder.Services.AddScoped<IEmployerDashboardQuery, EmployerDashboardQuery>();
+builder.Services.AddScoped<IEmployeeDashboardQuery, EmployeeDashboardQuery>();
 builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
+
 
 builder.Services.AddControllers();
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
   options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
