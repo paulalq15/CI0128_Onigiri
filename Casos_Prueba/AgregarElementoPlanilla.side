@@ -1,0 +1,249 @@
+{
+  "id": "7baa999a-fe4c-4d5a-a0de-de29e85715b5",
+  "version": "2.0",
+  "name": "Test",
+  "url": "https://planillaonigiri.netlify.app",
+  "tests": [{
+    "id": "2f85a9bc-71de-49fd-944d-257096082996",
+    "name": "Empleador_CrearEP",
+    "commands": [{
+      "id": "69f75d16-0965-4f8d-bae4-acb6206730aa",
+      "comment": "",
+      "command": "open",
+      "target": "/auth/Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "c5ec813d-2c99-4d9d-9b4f-bb98e39649db",
+      "comment": "",
+      "command": "type",
+      "target": "id=email",
+      "targets": [
+        ["id=email", "id"],
+        ["css=#email", "css:finder"],
+        ["xpath=//input[@id='email']", "xpath:attributes"],
+        ["xpath=//div[@id='authLayout']/main/div/div/div/form/div/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "empleador@test.com"
+    }, {
+      "id": "23245683-2106-438b-9c2b-f197f3db8366",
+      "comment": "",
+      "command": "type",
+      "target": "id=password",
+      "targets": [
+        ["id=password", "id"],
+        ["css=#password", "css:finder"],
+        ["xpath=//input[@id='password']", "xpath:attributes"],
+        ["xpath=//div[@id='authLayout']/main/div/div/div/form/div[2]/div/input", "xpath:idRelative"],
+        ["xpath=//div[2]/div/input", "xpath:position"]
+      ],
+      "value": "Pass123."
+    }, {
+      "id": "b9d95221-c5de-4205-83ed-0db8e0f6844f",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn-custom",
+      "targets": [
+        ["css=.btn-custom", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//div[@id='authLayout']/main/div/div/div/form/div[5]/button", "xpath:idRelative"],
+        ["xpath=//div[5]/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Ingresar')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "e10fb6bc-644e-4629-9bb6-d1a4dd41be01",
+      "comment": "",
+      "command": "click",
+      "target": "css=.bi-list",
+      "targets": [
+        ["css=.bi-list", "css:finder"],
+        ["xpath=//header[@id='headerComp']/ul/li[2]/button/i", "xpath:idRelative"],
+        ["xpath=//i", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "e94e4ed5-44b9-4c19-b366-e5e4eee3c42f",
+      "comment": "",
+      "command": "click",
+      "target": "css=.my-3:nth-child(5) .flex-grow-1",
+      "targets": [
+        ["css=.my-3:nth-child(5) .flex-grow-1", "css:finder"],
+        ["xpath=//ul[@id='sidebar-accordion']/li[5]/button/span", "xpath:idRelative"],
+        ["xpath=//li[5]/button/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Planilla')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "4e908a78-b90c-4f97-b032-2186aef8a8ce",
+      "comment": "",
+      "command": "click",
+      "target": "css=#payroll-collapse li:nth-child(3) .px-2",
+      "targets": [
+        ["css=#payroll-collapse li:nth-child(3) .px-2", "css:finder"],
+        ["xpath=//div[@id='payroll-collapse']/ul/li[3]/a/span", "xpath:idRelative"],
+        ["xpath=//li[5]/div/ul/li[3]/a/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Crear beneficios y deducciones')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "6f2e9d85-0c05-4578-a7e8-b61bfd088983",
+      "comment": "",
+      "command": "assertEditable",
+      "target": "id=elementName",
+      "targets": [
+        ["id=elementName", "id"],
+        ["css=#elementName", "css:finder"],
+        ["xpath=//input[@id='elementName']", "xpath:attributes"],
+        ["xpath=//div[@id='webpageLayout']/main/div/div/form/div/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "74040395-e261-400b-8f58-05db39c56daf",
+      "comment": "",
+      "command": "type",
+      "target": "id=elementName",
+      "targets": [
+        ["id=elementName", "id"],
+        ["css=#elementName", "css:finder"],
+        ["xpath=//input[@id='elementName']", "xpath:attributes"],
+        ["xpath=//div[@id='webpageLayout']/main/div/div/form/div/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "Test"
+    }, {
+      "id": "c9c7dbe6-a21a-4854-be46-cf893276bd68",
+      "comment": "",
+      "command": "assertEditable",
+      "target": "id=calculationType",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "b05261ea-e6cf-4af3-91e4-1cd934c747d5",
+      "comment": "",
+      "command": "select",
+      "target": "id=calculationType",
+      "targets": [],
+      "value": "label=Porcentaje"
+    }, {
+      "id": "8ade6754-8e9c-4bc7-b11d-5e25318a7e51",
+      "comment": "",
+      "command": "assertSelectedValue",
+      "target": "id=calculationType",
+      "targets": [],
+      "value": "Porcentaje"
+    }, {
+      "id": "260e8f79-719f-43c4-a3e5-7e7d5d0b7876",
+      "comment": "",
+      "command": "assertEditable",
+      "target": "css=.form-control:nth-child(1)",
+      "targets": [
+        ["css=.form-control:nth-child(1)", "css:finder"],
+        ["xpath=//input[@type='number']", "xpath:attributes"],
+        ["xpath=//div[@id='webpageLayout']/main/div/div/form/div[3]/div/input", "xpath:idRelative"],
+        ["xpath=//div[3]/div/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "ec3d6021-f309-455d-9921-a9049e4fbfc2",
+      "comment": "",
+      "command": "type",
+      "target": "css=.form-control:nth-child(1)",
+      "targets": [
+        ["css=.form-control:nth-child(1)", "css:finder"],
+        ["xpath=//input[@type='number']", "xpath:attributes"],
+        ["xpath=//div[@id='webpageLayout']/main/div/div/form/div[3]/div/input", "xpath:idRelative"],
+        ["xpath=//div[3]/div/input", "xpath:position"]
+      ],
+      "value": "1"
+    }, {
+      "id": "909e6ada-c412-4cad-889f-24108b52c575",
+      "comment": "",
+      "command": "select",
+      "target": "id=PaidBy",
+      "targets": [],
+      "value": "label=Empleador"
+    }, {
+      "id": "74083993-7cf7-4afb-ab95-c3b7dfc85f36",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn-custom",
+      "targets": [
+        ["css=.btn-custom", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//div[@id='webpageLayout']/main/div/div/form/div[6]/button", "xpath:idRelative"],
+        ["xpath=//div[6]/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Crear elemento')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "9888ce49-c485-4b2e-8bb0-a9b512f00d30",
+      "comment": "",
+      "command": "type",
+      "target": "css=.form-control:nth-child(1)",
+      "targets": [],
+      "value": "1"
+    }, {
+      "id": "3a715550-ebdb-4dd9-8bc3-93103870728b",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn-custom",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "d2bf65ba-9e8f-4f46-a006-ef784ba0b352",
+      "comment": "",
+      "command": "click",
+      "target": "css=.bi-list",
+      "targets": [
+        ["css=.bi-list", "css:finder"],
+        ["xpath=//header[@id='headerComp']/ul/li[2]/button/i", "xpath:idRelative"],
+        ["xpath=//i", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "3516e795-bb75-4bbb-955a-721b1e10164d",
+      "comment": "",
+      "command": "click",
+      "target": "css=.my-3:nth-child(5) .flex-grow-1",
+      "targets": [
+        ["css=.my-3:nth-child(5) .flex-grow-1", "css:finder"],
+        ["xpath=//ul[@id='sidebar-accordion']/li[5]/button/span", "xpath:idRelative"],
+        ["xpath=//li[5]/button/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Planilla')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "ca366440-1fd6-46e6-a13e-672314d39cb6",
+      "comment": "",
+      "command": "click",
+      "target": "css=#payroll-collapse li:nth-child(2) .px-2",
+      "targets": [
+        ["css=#payroll-collapse li:nth-child(2) .px-2", "css:finder"],
+        ["xpath=//div[@id='payroll-collapse']/ul/li[2]/a/span", "xpath:idRelative"],
+        ["xpath=//li[5]/div/ul/li[2]/a/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Ver beneficios y deducciones')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "61b505f6-c59d-4175-8aef-97eef7ea0aab",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "xpath=//table//span[contains(text(),'Test')]",
+      "targets": [],
+      "value": "Test"
+    }]
+  }],
+  "suites": [{
+    "id": "787f505e-6d71-4a2d-976f-adb72d1a0f3c",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": []
+  }],
+  "urls": ["https://planillaonigiri.netlify.app/"],
+  "plugins": []
+}
