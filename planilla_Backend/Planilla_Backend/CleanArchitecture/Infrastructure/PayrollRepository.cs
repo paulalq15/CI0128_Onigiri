@@ -69,6 +69,7 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
               JOIN Empresa AS e ON ue.IdEmpresa = e.IdEmpresa
             WHERE e.IdEmpresa = @companyId
               AND p.TipoPersona IN ('Empleado', 'Aprobador')
+              AND p.IsDeleted = 0
               AND p.IdPersona IN (
 	              SELECT h.IdEmpleado
 	              FROM HojaHoras AS h
@@ -79,7 +80,6 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
                 SELECT 1
                 FROM dbo.fn_GetPayrollTimesheets(@companyId, @dateFrom, @dateTo) AS fn
                 WHERE fn.EmployeeId = p.IdPersona
-                AND p.IsDeleted = 0
               );";
 
         var employees = await connection.QueryAsync<EmployeeModel>(query, new { companyId, dateFrom, dateTo }, transaction: tx);
@@ -123,7 +123,6 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
               SELECT 1
               FROM dbo.fn_GetPayrollTimesheets(@companyId, @dateFrom, @dateTo) AS fn
               WHERE fn.EmployeeId = c.IdPersona
-              AND p.IsDeleted = 0
             );";
 
         var contracts = await connection.QueryAsync<ContractModel>(query, new { companyId, dateFrom, dateTo }, transaction: tx);
@@ -166,7 +165,6 @@ namespace Planilla_Backend.CleanArchitecture.Infrastructure
             WHERE e.IdEmpresa = @companyId
               AND p.IdPersona = @employeeId
               AND ea.FechaInicio <= @dateTo
-              AND p.IsDeleted = 0
               AND (ea.FechaFin IS NULL OR ea.FechaFin >= @dateFrom);";
 
         var elements = await connection.QueryAsync<ElementModel>(query, new { companyId, employeeId, dateFrom, dateTo }, transaction: tx);

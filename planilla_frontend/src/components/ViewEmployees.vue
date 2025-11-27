@@ -55,7 +55,6 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import URLBaseAPI from '../axiosAPIInstances.js';
 import { getUser } from '../session.js';
-// import PopUp from './alerts/PopUp.vue';
 
 const router = useRouter();
 const employees = ref([]);

@@ -347,17 +347,17 @@ namespace Planilla_Backend.LayeredArchitecture.Repositories
       }
     }
 
-    public async Task<bool> CheckIfEmployeeHasPayments(int employeeId)
+    public async Task<bool> CheckIfEmployeeHasPayments(int userId)
     {
       using var connection = new SqlConnection(_connectionString);
       await connection.OpenAsync();
 
       const string query = @"
         SELECT CASE WHEN EXISTS(
-            SELECT 1 FROM NominaEmpleado WHERE IdEmpleado = @employeeId
+            SELECT 1 FROM NominaEmpleado WHERE IdEmpleado = @userId
         ) THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END";
 
-       return await connection.QuerySingleAsync<bool>(query, new { employeeId });
+       return await connection.QuerySingleAsync<bool>(query, new { userId });
     }
 
     public async Task SoftDeleteEmployee(int userId)
@@ -382,7 +382,15 @@ namespace Planilla_Backend.LayeredArchitecture.Repositories
 
           UPDATE ElementoAplicado
           SET FechaFin = GETDATE()
-          WHERE IdUsuario = @userId;";
+          WHERE IdUsuario = @userId;
+
+          UPDATE c
+          SET c.FechaFin = GETDATE()
+          FROM Contrato c
+          INNER JOIN Persona p ON c.IdPersona = p.IdPersona
+          INNER JOIN Usuario u ON u.IdPersona = p.IdPersona
+          WHERE u.IdUsuario = @userId;
+          ";
 
         await connection.ExecuteAsync(query, new { userId }, transaction);
         await transaction.CommitAsync();
