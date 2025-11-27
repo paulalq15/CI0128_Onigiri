@@ -235,11 +235,7 @@ export default {
     },
 
     filterAppliedElements() {
-      return this.appliedElements.filter(
-        (applied) =>
-          this.benefitElementIds.has(applied.elementId) &&
-          this.isActiveOrEndingThisMonth(applied)
-      );
+      return this.appliedElements.filter((applied) => this.isActiveOrEndingThisMonth(applied));
     },
   },
 
@@ -456,13 +452,9 @@ export default {
 
     isActiveOrEndingThisMonth(el) {
 
-      // Si está activo, siempre cuenta
+      if (el.elementType !== 'Beneficio') return false;
       if (el.status === 'Activo') return true;
-
-      // Si no es inactivo, no cuenta
       if (el.status !== 'Inactivo') return false;
-
-      // Si es inactivo, revisamos endDate
       if (!el.endDate) return false;
 
       const end = new Date(el.endDate);
