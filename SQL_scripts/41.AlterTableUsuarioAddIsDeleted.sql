@@ -1,0 +1,2 @@
+ALTER TABLE Usuario
+ADD IsDeleted bit NOT NULL DEFAULT 0;
