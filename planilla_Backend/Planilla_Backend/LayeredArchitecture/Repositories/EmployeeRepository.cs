@@ -374,6 +374,12 @@ namespace Planilla_Backend.LayeredArchitecture.Repositories
           SET IsDeleted = 1
           WHERE IdUsuario = @userId;
 
+          UPDATE p
+          SET p.IsDeleted = 1
+          FROM Persona p
+          INNER JOIN Usuario u ON u.IdPersona = p.IdPersona
+          WHERE u.IdUsuario = @userId;
+
           UPDATE ElementoAplicado
           SET FechaFin = GETDATE()
           WHERE IdUsuario = @userId;";
