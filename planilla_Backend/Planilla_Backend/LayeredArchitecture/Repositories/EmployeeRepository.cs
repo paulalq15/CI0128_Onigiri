@@ -353,9 +353,12 @@ namespace Planilla_Backend.LayeredArchitecture.Repositories
       await connection.OpenAsync();
 
       const string query = @"
-        SELECT CASE WHEN EXISTS(
-            SELECT 1 FROM NominaEmpleado WHERE IdEmpleado = @userId
-        ) THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END";
+          SELECT CASE WHEN EXISTS(
+            SELECT 1
+            FROM NominaEmpleado ne
+            INNER JOIN Usuario u ON u.IdPersona = ne.IdEmpleado
+            WHERE u.IdUsuario = @userId
+        ) THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END;";
 
        return await connection.QuerySingleAsync<bool>(query, new { userId });
     }
@@ -372,6 +375,7 @@ namespace Planilla_Backend.LayeredArchitecture.Repositories
         const string query = @"
           UPDATE Usuario
           SET IsDeleted = 1
+          SET Estado = 'Inactivo'
           WHERE IdUsuario = @userId;
 
           UPDATE p
